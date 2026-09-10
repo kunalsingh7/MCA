@@ -1,13 +1,14 @@
 (function () {
-  const data = SYLLABUS_DATA;
   const tabsEl = document.getElementById("tabs");
   const panelsEl = document.getElementById("panels");
 
-  document.getElementById("page-title").textContent = data.meta.title;
-  document.getElementById("page-subtitle").textContent = data.meta.subtitle;
-  document.title = data.meta.title;
+  document.getElementById("page-title").textContent = PAGE.title;
+  document.getElementById("page-subtitle").textContent = PAGE.subtitle;
+  document.title = PAGE.title;
 
-  data.subjects.forEach((subject, index) => {
+  const subjects = PAGE.order.map((id) => SUBJECTS[id]).filter(Boolean);
+
+  subjects.forEach((subject, index) => {
     tabsEl.appendChild(buildTabButton(subject, index));
     panelsEl.appendChild(buildSubjectPanel(subject, index));
   });
@@ -15,10 +16,7 @@
   /* ---------------- helpers ---------------- */
 
   function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
   function store(key, value) {
@@ -65,9 +63,6 @@
   /* ---------------- subject panel ---------------- */
 
   function buildSubjectPanel(subject, index) {
-    const deep = (typeof DEEP !== "undefined" && DEEP[subject.id]) || {};
-    const teaching = (typeof TEACHING !== "undefined" && TEACHING[subject.id]) || [];
-
     const panel = document.createElement("section");
     panel.className = "subject-panel" + (index === 0 ? " active" : "");
     panel.id = "panel-" + subject.id;
@@ -77,14 +72,18 @@
       <div class="subject-head" style="border-top-color:${subject.accent}">
         <div class="code" style="color:${subject.accent}">${subject.code}</div>
         <h2>${subject.icon} ${subject.name}</h2>
-        <div class="unit-title">${subject.unitTitle}</div>
+        <div class="unit-title">${subject.unit}</div>
         <div class="progress-wrap">
           <div class="progress-bar"><span class="progress-fill" style="background:${subject.accent}"></span></div>
           <span class="progress-text"></span>
         </div>
       </div>
 
-      ${buildObjectivesHtml(deep)}
+      <div class="section-title"><span class="step-num">1</span> What you will learn</div>
+      <div class="objectives">
+        <p class="objectives-intro">By the end of this unit, you should be able to:</p>
+        <ul>${(subject.objectives || []).map((o) => `<li>${o}</li>`).join("")}</ul>
+      </div>
 
       <div class="why-box">
         <div class="why-card problem">
@@ -108,17 +107,12 @@
     `;
 
     const topicsWrap = panel.querySelector(".topics");
-    subject.topics.forEach((topic, i) => {
-      topicsWrap.appendChild(
-        buildTopic(topic, i, subject, (deep.topics || [])[i] || {}, teaching[i] || {})
-      );
-    });
+    subject.topics.forEach((topic, i) => topicsWrap.appendChild(buildTopic(topic, i, subject)));
 
-    const quizWrap = panel.querySelector(".quiz");
-    quizWrap.appendChild(buildQuiz(deep.quiz || [], subject));
+    panel.querySelector(".quiz").appendChild(buildQuiz(subject.quiz || [], subject));
 
     const questionsWrap = panel.querySelector(".questions");
-    subject.questions.forEach((q, i) => {
+    (subject.examQuestions || []).forEach((q, i) => {
       questionsWrap.appendChild(buildExamQuestion(q, i, subject.id));
     });
 
@@ -126,116 +120,61 @@
     return panel;
   }
 
-  function buildObjectivesHtml(deep) {
-    if (!deep.objectives || !deep.objectives.length) return "";
-    const items = deep.objectives.map((o) => `<li>${o}</li>`).join("");
-    return `
-      <div class="section-title"><span class="step-num">1</span> What you will learn</div>
-      <div class="objectives">
-        <p class="objectives-intro">By the end of this unit, you should be able to:</p>
-        <ul>${items}</ul>
-      </div>
-    `;
+  /* ---------------- topic blocks ---------------- */
+
+  function block(cls, tag, body) {
+    return `<div class="topic-block ${cls}"><span class="tag">${tag}</span>${body}</div>`;
   }
 
-  /* ---------------- topic ---------------- */
-
-  function buildTeacherHtml(teaching) {
-    if (!teaching.teacher) return "";
-    return `
-      <div class="teacher-note">
-        <span class="teacher-avatar">👩‍🏫</span>
-        <p>${teaching.teacher}</p>
-      </div>
-    `;
+  function buildTeacher(t) {
+    if (!t.teacher) return "";
+    return `<div class="teacher-note"><span class="teacher-avatar">👩‍🏫</span><p>${t.teacher}</p></div>`;
   }
 
-  function buildDiagramHtml(teaching) {
-    if (!teaching.diagram) return "";
-    return `
-      <div class="topic-block diagram-block">
-        <span class="tag">🖼️ Picture It</span>
-        <div class="diagram">${teaching.diagram}</div>
-      </div>
-    `;
+  function buildDiagram(t) {
+    const svg = t.diagram && typeof DIAGRAMS !== "undefined" ? DIAGRAMS[t.diagram] : null;
+    if (!svg) return "";
+    return block("diagram-block", "🖼️ Picture It", `<div class="diagram">${svg}</div>`);
   }
 
-  function buildSubtopicsHtml(deepTopic) {
-    if (!deepTopic.subtopics || !deepTopic.subtopics.length) return "";
-    const items = deepTopic.subtopics
+  function buildKeyPoints(t) {
+    if (!t.keyPoints || !t.keyPoints.length) return "";
+    const items = t.keyPoints.map((p) => `<li>${p}</li>`).join("");
+    return block("keypoints", "🔑 Key Points", `<ul>${items}</ul>`);
+  }
+
+  function buildSubtopics(t) {
+    if (!t.subtopics || !t.subtopics.length) return "";
+    const items = t.subtopics
       .map(
-        (s, i) => `
-        <div class="subtopic">
-          <div class="subtopic-head"><span class="subtopic-num">${i + 1}</span>${s.title}</div>
-          <p>${s.text}</p>
-        </div>`
+        (s, i) =>
+          `<div class="subtopic">
+             <div class="subtopic-head"><span class="subtopic-num">${i + 1}</span>${s.title}</div>
+             <p>${s.text}</p>
+           </div>`
       )
       .join("");
-    return `
-      <div class="topic-block subtopics-block">
-        <span class="tag">🔍 Let's Break It Down</span>
-        ${items}
-      </div>
-    `;
+    return block("subtopics-block", "🔍 Let's Break It Down", items);
   }
 
-  function buildMistakeHtml(deepTopic) {
-    if (!deepTopic.mistake) return "";
-    return `
-      <div class="topic-block mistake">
-        <span class="tag">⚠️ Common Mistake — Don't Do This</span>
-        ${deepTopic.mistake}
-      </div>
-    `;
+  function buildTable(t) {
+    if (!t.table) return "";
+    const head = t.table.headers.map((h) => `<th>${h}</th>`).join("");
+    const rows = t.table.rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join("")}</tr>`).join("");
+    return block(
+      "table-block",
+      "📊 Quick Compare",
+      `<div class="table-scroll"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`
+    );
   }
 
-  function buildKeywordHtml(deepTopic) {
-    if (!deepTopic.keyword) return "";
-    return `
-      <div class="topic-block keyword">
-        <span class="tag">📌 Write This In The Exam</span>
-        ${deepTopic.keyword}
-      </div>
-    `;
+  function buildCode(t) {
+    if (!t.code) return "";
+    const note = t.codeNote ? `<div class="code-note">${t.codeNote}</div>` : "";
+    return block("code-block", "💻 Code Example", `<pre><code>${escapeHtml(t.code)}</code></pre>${note}`);
   }
 
-  function buildWorkedHtml(topic) {
-    if (!topic.worked) return "";
-    return `
-      <div class="topic-block worked">
-        <span class="tag">🧮 Worked Example</span>
-        ${topic.worked}
-      </div>
-    `;
-  }
-
-  function buildTableHtml(topic) {
-    if (!topic.table) return "";
-    const { headers, rows } = topic.table;
-    const headHtml = headers.map((h) => `<th>${h}</th>`).join("");
-    const rowsHtml = rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join("")}</tr>`).join("");
-    return `
-      <div class="topic-block table-block">
-        <span class="tag">📊 Quick Compare</span>
-        <div class="table-scroll">
-          <table><thead><tr>${headHtml}</tr></thead><tbody>${rowsHtml}</tbody></table>
-        </div>
-      </div>
-    `;
-  }
-
-  function buildCodeHtml(topic) {
-    if (!topic.code) return "";
-    return `
-      <div class="topic-block code-block">
-        <span class="tag">💻 Code Example</span>
-        <pre><code>${escapeHtml(topic.code)}</code></pre>
-        ${topic.codeNote ? `<div class="code-note">${topic.codeNote}</div>` : ""}
-      </div>
-    `;
-  }
-
-  function buildTopic(topic, i, subject, deepTopic, teaching) {
+  function buildTopic(topic, i, subject) {
     const details = document.createElement("details");
     details.className = "topic";
     if (i === 0) details.open = true;
@@ -253,26 +192,20 @@
         <span class="chevron" style="color:${subject.accent}">▶</span>
       </summary>
       <div class="topic-body">
-        ${buildTeacherHtml(teaching)}
-        <div class="topic-block">
-          <span class="tag">📖 In Simple Words</span>
-          ${topic.explain}
-        </div>
-        ${buildDiagramHtml(teaching)}
-        ${buildSubtopicsHtml(deepTopic)}
-        <div class="topic-block reallife">
-          <span class="tag">🌍 Real-Life Example</span>
-          ${topic.realLife}
-        </div>
-        ${buildTableHtml(topic)}
-        ${buildWorkedHtml(topic)}
-        ${buildCodeHtml(topic)}
-        ${buildMistakeHtml(deepTopic)}
-        ${buildKeywordHtml(deepTopic)}
-        <div class="topic-block helps">
-          <span class="tag">✅ Why It Matters</span>
-          ${topic.howItHelps}
-        </div>
+        ${buildTeacher(topic)}
+        ${block("", "📖 In Simple Words", topic.explain)}
+        ${buildDiagram(topic)}
+        ${buildKeyPoints(topic)}
+        ${buildSubtopics(topic)}
+        ${block("reallife", "🌍 Real-Life Example", topic.realLife)}
+        ${buildTable(topic)}
+        ${topic.worked ? block("worked", "🧮 Worked Example", topic.worked) : ""}
+        ${buildCode(topic)}
+        ${topic.mistake ? block("mistake", "⚠️ Common Mistake — Don't Do This", topic.mistake) : ""}
+        ${topic.examAnswer ? block("exam-answer", "📝 Exam-Ready Answer — write this", topic.examAnswer) : ""}
+        ${topic.remember ? block("remember", "🧠 Remember This", topic.remember) : ""}
+        ${topic.why ? block("helps", "✅ Why It Matters", topic.why) : ""}
+        ${topic.practice ? `<div class="practice-box"><span class="tag">✍️ Try It Yourself</span>${topic.practice}</div>` : ""}
         <label class="done-check">
           <input type="checkbox" ${isDone ? "checked" : ""}/>
           <span>I understood this topic</span>
@@ -311,7 +244,7 @@
     wrap.className = "quiz-card";
 
     if (!questions.length) {
-      wrap.innerHTML = `<p class="quiz-empty">Quiz coming soon for this subject.</p>`;
+      wrap.innerHTML = `<p class="quiz-intro">Quiz coming soon for this subject.</p>`;
       return wrap;
     }
 
@@ -350,9 +283,7 @@
 
           const isRight = oi === question.answer;
           btn.classList.add(isRight ? "correct" : "wrong");
-          if (!isRight) {
-            optsEl.children[question.answer].classList.add("correct");
-          }
+          if (!isRight) optsEl.children[question.answer].classList.add("correct");
           [...optsEl.children].forEach((b) => (b.disabled = true));
 
           feedback.hidden = false;

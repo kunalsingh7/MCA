@@ -1,178 +1,284 @@
-/* Deep content for Programming & Problem Solving in C (MCA 109) — Unit 1. */
-var DEEP = DEEP || {};
-DEEP.c = {
+/* Programming & Problem Solving in C (MCA 109) — Unit 1. */
+var SUBJECTS = SUBJECTS || {};
+SUBJECTS.c = {
+  id: "c",
+  code: "MCA 109",
+  icon: "💻",
+  name: "Programming & Problem Solving in C",
+  unit: "Unit 1: Fundamentals of C Programming",
+  accent: "#10b981",
+  problem: "You want to tell a computer to do something — like calculate your college fee after a discount. But a computer only understands very exact instructions. If you're not precise, it either shows an error or gives the wrong answer.",
+  solution: "C gives you a set of exact rules — data types, variables and operators — so you can write instructions a computer understands perfectly, step by step, like talking to a very literal-minded assistant.",
   objectives: [
-    "Write a complete C program from memory, and name every part of it",
-    "Choose the right data type for any value, and explain why size matters",
-    "Follow the naming rules for variables, and spot an invalid name instantly",
-    "Use arithmetic, relational and logical operators, and write the ternary shortcut",
-    "Predict the answer of any expression using priority (precedence) and associativity — without a calculator",
-    "Explain the difference between automatic type conversion and manual type casting, with an example"
+    "Write a complete C program from memory and name every part of it",
+    "Choose the right data type for any value, and explain why size and range matter",
+    "Apply the identifier naming rules and spot an invalid variable name instantly",
+    "Use arithmetic, relational and logical operators correctly, including % and ==",
+    "Write a simple if-else as a ternary expression",
+    "Explain implicit conversion and explicit casting, and predict the result of 7/2",
+    "Solve any expression using precedence and associativity, showing each step"
   ],
 
   topics: [
-    // 0 — History and Structure of a C Program
     {
+      title: "History and Structure of a C Program",
+      teacher: "Every C program looks the same from far away — just like every letter you write has a greeting, a body and a signature. Learn this one shape, and you can read ANY C program in the world.",
+      explain: "C was developed by <strong>Dennis Ritchie in 1972 at Bell Laboratories</strong> to rewrite the UNIX operating system. Before C, operating systems were written in assembly language, which was extremely hard. C gave the speed of low-level code with the readability of a high-level language — which is why it is still used today for operating systems, drivers and embedded devices.",
+      diagram: "c-structure",
+      keyPoints: [
+        "Developed by <strong>Dennis Ritchie, 1972, Bell Labs</strong>, to write UNIX.",
+        "C is a structured, general-purpose, middle-level language.",
+        "Execution always begins from <code>main()</code>, wherever it is written.",
+        "<code>#include</code> brings in declarations from a header file.",
+        "Every statement ends with a semicolon <code>;</code>.",
+        "<code>return 0;</code> tells the OS the program finished successfully."
+      ],
       subtopics: [
         {
-          title: "Where C came from (2-mark answer)",
-          text: "C was developed by <strong>Dennis Ritchie in 1972 at Bell Laboratories</strong>, USA. It was created to rewrite the UNIX operating system — before that, operating systems were written in assembly language, which was extremely hard. C gave programmers the speed of low-level code with the readability of a high-level language. That mix is exactly why C is still used today for operating systems, drivers and embedded devices."
-        },
-        {
-          title: "The parts of every C program",
-          text: "Reading top to bottom: <strong>(1) Documentation</strong> — comments saying what the program does. <strong>(2) Preprocessor / link section</strong> — the <code>#include</code> lines that borrow ready-made tools. <strong>(3) Definition section</strong> — constants defined with <code>#define</code>. <strong>(4) Global declarations</strong> — variables usable everywhere. <strong>(5) main() function</strong> — where execution actually begins. <strong>(6) Other functions</strong> — your own extra functions."
+          title: "The six sections of a C program",
+          text: "<strong>(1) Documentation</strong> — comments saying what the program does. <strong>(2) Link/preprocessor</strong> — the <code>#include</code> lines. <strong>(3) Definition</strong> — constants made with <code>#define</code>. <strong>(4) Global declarations</strong> — variables usable everywhere. <strong>(5) main()</strong> — where execution begins. <strong>(6) Other functions</strong> — your own extra functions."
         },
         {
           title: "Why main() is special",
-          text: "No matter where you write it in the file, the computer always starts running from <code>main()</code>. That is a fixed rule. And <code>return 0;</code> at the end is main's way of telling the operating system \"I finished successfully\" — a non-zero number would mean something went wrong."
+          text: "No matter where you write it in the file, the computer always starts running from <code>main()</code>. That is a fixed rule of the language, not a convention."
         },
         {
           title: "What #include actually does",
-          text: "<code>#include &lt;stdio.h&gt;</code> means \"copy in the standard input–output toolbox before compiling\". Without it, the compiler has never heard of <code>printf</code> and will give an error. Think of it as borrowing a toolbox before starting your work."
+          text: "<code>#include &lt;stdio.h&gt;</code> means \"copy in the standard input–output toolbox before compiling\". Without it the compiler has never heard of <code>printf</code> and gives an error. Think of it as borrowing a toolbox before starting work."
         }
       ],
-      keyword: "C was developed by Dennis Ritchie in 1972 at Bell Labs to write the UNIX operating system. Every C program starts execution from the main() function.",
-      mistake: "Forgetting the semicolon <code>;</code> at the end of a statement is the #1 beginner error. In C, the semicolon means 'this instruction is finished' — it is not optional decoration."
+      realLife: "A C program is like a formal application form — a fixed place for your name, a fixed place for your photo, a fixed place to sign. Follow the structure and it is accepted; break it and it is rejected.",
+      code: "#include <stdio.h>     // header file - gives us printf()\n\nint main() {           // every C program starts running here\n    printf(\"Hello, MCA!\\n\");\n    return 0;           // tells the OS the program finished fine\n}",
+      codeNote: "Notice the fixed shape: header on top, main() in the middle, return at the end.",
+      mistake: "Forgetting the semicolon <code>;</code> at the end of a statement is the number one beginner error. In C the semicolon means 'this instruction is finished' — it is not decoration.",
+      examAnswer: "C was developed by Dennis Ritchie at Bell Laboratories in 1972, mainly for writing the UNIX operating system. It is a structured, general-purpose programming language widely used for system and application programming. A C program consists of a documentation section, link section, definition section, global declarations, the main() function and other user-defined functions. Execution of a C program always begins from main().",
+      remember: "Header → main() → statements → return 0.",
+      why: "Once you know the fixed structure, you can read and write simple C programs with confidence instead of copying blindly.",
+      practice: "In the example above, state the purpose of #include, main(), printf() and return 0 — one line each."
     },
 
-    // 1 — Data Types and Type Modifiers
     {
+      title: "Data Types and Type Modifiers",
+      teacher: "You would never keep one grain of rice inside a big suitcase, right? In C you must tell the computer what SIZE of box to use. That is all a data type really is — a box size.",
+      explain: "A data type tells the compiler <strong>what kind of value</strong> a variable holds and <strong>how much memory</strong> to reserve for it. Type modifiers — <code>short</code>, <code>long</code>, <code>signed</code>, <code>unsigned</code> — adjust that size or range.",
+      diagram: "c-datatypes",
+      keyPoints: [
+        "<code>int</code> → whole numbers. <code>float</code>/<code>double</code> → decimal numbers. <code>char</code> → one character.",
+        "<code>void</code> → 'no value', used mainly with functions.",
+        "Typical sizes: char 1 byte, int 4, float 4, double 8 bytes.",
+        "The size decides the <strong>range</strong> of values you can store.",
+        "Modifiers: short, long (change size); signed, unsigned (change range).",
+        "<code>unsigned</code> allows only 0 and positives, doubling the positive range.",
+        "Use <code>sizeof()</code> to check the real size on your machine."
+      ],
       subtopics: [
         {
-          title: "The four basic (primary) data types",
-          text: "<code>int</code> for whole numbers, <code>float</code> for decimal numbers, <code>double</code> for bigger and more precise decimals, and <code>char</code> for a single character. There is also <code>void</code>, which means 'no value at all' — used when a function returns nothing."
+          title: "Why size matters",
+          text: "Each type reserves a fixed amount of memory, and that decides the range of values it can hold. Choose too small a type and your value silently overflows into a wrong number; choose too big and you waste memory. Both are real bugs."
         },
         {
-          title: "Why the size of a type matters",
-          text: "Each type reserves a fixed amount of memory: usually <code>char</code> = 1 byte, <code>int</code> = 4 bytes, <code>float</code> = 4 bytes, <code>double</code> = 8 bytes. The size decides the <strong>range</strong> of values you can store. Choose too small a type and your value silently overflows into a wrong number; choose too big and you waste memory."
-        },
-        {
-          title: "Type modifiers change the size or range",
-          text: "The four modifiers are <code>short</code>, <code>long</code>, <code>signed</code> and <code>unsigned</code>. <code>short</code> and <code>long</code> change how many bytes are used. <code>signed</code> allows negative values (this is the default), while <code>unsigned</code> allows only zero and positives — which doubles the positive range. So an <code>unsigned int</code> can hold a bigger positive number than a normal <code>int</code>."
+          title: "The modifiers explained",
+          text: "<code>short</code> and <code>long</code> change how many bytes are used. <code>signed</code> allows negative values (this is the default) while <code>unsigned</code> allows only zero and positives — which doubles the positive range. So an <code>unsigned int</code> holds a bigger positive number than a normal <code>int</code>."
         },
         {
           title: "A rule of thumb for the exam",
-          text: "Storing age or roll number → <code>int</code>. Storing marks or price → <code>float</code>. Storing a grade letter → <code>char</code>. Storing a count that can never be negative → <code>unsigned int</code>. Being able to justify your choice is what earns the mark."
+          text: "Age or roll number → <code>int</code>. Marks or price → <code>float</code>. A grade letter → <code>char</code>. A count that can never be negative → <code>unsigned int</code>. Being able to justify your choice is what earns the mark."
         }
       ],
-      keyword: "Data type = tells the compiler what kind of value a variable holds and how much memory to reserve for it. Type modifiers (short, long, signed, unsigned) change that size or range.",
-      mistake: "Do not assume <code>int</code> is always 4 bytes — it depends on the compiler and machine. That is exactly why C gives us the <code>sizeof()</code> operator to check it."
+      realLife: "Different-sized boxes at home: a small box for keys (char), a medium box for shoes (int), a big box for a blanket (double). You pick the box based on what you are storing.",
+      table: {
+        headers: ["Data Type", "Used For", "Typical Size", "Example Value"],
+        rows: [
+          ["char", "a single character", "1 byte", "'A'"],
+          ["int", "whole numbers", "4 bytes", "21"],
+          ["float", "decimal numbers", "4 bytes", "87.5"],
+          ["double", "large/precise decimals", "8 bytes", "55999.99"]
+        ]
+      },
+      code: "int rollNo   = 21;        // whole number\nfloat marks  = 87.5;      // number with a decimal\nchar grade   = 'A';       // single character\ndouble fees  = 55999.99;  // bigger decimal number\n\nprintf(\"Size of int:  %zu bytes\\n\", sizeof(int));\nprintf(\"Size of char: %zu bytes\\n\", sizeof(char));",
+      codeNote: "sizeof() shows how much memory each data type actually uses on your computer.",
+      mistake: "Do not assume <code>int</code> is always 4 bytes — it depends on the compiler and machine. That is exactly why C gives us <code>sizeof()</code>.",
+      examAnswer: "A data type specifies the kind of value a variable can store, the amount of memory reserved for it and the operations allowed on it. The basic data types in C are int, float, double, char and void. Type modifiers such as short, long, signed and unsigned are used to change the size or range of these data types — for example, unsigned int stores only non-negative values and therefore has double the positive range of a signed int.",
+      remember: "Type = what kind of value. Size = how much it can hold.",
+      why: "Choosing the right data type saves memory and prevents silent, hard-to-find calculation errors.",
+      practice: "Choose a suitable data type for: age, attendance percentage, grade letter, and a large fee amount. Justify each."
     },
 
-    // 2 — Constants and Variables
     {
+      title: "Constants and Variables",
+      teacher: "A jar in your kitchen gets refilled again and again — sugar today, salt tomorrow. But grandma's special pickle jar? Sealed. Nobody touches it. C has both kinds of jars.",
+      explain: "A <strong>variable</strong> is a name given to a memory location whose value can change while the program runs. A <strong>constant</strong> holds a value that is fixed once defined and cannot be modified.",
+      diagram: "c-jars",
+      keyPoints: [
+        "A variable is a <strong>name for a memory location</strong>, not the value itself.",
+        "Identifiers may contain letters, digits and underscore <code>_</code>.",
+        "An identifier can <strong>never start with a digit</strong>.",
+        "No spaces and no special symbols like <code>@ # $ %</code>.",
+        "Keywords such as <code>int</code>, <code>for</code>, <code>return</code> cannot be used as names.",
+        "C is <strong>case-sensitive</strong>: <code>marks</code> and <code>Marks</code> are different.",
+        "Constants can be made with <code>const</code> or <code>#define</code>."
+      ],
       subtopics: [
         {
           title: "What a variable really is",
-          text: "A variable is a <strong>name given to a memory location</strong>. Instead of remembering that your marks are stored at address 4000, you just call it <code>marks</code>. The value inside can be changed as many times as you want while the program runs."
-        },
-        {
-          title: "The naming rules (very common exam question)",
-          text: "<strong>(1)</strong> The name may contain letters, digits and the underscore <code>_</code>. <strong>(2)</strong> It must start with a letter or underscore — <strong>never a digit</strong>. <strong>(3)</strong> No spaces and no special symbols like <code>@ # $ %</code>. <strong>(4)</strong> Keywords such as <code>int</code>, <code>for</code>, <code>return</code> cannot be used as names. <strong>(5)</strong> C is case-sensitive, so <code>Marks</code> and <code>marks</code> are two different variables."
+          text: "Instead of remembering that your marks are stored at memory address 4000, you simply call it <code>marks</code>. The name is a convenient label for a location; the value inside can change as many times as you like."
         },
         {
           title: "Two ways to make a constant",
-          text: "Either <code>const float PI = 3.14;</code> or <code>#define PI 3.14</code>. Both stop the value from being changed later. <code>const</code> is checked by the compiler with a proper data type, while <code>#define</code> is a simple text replacement done before compiling."
+          text: "Either <code>const float PI = 3.14;</code> or <code>#define PI 3.14</code>. Both prevent the value from changing. <code>const</code> is checked by the compiler with a proper data type, while <code>#define</code> is a simple text replacement done before compiling."
         },
         {
           title: "Why constants are worth using",
-          text: "If the value 3.14 appears in twenty places in your program and you need to change it, you must edit twenty lines and you WILL miss one. With a constant, you change it in exactly one place. It also protects an important value from being modified by mistake."
+          text: "If 3.14 appears in twenty places and you must change it, you will edit twenty lines and you WILL miss one. With a constant you change it in exactly one place — and it protects an important value from accidental modification."
         }
       ],
-      keyword: "Variable = a name given to a memory location whose value can change during execution. Constant = a value that is fixed once declared and cannot be modified afterwards.",
-      mistake: "<code>Total</code>, <code>total</code> and <code>TOTAL</code> are three completely different variables in C, because C is case-sensitive. Many marks are lost to this small detail."
+      realLife: "A variable is a labelled kitchen jar — sugar today, salt tomorrow, same jar. A constant is a jar sealed forever and labelled 'Grandma's Pickle' — the label and contents never change.",
+      code: "int   attendance = 75;      // valid variable name\nconst float PI   = 3.14;    // constant - can never change\n\n// int 2ndYear = 2025;      ❌ invalid: cannot start with a number\n// int total marks = 90;    ❌ invalid: no spaces allowed in a name\nint totalMarks = 90;         // ✅ correct way to write it",
+      codeNote: "The ❌ lines won't even compile — C rejects them before your program can run.",
+      mistake: "<code>Total</code>, <code>total</code> and <code>TOTAL</code> are three completely different variables in C, because C is case-sensitive. Many easy marks are lost here.",
+      examAnswer: "A variable is a named memory location whose value can be changed during program execution, whereas a constant represents a fixed value that cannot be modified after it is defined. In C, an identifier may contain letters, digits and underscores, must not begin with a digit, must not contain spaces or special symbols, and must not be a reserved keyword. C is case-sensitive, so marks and Marks are treated as different identifiers.",
+      remember: "Variable = can change. Constant = stays fixed. Never start a name with a digit.",
+      why: "Clear naming makes a program readable, and constants stop important values from being changed by accident.",
+      practice: "Mark these valid or invalid, with a reason: total_marks, 2marks, _count, first-name, int, Marks1."
     },
 
-    // 3 — Operators and Expressions
     {
+      title: "Operators and Expressions",
+      teacher: "Good news — you already know operators. You've been using plus, minus and greater-than since class 5. C uses the very same symbols, just with stricter rules. Nothing scary here.",
+      explain: "An <strong>operator</strong> is a symbol that performs an operation on values (called operands). An <strong>expression</strong> combines values, variables and operators to produce a single result.",
+      keyPoints: [
+        "Arithmetic: <code>+ &nbsp; - &nbsp; * &nbsp; / &nbsp; %</code>",
+        "Relational (compare, give true/false): <code>&gt; &nbsp; &lt; &nbsp; &gt;= &nbsp; &lt;= &nbsp; == &nbsp; !=</code>",
+        "Logical (join conditions): <code>&amp;&amp;</code> AND, <code>||</code> OR, <code>!</code> NOT",
+        "Assignment: <code>=</code>, <code>+=</code>, <code>-=</code>",
+        "Increment / decrement: <code>++</code> and <code>--</code>",
+        "<code>%</code> gives the <strong>remainder</strong>, and works only with integers.",
+        "In C, <strong>0 = false</strong> and any non-zero value = true."
+      ],
       subtopics: [
         {
-          title: "The main families of operators",
-          text: "<strong>Arithmetic</strong>: <code>+ - * / %</code>. <strong>Relational</strong> (they compare and give true/false): <code>&gt; &lt; &gt;= &lt;= == !=</code>. <strong>Logical</strong> (they join conditions): <code>&amp;&amp;</code> (AND), <code>||</code> (OR), <code>!</code> (NOT). <strong>Assignment</strong>: <code>=</code>, <code>+=</code>, <code>-=</code>. <strong>Increment/Decrement</strong>: <code>++</code> and <code>--</code>."
-        },
-        {
-          title: "The modulus operator % — students love this one",
-          text: "<code>%</code> gives the <strong>remainder</strong> after division. So <code>10 % 3</code> is 1, and <code>10 / 3</code> is 3. It is extremely useful: <code>n % 2 == 0</code> instantly tells you a number is even. Important rule: <code>%</code> works only with integers, never with float."
+          title: "The modulus operator %",
+          text: "<code>%</code> gives the <strong>remainder</strong> after division. So <code>10 % 3</code> is 1, while <code>10 / 3</code> is 3. It is extremely useful: <code>n % 2 == 0</code> instantly tells you a number is even. Important rule — <code>%</code> works only with integers, never with float."
         },
         {
           title: "True and false in C",
-          text: "C has no separate 'boolean' type in the traditional sense. Instead, <strong>0 means false and any non-zero value means true</strong>. So a comparison like <code>(5 &gt; 3)</code> actually produces the number 1. That is why you can store a comparison result inside an <code>int</code>."
+          text: "C has no traditional boolean type. Instead, <strong>0 means false and any non-zero value means true</strong>. So the comparison <code>(5 &gt; 3)</code> actually produces the number 1 — which is why you can store a comparison result inside an <code>int</code>."
         },
         {
-          title: "What an 'expression' means",
-          text: "An expression is any valid combination of variables, constants and operators that produces a single value — like <code>a + b * 2</code>. When you end an expression with a semicolon, it becomes a <strong>statement</strong>, which is a complete instruction the computer can execute."
+          title: "Expression vs statement",
+          text: "An expression is any valid combination of variables, constants and operators producing a single value, like <code>a + b * 2</code>. Put a semicolon after it and it becomes a <strong>statement</strong> — a complete instruction the computer executes."
         }
       ],
-      keyword: "Operator = a symbol that performs an operation on operands. Expression = a combination of variables, constants and operators that produces a single result value.",
-      mistake: "The biggest trap in C: <code>=</code> means ASSIGN, while <code>==</code> means COMPARE. Writing <code>if (x = 5)</code> assigns 5 to x and is always true — you meant <code>if (x == 5)</code>."
+      realLife: "Operators are the buttons on a calculator. You press '+' to add your pocket money and gift money to find your total savings — C does exactly the same thing, just written down.",
+      code: "int pocketMoney = 500;\nint giftMoney   = 300;\nint total = pocketMoney + giftMoney;      // arithmetic operator\n\nint minMarksToPass = 40;\nint myMarks = 55;\nint passed = (myMarks >= minMarksToPass); // relational: gives 1 = true\n\nprintf(\"Total savings: %d\\n\", total);\nprintf(\"Passed? %d\\n\", passed);",
+      mistake: "The biggest trap in C: <code>=</code> means ASSIGN while <code>==</code> means COMPARE. Writing <code>if (x = 5)</code> assigns 5 to x and is always true — you meant <code>if (x == 5)</code>.",
+      examAnswer: "An operator is a symbol that performs a specific operation on one or more operands, and an expression is a valid combination of constants, variables and operators that produces a single value. C provides arithmetic operators (+, -, *, /, %), relational operators (>, <, >=, <=, ==, !=), logical operators (&&, ||, !), assignment operators and increment/decrement operators. In C, zero is treated as false and any non-zero value as true.",
+      remember: "% gives the remainder. = assigns. == compares.",
+      why: "Operators are how a program actually calculates, compares and makes decisions — without them a program only stores data uselessly.",
+      practice: "What are the results of 10 % 3, 10 / 3, and (10 > 3)? Explain each in one line."
     },
 
-    // 4 — Ternary Operator
     {
+      title: "Ternary Operator",
+      teacher: "Sometimes a long answer can be given in three words. Programmers are lazy in a smart way, so they invented a short-cut for simple if-else. Let's learn that short-cut.",
+      explain: "The ternary (conditional) operator is a compact way to choose between two values based on a condition. It is written as <code>condition ? value_if_true : value_if_false</code>.",
+      keyPoints: [
+        "Syntax: <code>condition ? expression1 : expression2</code>",
+        "It is the <strong>only operator in C that takes three operands</strong> — hence 'ternary'.",
+        "If the condition is true the result is expression1, otherwise expression2.",
+        "It produces a <strong>value</strong>, so it can be assigned or printed.",
+        "Use it for short, simple choices only — use if-else for multi-statement logic."
+      ],
       subtopics: [
         {
           title: "Why it is called 'ternary'",
-          text: "'Ternary' means <em>three</em>. It is the only operator in C that works on <strong>three operands</strong> at once: a condition, a value if true, and a value if false. Every other operator takes one or two. That fact alone is often a 1-mark question."
+          text: "'Ternary' means <em>three</em>. It works on three operands at once: a condition, a value if true and a value if false. Every other operator in C takes one or two — that fact alone is often a one-mark question."
         },
         {
-          title: "The syntax, broken down",
-          text: "<code>condition ? value_if_true : value_if_false</code>. C checks the condition first. If it is true, the whole expression becomes the value after <code>?</code>. If false, it becomes the value after <code>:</code>. The result can be stored, printed, or used anywhere a value is allowed."
-        },
-        {
-          title: "When to use it — and when NOT to",
-          text: "Use it for a small, simple choice, like picking the larger of two numbers. Do <strong>not</strong> use it when each branch needs several statements — that is what a proper <code>if-else</code> block is for. Squeezing complicated logic into a ternary makes code unreadable."
+          title: "When to use it — and when not to",
+          text: "Use it for a small, simple choice, like picking the larger of two numbers. Do <strong>not</strong> use it when each branch needs several statements — that is what a proper if-else block is for. Readability beats cleverness."
         }
       ],
-      keyword: "Ternary (conditional) operator = the only operator in C that takes three operands, written as condition ? value_if_true : value_if_false, and used as a shortcut for a simple if-else.",
-      mistake: "The ternary operator returns a VALUE — it is not a replacement for every if-else. If your branches need multiple statements, use a normal if-else block instead."
+      realLife: "It's like answering 'Are you free today?' with one quick reply: 'Yes, movie plan' or 'No, studying' — instead of writing a whole paragraph to explain.",
+      code: "// ❌ Longer way, using if-else\nint result;\nif (marks >= 40) {\n    result = 1;   // Pass\n} else {\n    result = 0;   // Fail\n}\n\n// ✅ Same logic, one line, using the ternary operator\nint result2 = (marks >= 40) ? 1 : 0;\n\n// Another common use - find the bigger number\nint max = (a > b) ? a : b;",
+      codeNote: "Both versions do exactly the same thing — the ternary operator just writes it shorter.",
+      mistake: "The ternary operator returns a VALUE — it is not a replacement for every if-else. If your branches need multiple statements, use a normal if-else block.",
+      examAnswer: "The ternary operator, also called the conditional operator, is written as condition ? expression1 : expression2. It first evaluates the condition; if the condition is true the value of expression1 is returned, otherwise the value of expression2 is returned. It is the only operator in C that takes three operands and is commonly used as a shorthand for a simple if-else statement.",
+      remember: "? means 'if true'. : means 'otherwise'. Three operands = ternary.",
+      why: "It makes small decisions shorter and clearer, and it appears constantly in real C code you will read.",
+      practice: "Convert this into a ternary expression: if (a > b) max = a; else max = b;"
     },
 
-    // 5 — Type Conversion and Type Casting
     {
+      title: "Type Conversion and Type Casting",
+      teacher: "This is where students lose easy marks in the exam. Because in C, 7 divided by 2 does NOT give 3.5. Sounds wrong, right? Let me show you exactly why that happens.",
+      explain: "<strong>Type conversion</strong> changes a value from one data type to another. It can happen <strong>automatically</strong> (implicit conversion, done by the compiler) or be <strong>forced by you</strong> (explicit conversion, called type casting).",
+      keyPoints: [
+        "Implicit conversion is done automatically by the compiler.",
+        "The promotion ladder: <code>char → int → float → double</code>.",
+        "Explicit casting is written by you: <code>(float)total</code>.",
+        "Casting is temporary — the original variable keeps its own type.",
+        "int ÷ int always gives an int, discarding the fractional part.",
+        "Casting a float to int <strong>truncates</strong> (chops), it does not round."
+      ],
       subtopics: [
         {
-          title: "Implicit conversion (done automatically)",
-          text: "When you mix types in one expression, the compiler quietly promotes the smaller type to the bigger one so nothing is lost. The usual promotion ladder is <code>char → int → float → double</code>. This automatic upgrade is also called <strong>type promotion</strong>, and you do not write anything for it to happen."
-        },
-        {
-          title: "Explicit conversion — type casting (done by you)",
-          text: "You force a conversion yourself by writing the target type in brackets: <code>(float)total</code>. This is called <strong>type casting</strong>. It is temporary — it changes the value only for that one expression, and the original variable keeps its own type."
+          title: "Implicit conversion (type promotion)",
+          text: "When you mix types in one expression, the compiler quietly promotes the smaller type to the bigger one so nothing is lost. The usual ladder is <code>char → int → float → double</code>. You write nothing for this to happen."
         },
         {
           title: "The classic 7/2 trap",
-          text: "<code>int a = 7, b = 2; float r = a / b;</code> gives <strong>3.00</strong>, not 3.5! Why? Because <code>a / b</code> is int ÷ int, which C calculates as integer division (the .5 is thrown away) BEFORE the answer is copied into the float. Casting first — <code>(float)a / b</code> — fixes it and gives 3.50."
+          text: "<code>int a = 7, b = 2; float r = a / b;</code> gives <strong>3.00</strong>, not 3.5. Why? <code>a / b</code> is int ÷ int, so C performs integer division and throws the .5 away BEFORE copying the result into the float. Casting first — <code>(float)a / b</code> — fixes it and gives 3.50."
         },
         {
-          title: "Watch out for losing data",
-          text: "Converting downward loses information. <code>(int)9.99</code> gives <strong>9</strong>, not 10 — C truncates (chops off) the decimal part, it does not round. Remember that word 'truncate'; examiners like it."
+          title: "Losing data when converting down",
+          text: "<code>(int)9.99</code> gives <strong>9</strong>, not 10 — C truncates (chops off) the decimal part, it does not round. Remember the word 'truncate'; examiners look for it."
         }
       ],
-      keyword: "Implicit conversion (type promotion) = the compiler automatically converts a smaller type to a larger one. Explicit conversion (type casting) = the programmer forces a conversion by writing (type) before the value.",
-      mistake: "Casting truncates, it does not round. <code>(int)9.99</code> is 9 and <code>(int)9.01</code> is also 9 — the decimal part is simply chopped off."
+      realLife: "A shop automatically converting your rupees into paise for a tiny amount is implicit conversion. You yourself converting dollars to rupees before paying is explicit casting — you chose to do it.",
+      code: "int total  = 7;\nint people = 2;\n\nfloat shareAuto = total / people;         // ❌ gives 3.00 (int / int first)\nfloat shareCast = (float)total / people;  // ✅ gives 3.50 - cast BEFORE dividing\n\nint chopped = (int)9.99;                  // 9  - truncated, NOT rounded\n\nprintf(\"%.2f\\n\", shareAuto);\nprintf(\"%.2f\\n\", shareCast);",
+      codeNote: "(float) forces total to become a decimal before the division happens, so the remainder is not lost.",
+      mistake: "Casting truncates, it does not round. <code>(int)9.99</code> is 9 and <code>(int)9.01</code> is also 9 — the decimal part is simply chopped off.",
+      examAnswer: "Type conversion is the process of converting a value of one data type into another. Implicit conversion, also called type promotion, is performed automatically by the compiler according to C's conversion rules, usually converting a smaller type to a larger one such as int to float. Explicit conversion, called type casting, is performed by the programmer by writing the required type in parentheses before the value, for example (float)a. Converting a floating-point value to an integer truncates the fractional part rather than rounding it.",
+      remember: "7 / 2 with ints → 3. Cast first → 3.5. Casting chops, never rounds.",
+      why: "Understanding conversion prevents wrong answers in calculations — one of the most common real bugs in beginner C programs.",
+      practice: "Predict and explain the output: int a=7,b=2; float r1=a/b; float r2=(float)a/b; int c=(int)9.99;"
     },
 
-    // 6 — Priority and Associativity of Operators
     {
+      title: "Operator Precedence and Associativity",
+      teacher: "Remember BODMAS from school? Congratulations — you already know most of this topic. C simply follows the same rule, just with a few extra symbols added.",
+      explain: "<strong>Precedence (priority)</strong> decides which operator is evaluated first when an expression has several operators. <strong>Associativity</strong> decides the direction — left-to-right or right-to-left — when two operators have the <em>same</em> precedence.",
+      diagram: "c-priority",
+      keyPoints: [
+        "Order (high → low): <code>()</code> → <code>++ -- !</code> → <code>* / %</code> → <code>+ -</code> → relational → <code>== !=</code> → <code>&amp;&amp;</code> → <code>||</code> → <code>=</code>",
+        "<code>*</code>, <code>/</code> and <code>%</code> have equal precedence — higher than <code>+</code> and <code>-</code>.",
+        "Most operators associate <strong>left to right</strong>.",
+        "Assignment <code>=</code> associates <strong>right to left</strong>.",
+        "Parentheses have the highest priority and always win.",
+        "<code>100 / 5 * 2 = 40</code>, not 10."
+      ],
       subtopics: [
         {
-          title: "Priority (precedence) decides WHO goes first",
-          text: "When one expression has several operators, precedence decides which one is applied first. A simplified order to memorise: <strong>()</strong> → <strong>++ -- !</strong> (unary) → <strong>* / %</strong> → <strong>+ -</strong> → <strong>relational (&lt; &gt; &lt;= &gt;=)</strong> → <strong>== !=</strong> → <strong>&amp;&amp;</strong> → <strong>||</strong> → <strong>=</strong> (assignment, lowest)."
+          title: "Precedence decides WHO goes first",
+          text: "In <code>10 + 2 * 3</code>, multiplication has higher precedence, so C computes <code>2 * 3</code> first and then adds 10 — giving 16, not 36. Exactly like BODMAS."
         },
         {
           title: "Associativity decides the DIRECTION",
-          text: "When two operators have the <em>same</em> priority, associativity breaks the tie. Most operators in C are <strong>left to right</strong>, so <code>100 / 5 * 2</code> is <code>(100/5)*2 = 40</code>, not 10. But assignment <code>=</code> and the unary operators are <strong>right to left</strong>, which is why <code>a = b = 5</code> assigns 5 to b first, then to a."
+          text: "When two operators have the same priority, associativity breaks the tie. <code>100 / 5 * 2</code> is <code>(100/5)*2 = 40</code> because / and * are equal and go left to right. But assignment is right to left, which is why <code>a = b = 5</code> assigns 5 to b first, then to a."
         },
         {
-          title: "The safe habit that saves marks",
-          text: "You are always allowed to add brackets. <code>(a + b) * c</code> is clearer than relying on memory, and brackets have the highest priority so they always win. Professional programmers use extra brackets on purpose — clarity beats cleverness."
-        },
-        {
-          title: "How to solve these in the exam",
-          text: "Never try to do it in your head. Copy the expression, solve one operator per line, and write which rule you applied. You get marks for the steps, and you avoid silly mistakes. That is exactly what the worked example below shows."
+          title: "The habit that saves marks",
+          text: "You are always allowed to add brackets. <code>(a + b) * c</code> is clearer than relying on memory, and brackets always win. Then in the exam, solve one operator per line and write which rule you used — you get marks for the steps."
         }
       ],
-      keyword: "Precedence (priority) = decides which operator is evaluated first when an expression has several operators. Associativity = decides the order (left-to-right or right-to-left) when operators have the same precedence.",
-      mistake: "<code>100 / 5 * 2</code> is <strong>40</strong>, not 10. Since / and * have the same priority, C works left to right — it does not do the multiplication first just because it looks later."
+      realLife: "It is exactly the BODMAS rule from school maths — brackets and multiplication before addition, no matter what order they are written in.",
+      code: "int result = 10 + 2 * 3 - 4 / 2;\n// Step 1: 2 * 3 = 6     (multiplication - highest priority here)\n// Step 2: 4 / 2 = 2     (division - same level as *, left to right)\n// Step 3: 10 + 6 - 2    (then + and -, left to right)\n// Result = 14\n\nint x = 100 / 5 * 2;   // = 40, NOT 10 (equal priority, left to right)\n\nprintf(\"%d\\n\", result);",
+      mistake: "<code>100 / 5 * 2</code> is <strong>40</strong>, not 10. Since / and * have the same priority, C works left to right — it does not do the multiplication first just because it appears later.",
+      examAnswer: "Operator precedence determines the order in which operators are evaluated when an expression contains more than one operator, while associativity determines the direction of evaluation when operators have equal precedence. In C, parentheses have the highest precedence, followed by unary operators, then *, / and %, then + and -, then relational and equality operators, then logical operators, and finally assignment. Most operators associate from left to right, whereas the assignment operator associates from right to left.",
+      remember: "Precedence = who goes first. Associativity = which direction.",
+      why: "These rules let you predict an expression's result exactly, instead of guessing — and expression-solving questions appear in almost every paper.",
+      practice: "Evaluate step by step, showing each rule used: 20 - 6 / 2 + 3 * 2"
     }
   ],
 
@@ -192,30 +298,25 @@ DEEP.c = {
       q: "In C, what does <code>int result = 7 / 2;</code> store in result?",
       options: ["3.5", "3", "4", "It gives a compiler error"],
       answer: 1,
-      why: "Both 7 and 2 are integers, so C performs integer division and truncates the .5 away. The answer is 3 — this is the classic trap."
+      why: "Both 7 and 2 are integers, so C performs integer division and truncates the .5 away. The answer is 3 — the classic trap."
     },
     {
       q: "Which of these is an INVALID variable name in C?",
       options: ["total_marks", "_count", "2ndYear", "Marks1"],
       answer: 2,
-      why: "A variable name can never start with a digit. It must start with a letter or an underscore."
+      why: "An identifier can never start with a digit. It must begin with a letter or an underscore."
     },
     {
       q: "What is the value of <code>100 / 5 * 2</code> in C?",
       options: ["10", "40", "1000", "50"],
       answer: 1,
-      why: "/ and * have equal priority, so associativity decides: left to right. 100/5 = 20, then 20*2 = 40."
+      why: "/ and * have equal precedence, so associativity decides: left to right. 100/5 = 20, then 20*2 = 40."
     },
     {
       q: "The ternary operator is special because it is the only C operator that…",
-      options: [
-        "works on three operands",
-        "can be used inside a loop",
-        "returns nothing",
-        "works only with integers"
-      ],
+      options: ["works on three operands", "can be used inside a loop", "returns nothing", "works only with integers"],
       answer: 0,
-      why: "'Ternary' literally means three. It takes a condition, a value if true, and a value if false — every other C operator takes one or two operands."
+      why: "'Ternary' literally means three. It takes a condition, a value if true and a value if false."
     },
     {
       q: "What does <code>(int)9.99</code> give?",
@@ -228,6 +329,20 @@ DEEP.c = {
       options: ["3.33", "3", "1", "0"],
       answer: 2,
       why: "The % operator gives the REMAINDER, not the quotient. 10 divided by 3 leaves a remainder of 1."
+    },
+    {
+      q: "In C, what does <code>==</code> mean?",
+      options: ["Assign a value", "Compare two values", "Increase by one", "Divide"],
+      answer: 1,
+      why: "== is the equality comparison operator. A single = assigns instead of comparing — a very common bug."
     }
+  ],
+
+  examQuestions: [
+    { q: "Why can't a variable name start with a number in C? Try to guess a possible reason." },
+    { q: "You want to store your exact attendance percentage, like 87.5%. Which data type is better — int or float? Why?" },
+    { q: "Rewrite this using the ternary operator: if(marks>=40) result='P'; else result='F';" },
+    { q: "What will 7/2 give in C if both are int? What if one is float? Explain the reason for the difference.", hint: "Think about whether integer division keeps the decimal part or drops it." },
+    { q: "Solve using priority rules (no calculator): 10 + 2 * 3 - 4 / 2. Show every step and the rule you used." }
   ]
 };

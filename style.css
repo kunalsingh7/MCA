@@ -524,24 +524,98 @@ header.hero p {
   }
 }
 
-/* ---------- Exam keyword ---------- */
-.topic-block.keyword {
+/* ---------- Key Points ---------- */
+.topic-block.keypoints {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.topic-block.keypoints .tag {
+  color: var(--accent);
+}
+.topic-block.keypoints ul {
+  margin: 6px 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+.topic-block.keypoints li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 6px;
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+.topic-block.keypoints li:last-child {
+  margin-bottom: 0;
+}
+.topic-block.keypoints li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ---------- Exam-ready answer ---------- */
+.topic-block.exam-answer {
   background: #fffbe6;
   border: 1px solid #e8d089;
-  font-weight: 600;
+  font-size: 0.94rem;
+  line-height: 1.65;
 }
-.topic-block.keyword .tag {
+.topic-block.exam-answer .tag {
   color: #a37800;
   font-weight: 700;
 }
 @media (prefers-color-scheme: dark) {
-  .topic-block.keyword {
+  .topic-block.exam-answer {
     background: #2c2711;
     border-color: #6b5c22;
   }
-  .topic-block.keyword .tag {
+  .topic-block.exam-answer .tag {
     color: #ecc94b;
   }
+}
+
+/* ---------- Remember this (memory trick) ---------- */
+.topic-block.remember {
+  background: #f3f0ff;
+  border: 1px solid #cbbdf0;
+  font-weight: 700;
+  text-align: center;
+  font-size: 0.96rem;
+}
+.topic-block.remember .tag {
+  color: #7c3aed;
+  text-align: left;
+}
+@media (prefers-color-scheme: dark) {
+  .topic-block.remember {
+    background: #26203c;
+    border-color: #55458a;
+  }
+  .topic-block.remember .tag {
+    color: #b79dff;
+  }
+}
+
+/* ---------- Try it yourself (per-topic practice) ---------- */
+.practice-box {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  border-left: 4px solid var(--accent);
+  font-size: 0.93rem;
+  font-weight: 600;
+}
+.practice-box .tag {
+  display: block;
+  font-weight: 700;
+  font-size: 0.78rem;
+  margin-bottom: 4px;
+  color: var(--accent);
 }
 
 /* ---------- "I understood this" checkbox ---------- */

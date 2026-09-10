@@ -1,0 +1,351 @@
+/* All diagrams, keyed by a stable name so topics can be reordered freely.
+   Inline SVG - works offline, adapts to light/dark via currentColor.
+   Loaded with a normal <script> tag. */
+const DIAGRAMS = {
+  "os-layers": `<svg viewBox="0 0 440 222" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Apps on top, Operating System in the middle, Hardware at the bottom">
+        <rect x="70" y="14" width="300" height="50" rx="10" fill="#60a5fa"/>
+        <text x="220" y="37" text-anchor="middle" font-size="14.5" font-weight="600" fill="#fff">You + Your Apps</text>
+        <text x="220" y="55" text-anchor="middle" font-size="11.5" fill="#eff6ff">Chrome · Music · Word</text>
+        <line x1="170" y1="66" x2="170" y2="80" stroke="currentColor" stroke-width="2"/>
+        <polygon points="170,87 165,78 175,78" fill="currentColor"/>
+        <line x1="270" y1="80" x2="270" y2="66" stroke="currentColor" stroke-width="2"/>
+        <polygon points="270,59 265,68 275,68" fill="currentColor"/>
+        <rect x="70" y="89" width="300" height="54" rx="10" fill="#2563eb"/>
+        <text x="220" y="112" text-anchor="middle" font-size="14.5" font-weight="700" fill="#fff">OPERATING SYSTEM</text>
+        <text x="220" y="131" text-anchor="middle" font-size="11.5" fill="#dbeafe">the manager standing in the middle</text>
+        <line x1="170" y1="145" x2="170" y2="159" stroke="currentColor" stroke-width="2"/>
+        <polygon points="170,166 165,157 175,157" fill="currentColor"/>
+        <line x1="270" y1="159" x2="270" y2="145" stroke="currentColor" stroke-width="2"/>
+        <polygon points="270,138 265,147 275,147" fill="currentColor"/>
+        <rect x="70" y="168" width="300" height="48" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="220" y="190" text-anchor="middle" font-size="13.5" font-weight="600" fill="currentColor">Hardware</text>
+        <text x="220" y="207" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.7">CPU · RAM · Disk · Screen</text>
+      </svg>`,
+
+  "os-cpu-idle": `<svg viewBox="0 0 470 190" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="CPU timeline with idle gaps versus a fully used CPU timeline">
+        <text x="25" y="20" font-size="12.5" font-weight="600" fill="currentColor">Old way — CPU sits and waits</text>
+        <rect x="25" y="30" width="80" height="28" rx="4" fill="#10b981"/>
+        <text x="65" y="49" text-anchor="middle" font-size="11" fill="#fff">work</text>
+        <rect x="105" y="30" width="80" height="28" rx="4" fill="currentColor" opacity="0.13"/>
+        <text x="145" y="49" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">waiting…</text>
+        <rect x="185" y="30" width="80" height="28" rx="4" fill="#10b981"/>
+        <text x="225" y="49" text-anchor="middle" font-size="11" fill="#fff">work</text>
+        <rect x="265" y="30" width="80" height="28" rx="4" fill="currentColor" opacity="0.13"/>
+        <text x="305" y="49" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">waiting…</text>
+        <rect x="345" y="30" width="100" height="28" rx="4" fill="#10b981"/>
+        <text x="395" y="49" text-anchor="middle" font-size="11" fill="#fff">work</text>
+        <text x="25" y="98" font-size="12.5" font-weight="600" fill="currentColor">Smarter way — another job fills the gap</text>
+        <rect x="25" y="108" width="80" height="28" rx="4" fill="#10b981"/>
+        <text x="65" y="127" text-anchor="middle" font-size="11" fill="#fff">job A</text>
+        <rect x="105" y="108" width="80" height="28" rx="4" fill="#3b82f6"/>
+        <text x="145" y="127" text-anchor="middle" font-size="11" fill="#fff">job B</text>
+        <rect x="185" y="108" width="80" height="28" rx="4" fill="#10b981"/>
+        <text x="225" y="127" text-anchor="middle" font-size="11" fill="#fff">job A</text>
+        <rect x="265" y="108" width="80" height="28" rx="4" fill="#f59e0b"/>
+        <text x="305" y="127" text-anchor="middle" font-size="11" fill="#fff">job C</text>
+        <rect x="345" y="108" width="100" height="28" rx="4" fill="#3b82f6"/>
+        <text x="395" y="127" text-anchor="middle" font-size="11" fill="#fff">job B</text>
+        <text x="235" y="170" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.8">Same CPU, same time — but zero minutes wasted.</text>
+      </svg>`,
+
+  "os-timeslice": `<svg viewBox="0 0 470 175" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="CPU time divided into tiny slices shared between users A, B and C">
+        <text x="235" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">One CPU, chopped into tiny time slices</text>
+        <g>
+          <rect x="25" y="35" width="36" height="34" rx="3" fill="#3b82f6"/><text x="43" y="57" text-anchor="middle" font-size="12" fill="#fff">A</text>
+          <rect x="63" y="35" width="36" height="34" rx="3" fill="#10b981"/><text x="81" y="57" text-anchor="middle" font-size="12" fill="#fff">B</text>
+          <rect x="101" y="35" width="36" height="34" rx="3" fill="#f59e0b"/><text x="119" y="57" text-anchor="middle" font-size="12" fill="#fff">C</text>
+          <rect x="139" y="35" width="36" height="34" rx="3" fill="#3b82f6"/><text x="157" y="57" text-anchor="middle" font-size="12" fill="#fff">A</text>
+          <rect x="177" y="35" width="36" height="34" rx="3" fill="#10b981"/><text x="195" y="57" text-anchor="middle" font-size="12" fill="#fff">B</text>
+          <rect x="215" y="35" width="36" height="34" rx="3" fill="#f59e0b"/><text x="233" y="57" text-anchor="middle" font-size="12" fill="#fff">C</text>
+          <rect x="253" y="35" width="36" height="34" rx="3" fill="#3b82f6"/><text x="271" y="57" text-anchor="middle" font-size="12" fill="#fff">A</text>
+          <rect x="291" y="35" width="36" height="34" rx="3" fill="#10b981"/><text x="309" y="57" text-anchor="middle" font-size="12" fill="#fff">B</text>
+          <rect x="329" y="35" width="36" height="34" rx="3" fill="#f59e0b"/><text x="347" y="57" text-anchor="middle" font-size="12" fill="#fff">C</text>
+          <rect x="367" y="35" width="36" height="34" rx="3" fill="#3b82f6"/><text x="385" y="57" text-anchor="middle" font-size="12" fill="#fff">A</text>
+          <rect x="405" y="35" width="40" height="34" rx="3" fill="#10b981"/><text x="425" y="57" text-anchor="middle" font-size="12" fill="#fff">B</text>
+        </g>
+        <line x1="25" y1="82" x2="445" y2="82" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+        <polygon points="452,82 442,77 442,87" fill="currentColor" opacity="0.5"/>
+        <text x="235" y="100" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.7">time →</text>
+        <text x="235" y="132" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.85">Each slice is a few milliseconds long.</text>
+        <text x="235" y="152" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.85">So A, B and C all feel they have their own computer.</text>
+      </svg>`,
+
+  "os-structure": `<svg viewBox="0 0 470 225" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Monolithic design as one mixed block versus layered design as neat stacked floors">
+        <text x="115" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Monolithic — all in one room</text>
+        <rect x="20" y="32" width="190" height="150" rx="12" fill="none" stroke="#ef4444" stroke-width="2"/>
+        <text x="60" y="62" font-size="11.5" fill="currentColor">files</text>
+        <text x="140" y="55" font-size="11.5" fill="currentColor">memory</text>
+        <text x="45" y="98" font-size="11.5" fill="currentColor">devices</text>
+        <text x="135" y="110" font-size="11.5" fill="currentColor">scheduler</text>
+        <text x="70" y="140" font-size="11.5" fill="currentColor">network</text>
+        <text x="145" y="165" font-size="11.5" fill="currentColor">security</text>
+        <text x="115" y="205" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.7">Fast, but hard to find a problem</text>
+        <text x="355" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Layered — floor by floor</text>
+        <rect x="262" y="32" width="186" height="33" rx="6" fill="#8b5cf6"/>
+        <text x="355" y="53" text-anchor="middle" font-size="11.5" fill="#fff">User programs</text>
+        <rect x="262" y="70" width="186" height="33" rx="6" fill="#3b82f6"/>
+        <text x="355" y="91" text-anchor="middle" font-size="11.5" fill="#fff">File system</text>
+        <rect x="262" y="108" width="186" height="33" rx="6" fill="#10b981"/>
+        <text x="355" y="129" text-anchor="middle" font-size="11.5" fill="#fff">Memory manager</text>
+        <rect x="262" y="146" width="186" height="33" rx="6" fill="#f59e0b"/>
+        <text x="355" y="167" text-anchor="middle" font-size="11.5" fill="#fff">Hardware layer</text>
+        <text x="355" y="205" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.7">Slower, but easy to check one floor</text>
+      </svg>`,
+
+  "c-structure": `<svg viewBox="0 0 470 215" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="A C program with each part labelled">
+        <rect x="18" y="18" width="278" height="180" rx="10" fill="#1e1e2e"/>
+        <text x="34" y="48" font-size="12.5" font-family="Consolas, monospace" fill="#7dd3fc">#include &lt;stdio.h&gt;</text>
+        <text x="34" y="85" font-size="12.5" font-family="Consolas, monospace" fill="#a5f3fc">int main() {</text>
+        <text x="34" y="115" font-size="12.5" font-family="Consolas, monospace" fill="#e4e4f0">    printf("Hi!");</text>
+        <text x="34" y="145" font-size="12.5" font-family="Consolas, monospace" fill="#e4e4f0">    return 0;</text>
+        <text x="34" y="175" font-size="12.5" font-family="Consolas, monospace" fill="#a5f3fc">}</text>
+        <line x1="300" y1="44" x2="318" y2="44" stroke="currentColor" stroke-width="1.5"/>
+        <text x="324" y="48" font-size="11.5" fill="currentColor">the toolbox you borrow</text>
+        <line x1="300" y1="81" x2="318" y2="81" stroke="currentColor" stroke-width="1.5"/>
+        <text x="324" y="85" font-size="11.5" fill="currentColor">program starts HERE</text>
+        <line x1="300" y1="111" x2="318" y2="111" stroke="currentColor" stroke-width="1.5"/>
+        <text x="324" y="115" font-size="11.5" fill="currentColor">the actual work</text>
+        <line x1="300" y1="141" x2="318" y2="141" stroke="currentColor" stroke-width="1.5"/>
+        <text x="324" y="145" font-size="11.5" fill="currentColor">tell the OS "all good"</text>
+        <line x1="300" y1="171" x2="318" y2="171" stroke="currentColor" stroke-width="1.5"/>
+        <text x="324" y="175" font-size="11.5" fill="currentColor">the closing signature</text>
+      </svg>`,
+
+  "c-datatypes": `<svg viewBox="0 0 470 180" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Boxes of different sizes for char, int, float and double">
+        <text x="235" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Different boxes for different things</text>
+        <rect x="25" y="34" width="42" height="46" rx="6" fill="#8b5cf6"/>
+        <text x="46" y="62" text-anchor="middle" font-size="12" fill="#fff">char</text>
+        <text x="46" y="98" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">1 byte</text>
+        <text x="46" y="118" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">'A'</text>
+        <rect x="88" y="34" width="94" height="46" rx="6" fill="#3b82f6"/>
+        <text x="135" y="62" text-anchor="middle" font-size="12" fill="#fff">int</text>
+        <text x="135" y="98" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">4 bytes</text>
+        <text x="135" y="118" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">21</text>
+        <rect x="203" y="34" width="94" height="46" rx="6" fill="#10b981"/>
+        <text x="250" y="62" text-anchor="middle" font-size="12" fill="#fff">float</text>
+        <text x="250" y="98" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">4 bytes</text>
+        <text x="250" y="118" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">87.5</text>
+        <rect x="318" y="34" width="130" height="46" rx="6" fill="#f59e0b"/>
+        <text x="383" y="62" text-anchor="middle" font-size="12" fill="#fff">double</text>
+        <text x="383" y="98" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">8 bytes</text>
+        <text x="383" y="118" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">55999.99</text>
+        <text x="235" y="155" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.8">Pick the smallest box the value can fit in — don't waste memory.</text>
+      </svg>`,
+
+  "c-jars": `<svg viewBox="0 0 440 200" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="A refillable jar as a variable and a sealed jar as a constant">
+        <text x="112" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Variable — you can refill it</text>
+        <rect x="72" y="34" width="80" height="14" rx="4" fill="#3b82f6" opacity="0.55"/>
+        <rect x="62" y="50" width="100" height="100" rx="12" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+        <text x="112" y="86" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">marks</text>
+        <text x="112" y="116" text-anchor="middle" font-size="17" font-weight="700" fill="#3b82f6">45</text>
+        <text x="112" y="172" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.8">tomorrow it can hold 90</text>
+        <text x="328" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Constant — sealed forever</text>
+        <rect x="288" y="34" width="80" height="14" rx="4" fill="#ef4444"/>
+        <rect x="278" y="50" width="100" height="100" rx="12" fill="none" stroke="#ef4444" stroke-width="2.5"/>
+        <text x="328" y="86" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">PI</text>
+        <text x="328" y="116" text-anchor="middle" font-size="17" font-weight="700" fill="#ef4444">3.14</text>
+        <text x="328" y="172" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.8">can never change, ever</text>
+      </svg>`,
+
+  "c-priority": `<svg viewBox="0 0 470 205" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Step by step solving of 10 plus 2 times 3 minus 4 divided by 2">
+        <rect x="118" y="22" width="72" height="30" rx="5" fill="#f59e0b" opacity="0.28"/>
+        <rect x="238" y="22" width="72" height="30" rx="5" fill="#f59e0b" opacity="0.28"/>
+        <text x="235" y="44" text-anchor="middle" font-size="19" font-family="Consolas, monospace" fill="currentColor">10 + 2 * 3 - 4 / 2</text>
+        <circle cx="52" cy="82" r="13" fill="#3b82f6"/>
+        <text x="52" y="87" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">1</text>
+        <text x="76" y="87" font-size="13" fill="currentColor">2 * 3 = 6</text>
+        <text x="180" y="87" font-size="11.5" fill="currentColor" opacity="0.7">multiply first (highest priority)</text>
+        <circle cx="52" cy="118" r="13" fill="#3b82f6"/>
+        <text x="52" y="123" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">2</text>
+        <text x="76" y="123" font-size="13" fill="currentColor">4 / 2 = 2</text>
+        <text x="180" y="123" font-size="11.5" fill="currentColor" opacity="0.7">divide — same level, left to right</text>
+        <circle cx="52" cy="154" r="13" fill="#3b82f6"/>
+        <text x="52" y="159" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">3</text>
+        <text x="76" y="159" font-size="13" fill="currentColor">10 + 6 - 2</text>
+        <text x="180" y="159" font-size="11.5" fill="currentColor" opacity="0.7">now the + and - , left to right</text>
+        <rect x="176" y="176" width="118" height="24" rx="12" fill="#10b981"/>
+        <text x="235" y="193" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Answer = 14</text>
+      </svg>`,
+
+  "m-venn": `<svg viewBox="0 0 440 215" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Venn diagram of set A and set B overlapping">
+        <text x="220" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">A set is just a group of things</text>
+        <circle cx="175" cy="115" r="72" fill="#3b82f6" opacity="0.3" stroke="#3b82f6" stroke-width="2"/>
+        <circle cx="265" cy="115" r="72" fill="#f59e0b" opacity="0.3" stroke="#f59e0b" stroke-width="2"/>
+        <text x="118" y="48" font-size="13" font-weight="700" fill="#3b82f6">A</text>
+        <text x="313" y="48" font-size="13" font-weight="700" fill="#f59e0b">B</text>
+        <text x="140" y="122" text-anchor="middle" font-size="15" font-weight="600" fill="currentColor">1, 2</text>
+        <text x="220" y="122" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">3, 4</text>
+        <text x="300" y="122" text-anchor="middle" font-size="15" font-weight="600" fill="currentColor">5, 6</text>
+        <text x="220" y="205" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.8">The middle part = things in BOTH groups (intersection)</text>
+      </svg>`,
+
+  "m-relation": `<svg viewBox="0 0 440 210" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Arrows showing who follows whom between three people">
+        <text x="220" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">A relation = who is connected to whom</text>
+        <circle cx="110" cy="60" r="9" fill="#3b82f6"/><text x="92" y="65" text-anchor="end" font-size="12" fill="currentColor">Aman</text>
+        <circle cx="110" cy="115" r="9" fill="#3b82f6"/><text x="92" y="120" text-anchor="end" font-size="12" fill="currentColor">Bina</text>
+        <circle cx="110" cy="170" r="9" fill="#3b82f6"/><text x="92" y="175" text-anchor="end" font-size="12" fill="currentColor">Chetan</text>
+        <circle cx="330" cy="60" r="9" fill="#10b981"/><text x="348" y="65" font-size="12" fill="currentColor">Aman</text>
+        <circle cx="330" cy="115" r="9" fill="#10b981"/><text x="348" y="120" font-size="12" fill="currentColor">Bina</text>
+        <circle cx="330" cy="170" r="9" fill="#10b981"/><text x="348" y="175" font-size="12" fill="currentColor">Chetan</text>
+        <line x1="122" y1="63" x2="315" y2="112" stroke="#3b82f6" stroke-width="2"/>
+        <polygon points="322,114 311,117 314,107" fill="#3b82f6"/>
+        <line x1="122" y1="118" x2="315" y2="167" stroke="#3b82f6" stroke-width="2"/>
+        <polygon points="322,169 311,172 314,162" fill="#3b82f6"/>
+        <text x="220" y="200" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.8">Aman → Bina, Bina → Chetan. So should Aman follow Chetan too?</text>
+      </svg>`,
+
+  "m-function": `<svg viewBox="0 0 460 190" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="A function machine turning input 3 into output 5">
+        <text x="230" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">A function is a machine: one input → one answer</text>
+        <text x="60" y="82" text-anchor="middle" font-size="20" font-weight="700" fill="#3b82f6">3</text>
+        <text x="60" y="102" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.7">input</text>
+        <line x1="82" y1="95" x2="145" y2="95" stroke="currentColor" stroke-width="2"/>
+        <polygon points="153,95 142,90 142,100" fill="currentColor"/>
+        <rect x="158" y="58" width="146" height="76" rx="12" fill="#8b5cf6"/>
+        <text x="231" y="103" text-anchor="middle" font-size="17" font-weight="600" fill="#fff">f(x) = x + 2</text>
+        <line x1="315" y1="95" x2="378" y2="95" stroke="currentColor" stroke-width="2"/>
+        <polygon points="386,95 375,90 375,100" fill="currentColor"/>
+        <text x="410" y="82" text-anchor="middle" font-size="20" font-weight="700" fill="#10b981">5</text>
+        <text x="410" y="102" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.7">output</text>
+        <text x="230" y="168" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.8">Put 3 in, you always get 5 out — never two different answers.</text>
+      </svg>`,
+
+  "m-pigeonhole": `<svg viewBox="0 0 460 195" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Five socks going into four colour boxes so one box must hold two">
+        <text x="230" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">5 socks, but only 4 boxes…</text>
+        <rect x="25" y="70" width="90" height="66" rx="8" fill="none" stroke="#ef4444" stroke-width="2.5"/>
+        <circle cx="52" cy="103" r="14" fill="#f59e0b"/>
+        <circle cx="88" cy="103" r="14" fill="#f59e0b"/>
+        <text x="70" y="156" text-anchor="middle" font-size="11" font-weight="600" fill="#ef4444">2 socks!</text>
+        <rect x="140" y="70" width="90" height="66" rx="8" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+        <circle cx="185" cy="103" r="14" fill="#f59e0b"/>
+        <rect x="255" y="70" width="90" height="66" rx="8" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+        <circle cx="300" cy="103" r="14" fill="#f59e0b"/>
+        <rect x="370" y="70" width="90" height="66" rx="8" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+        <circle cx="415" cy="103" r="14" fill="#f59e0b"/>
+        <text x="230" y="183" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.85">…so at least one box MUST get 2. That's the whole principle.</text>
+      </svg>`,
+
+  "m-dominoes": `<svg viewBox="0 0 470 185" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="A line of dominoes where the first one falls and knocks all the others">
+        <text x="235" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Push the first one — and ALL of them fall</text>
+        <text x="30" y="70" font-size="11.5" fill="#ef4444" font-weight="600">push!</text>
+        <line x1="30" y1="80" x2="52" y2="92" stroke="#ef4444" stroke-width="2"/>
+        <polygon points="60,96 48,96 53,86" fill="#ef4444"/>
+        <rect x="70" y="60" width="17" height="72" rx="3" fill="#8b5cf6" transform="rotate(-38 78 132)"/>
+        <rect x="130" y="60" width="17" height="72" rx="3" fill="#8b5cf6" transform="rotate(-20 138 132)"/>
+        <rect x="190" y="60" width="17" height="72" rx="3" fill="#8b5cf6" transform="rotate(-8 198 132)"/>
+        <rect x="250" y="60" width="17" height="72" rx="3" fill="#3b82f6"/>
+        <rect x="310" y="60" width="17" height="72" rx="3" fill="#3b82f6"/>
+        <rect x="370" y="60" width="17" height="72" rx="3" fill="#3b82f6"/>
+        <line x1="55" y1="135" x2="420" y2="135" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+        <text x="235" y="167" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.85">Step 1: first one falls. Step 2: each one knocks the next. Done!</text>
+      </svg>`,
+
+  "f-model": `<svg viewBox="0 0 480 205" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Input goes to CPU, CPU sends to output, and storage keeps data">
+        <rect x="18" y="58" width="105" height="58" rx="10" fill="#60a5fa"/>
+        <text x="70" y="82" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">INPUT</text>
+        <text x="70" y="100" text-anchor="middle" font-size="10.5" fill="#eff6ff">keyboard, mouse</text>
+        <line x1="128" y1="87" x2="172" y2="87" stroke="currentColor" stroke-width="2"/>
+        <polygon points="180,87 169,82 169,92" fill="currentColor"/>
+        <rect x="185" y="48" width="118" height="78" rx="10" fill="#2563eb"/>
+        <text x="244" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">CPU</text>
+        <text x="244" y="99" text-anchor="middle" font-size="10.5" fill="#dbeafe">thinks &amp; processes</text>
+        <line x1="308" y1="87" x2="352" y2="87" stroke="currentColor" stroke-width="2"/>
+        <polygon points="360,87 349,82 349,92" fill="currentColor"/>
+        <rect x="365" y="58" width="100" height="58" rx="10" fill="#10b981"/>
+        <text x="415" y="82" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">OUTPUT</text>
+        <text x="415" y="100" text-anchor="middle" font-size="10.5" fill="#ecfdf5">screen, printer</text>
+        <line x1="228" y1="130" x2="228" y2="150" stroke="currentColor" stroke-width="2"/>
+        <polygon points="228,157 223,148 233,148" fill="currentColor"/>
+        <line x1="262" y1="150" x2="262" y2="130" stroke="currentColor" stroke-width="2"/>
+        <polygon points="262,123 257,132 267,132" fill="currentColor"/>
+        <rect x="185" y="158" width="118" height="40" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="244" y="183" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">STORAGE</text>
+        <text x="392" y="180" font-size="11" fill="currentColor" opacity="0.75">remembers</text>
+        <text x="392" y="195" font-size="11" fill="currentColor" opacity="0.75">for later</text>
+      </svg>`,
+
+  "f-cpu": `<svg viewBox="0 0 470 235" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Inside the CPU: ALU, registers and control unit, connected by a bus to memory and input output">
+        <rect x="20" y="28" width="232" height="148" rx="12" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <text x="34" y="48" font-size="12.5" font-weight="700" fill="currentColor">CPU</text>
+        <rect x="38" y="58" width="90" height="44" rx="8" fill="#ef4444"/>
+        <text x="83" y="79" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">ALU</text>
+        <text x="83" y="94" text-anchor="middle" font-size="10" fill="#fee2e2">does the maths</text>
+        <rect x="144" y="58" width="92" height="44" rx="8" fill="#f59e0b"/>
+        <text x="190" y="79" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Registers</text>
+        <text x="190" y="94" text-anchor="middle" font-size="10" fill="#fffbeb">tiny + fast</text>
+        <rect x="38" y="114" width="198" height="44" rx="8" fill="#8b5cf6"/>
+        <text x="137" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Control Unit + Program Counter</text>
+        <text x="137" y="150" text-anchor="middle" font-size="10" fill="#ede9fe">decides what runs next</text>
+        <line x1="252" y1="102" x2="330" y2="102" stroke="currentColor" stroke-width="4" opacity="0.55"/>
+        <text x="291" y="94" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">BUS</text>
+        <line x1="330" y1="70" x2="330" y2="150" stroke="currentColor" stroke-width="4" opacity="0.55"/>
+        <line x1="330" y1="70" x2="352" y2="70" stroke="currentColor" stroke-width="3" opacity="0.55"/>
+        <line x1="330" y1="150" x2="352" y2="150" stroke="currentColor" stroke-width="3" opacity="0.55"/>
+        <rect x="354" y="46" width="104" height="48" rx="8" fill="#3b82f6"/>
+        <text x="406" y="68" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">MEMORY</text>
+        <text x="406" y="83" text-anchor="middle" font-size="10" fill="#dbeafe">RAM</text>
+        <rect x="354" y="126" width="104" height="48" rx="8" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="406" y="148" text-anchor="middle" font-size="11.5" font-weight="600" fill="currentColor">Input / Output</text>
+        <text x="406" y="163" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.7">keyboard, screen</text>
+        <text x="235" y="207" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.85">The bus is the road — every piece of data travels on it.</text>
+      </svg>`,
+
+  "f-memory": `<svg viewBox="0 0 460 235" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Memory pyramid from fast small registers at top to big slow storage at bottom">
+        <text x="230" y="20" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Fast &amp; small on top, slow &amp; huge at the bottom</text>
+        <polygon points="200,32 260,32 275,74 185,74" fill="#ef4444"/>
+        <text x="230" y="59" text-anchor="middle" font-size="11.5" font-weight="600" fill="#fff">Registers</text>
+        <polygon points="185,76 275,76 293,118 167,118" fill="#f59e0b"/>
+        <text x="230" y="103" text-anchor="middle" font-size="11.5" font-weight="600" fill="#fff">Cache</text>
+        <polygon points="167,120 293,120 313,162 147,162" fill="#3b82f6"/>
+        <text x="230" y="147" text-anchor="middle" font-size="11.5" font-weight="600" fill="#fff">RAM (forgets on power off)</text>
+        <polygon points="147,164 313,164 335,206 125,206" fill="#10b981"/>
+        <text x="230" y="191" text-anchor="middle" font-size="11.5" font-weight="600" fill="#fff">SSD / Hard Disk (never forgets)</text>
+        <line x1="372" y1="40" x2="372" y2="198" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+        <polygon points="372,205 367,195 377,195" fill="currentColor" opacity="0.5"/>
+        <text x="384" y="60" font-size="11" fill="currentColor" opacity="0.8">fastest</text>
+        <text x="384" y="76" font-size="11" fill="currentColor" opacity="0.8">smallest</text>
+        <text x="384" y="176" font-size="11" fill="currentColor" opacity="0.8">slowest</text>
+        <text x="384" y="192" font-size="11" fill="currentColor" opacity="0.8">biggest</text>
+      </svg>`,
+
+  "comm-cycle": `<svg viewBox="0 0 480 235" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Sender encodes a message, it travels through a channel, receiver decodes it and sends feedback back">
+        <rect x="18" y="46" width="108" height="58" rx="10" fill="#8b5cf6"/>
+        <text x="72" y="70" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">SENDER</text>
+        <text x="72" y="88" text-anchor="middle" font-size="10.5" fill="#ede9fe">has an idea</text>
+        <line x1="131" y1="75" x2="177" y2="75" stroke="currentColor" stroke-width="2"/>
+        <polygon points="185,75 174,70 174,80" fill="currentColor"/>
+        <text x="158" y="64" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.8">encode</text>
+        <rect x="190" y="46" width="112" height="58" rx="10" fill="#3b82f6"/>
+        <text x="246" y="70" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">MESSAGE</text>
+        <text x="246" y="88" text-anchor="middle" font-size="10.5" fill="#dbeafe">call, text, email</text>
+        <line x1="307" y1="75" x2="353" y2="75" stroke="currentColor" stroke-width="2"/>
+        <polygon points="361,75 350,70 350,80" fill="currentColor"/>
+        <text x="334" y="64" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.8">decode</text>
+        <rect x="366" y="46" width="106" height="58" rx="10" fill="#10b981"/>
+        <text x="419" y="70" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">RECEIVER</text>
+        <text x="419" y="88" text-anchor="middle" font-size="10.5" fill="#ecfdf5">understands</text>
+        <path d="M 419 108 C 419 175 72 175 72 110" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="6 4"/>
+        <polygon points="72,102 67,112 77,112" fill="#f59e0b"/>
+        <text x="246" y="163" text-anchor="middle" font-size="11.5" font-weight="600" fill="#f59e0b">FEEDBACK — "got it, thanks!"</text>
+        <text x="240" y="212" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.85">If any one arrow breaks, the message goes wrong.</text>
+      </svg>`,
+
+  "comm-flow": `<svg viewBox="0 0 460 220" font-family="Segoe UI, system-ui, sans-serif" role="img" aria-label="Manager at top with downward and upward arrows to you, and a horizontal arrow to a colleague">
+        <rect x="170" y="18" width="120" height="46" rx="10" fill="#8b5cf6"/>
+        <text x="230" y="47" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">Manager</text>
+        <line x1="196" y1="66" x2="130" y2="128" stroke="#3b82f6" stroke-width="2.5"/>
+        <polygon points="124,134 128,122 136,130" fill="#3b82f6"/>
+        <text x="120" y="98" text-anchor="end" font-size="11" font-weight="600" fill="#3b82f6">Downward</text>
+        <line x1="152" y1="128" x2="218" y2="68" stroke="#10b981" stroke-width="2.5"/>
+        <polygon points="224,62 220,74 212,66" fill="#10b981"/>
+        <text x="238" y="100" font-size="11" font-weight="600" fill="#10b981">Upward</text>
+        <rect x="68" y="136" width="110" height="46" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="123" y="164" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">You</text>
+        <rect x="288" y="136" width="110" height="46" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="343" y="164" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Colleague</text>
+        <line x1="188" y1="159" x2="278" y2="159" stroke="#f59e0b" stroke-width="2.5"/>
+        <polygon points="284,159 274,154 274,164" fill="#f59e0b"/>
+        <polygon points="182,159 192,154 192,164" fill="#f59e0b"/>
+        <text x="233" y="150" text-anchor="middle" font-size="11" font-weight="600" fill="#f59e0b">Horizontal</text>
+        <text x="230" y="208" text-anchor="middle" font-size="11.5" fill="currentColor" opacity="0.8">Send your message in the right direction, to the right person.</text>
+      </svg>`
+};
