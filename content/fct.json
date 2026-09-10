@@ -1,0 +1,212 @@
+/* Deep content for Fundamentals of Computer Technologies (MCA 111) — Unit 1. */
+var DEEP = DEEP || {};
+DEEP.fct = {
+  objectives: [
+    "Draw and explain the block diagram of a digital computer from memory",
+    "Name the five generations of computers with the technology used in each",
+    "Classify computers by size and power, and say which one suits which job",
+    "Explain the difference between data and information with your own example",
+    "Name every part inside the CPU (ALU, CU, registers) and say what each one does",
+    "Compare RAM, ROM, flash, magnetic and optical storage — and know which one forgets"
+  ],
+
+  topics: [
+    // 0 — Model of a Digital Computer & Evolution
+    {
+      subtopics: [
+        {
+          title: "The block diagram (learn to draw this)",
+          text: "Every digital computer follows the same block diagram: <strong>Input Unit → CPU → Output Unit</strong>, with a <strong>Memory Unit</strong> connected to the CPU. Inside the CPU sit two blocks: the <strong>ALU</strong> (does calculations) and the <strong>Control Unit</strong> (directs everything). This diagram is worth full marks on its own, so practise drawing it."
+        },
+        {
+          title: "Why it is called 'digital'",
+          text: "A digital computer understands only two states — <strong>0 and 1</strong> (off and on). Every photo, song and message you own is finally stored as a long pattern of 0s and 1s. An analog computer works with continuous values instead, like an old mercury thermometer, but digital won because 0/1 is far more reliable to store and copy."
+        },
+        {
+          title: "The five generations",
+          text: "<strong>1st (1940–56):</strong> vacuum tubes — huge, hot, ENIAC. <strong>2nd (1956–63):</strong> transistors — smaller and more reliable. <strong>3rd (1964–71):</strong> integrated circuits (many transistors on one chip). <strong>4th (1971–now):</strong> microprocessors — a whole CPU on a single chip, giving us personal computers. <strong>5th (now onward):</strong> artificial intelligence and parallel processing."
+        },
+        {
+          title: "The stored-program idea",
+          text: "The single biggest idea in computing, from <strong>von Neumann</strong>: keep the <em>program</em> in memory alongside the <em>data</em>. Before this, changing a program meant physically rewiring the machine. Because instructions now live in memory like any other data, one machine can run any program — which is why your laptop can be a calculator, a TV and a game console."
+        }
+      ],
+      keyword: "Digital computer = an electronic machine that works on binary (0 and 1), following the model Input → Process (CPU) → Output, with memory to store data and programs. The stored-program concept (von Neumann) keeps instructions in memory along with data.",
+      mistake: "Do not mix up the terms. The CPU is not 'the computer box' — the box is the cabinet. The CPU is a small chip inside it."
+    },
+
+    // 1 — Classification & Human vs Computer
+    {
+      subtopics: [
+        {
+          title: "Classification by size and power",
+          text: "<strong>Supercomputer:</strong> fastest and costliest, used for weather forecasting, space research, nuclear simulation (India's PARAM). <strong>Mainframe:</strong> handles thousands of users at once — banks, railways, insurance. <strong>Minicomputer:</strong> medium, for a department or small company. <strong>Microcomputer:</strong> single user — your laptop, desktop, phone."
+        },
+        {
+          title: "Classification by purpose and by data type",
+          text: "By <strong>purpose</strong>: general-purpose (a laptop, does anything) versus special-purpose (built for one job, like a washing machine controller). By <strong>data type</strong>: digital (works on 0/1), analog (works on continuous signals) and hybrid (both together — common in hospital equipment)."
+        },
+        {
+          title: "Where the computer beats us",
+          text: "<strong>Speed:</strong> billions of operations per second. <strong>Accuracy:</strong> no calculation mistakes if the input and program are correct. <strong>Diligence:</strong> it never gets tired or bored, even on the ten-millionth repetition. <strong>Storage:</strong> it remembers huge amounts perfectly and never forgets over time."
+        },
+        {
+          title: "Where we beat the computer",
+          text: "A computer has <strong>no intelligence of its own</strong> — it only follows instructions (this is called GIGO: Garbage In, Garbage Out). It has no feelings, no common sense, and cannot decide on its own what is worth doing. A human learns a friend's face from one look; a machine needs thousands of examples."
+        }
+      ],
+      keyword: "Computers are classified by size/power as supercomputer, mainframe, minicomputer and microcomputer. Computers beat humans in speed, accuracy, diligence and storage, but have no intelligence, emotions or decision-making ability of their own.",
+      mistake: "'Supercomputer' does not mean a very good laptop. It is a completely different class of machine, costing crores and filling a room, used for national-level scientific work."
+    },
+
+    // 2 — I/O Devices & Data vs Information
+    {
+      subtopics: [
+        {
+          title: "Input, output, and the both-ways devices",
+          text: "<strong>Input:</strong> keyboard, mouse, scanner, microphone, webcam, barcode reader. <strong>Output:</strong> monitor, printer, speaker, projector. And do not forget devices that do <strong>both</strong>: a touchscreen (you touch = input, it displays = output), a modem, and a hard disk (you read from and write to it)."
+        },
+        {
+          title: "Hard copy vs soft copy",
+          text: "A <strong>hard copy</strong> is a permanent physical output you can hold — a printed page. A <strong>soft copy</strong> is an electronic output shown on screen, which disappears when you close it. So a printer gives hard copy and a monitor gives soft copy — a favourite one-mark question."
+        },
+        {
+          title: "Data versus Information (the definition to write)",
+          text: "<strong>Data</strong> is raw, unorganised, unprocessed facts that mean little by themselves. <strong>Information</strong> is data that has been processed and organised so it becomes meaningful and useful for decisions. The link between them is simple: <strong>Data → Processing → Information</strong>."
+        },
+        {
+          title: "Why companies care so much about this",
+          text: "'45, 67, 89' is data — it tells you nothing. 'Average = 67, class rank 2, improving since last term' is information — now you can act on it. Businesses collect mountains of raw data, and their entire value comes from turning it into information. That single conversion is what a Data Analyst is paid for."
+        }
+      ],
+      keyword: "Data = raw, unprocessed facts with no meaning by themselves. Information = processed and organised data that is meaningful and useful for decision-making. Data + Processing = Information.",
+      mistake: "A touchscreen and a hard disk are BOTH input and output devices. Listing them under only one heading loses easy marks."
+    },
+
+    // 3 — Basic Structure: CPU, Registers, ALU, Bus
+    {
+      subtopics: [
+        {
+          title: "The CPU has exactly three parts",
+          text: "<strong>(1) ALU — Arithmetic Logic Unit:</strong> performs all arithmetic (+ − × ÷) and all logical comparisons (&gt;, &lt;, =, AND, OR). <strong>(2) CU — Control Unit:</strong> the manager; it fetches instructions, decodes them and tells every other part what to do. It does no calculation itself. <strong>(3) Registers:</strong> tiny, extremely fast storage inside the CPU."
+        },
+        {
+          title: "Registers and their types",
+          text: "Registers are the fastest memory in the whole computer, but there are only a few of them. Important ones: <strong>AC (Accumulator)</strong> holds the result of calculations; <strong>PC (Program Counter)</strong> holds the address of the next instruction; <strong>IR (Instruction Register)</strong> holds the instruction being executed; <strong>MAR</strong> holds a memory address; <strong>MBR/MDR</strong> holds the data read from or written to memory."
+        },
+        {
+          title: "The three buses",
+          text: "A <strong>bus</strong> is a group of wires that carries data between parts. <strong>Data bus:</strong> carries the actual data (two-way). <strong>Address bus:</strong> carries the address of where data should go (one-way only). <strong>Control bus:</strong> carries control signals such as read/write. The <em>width</em> of the data bus decides how much can travel at once — a wider bus means a faster computer."
+        },
+        {
+          title: "The machine cycle: Fetch – Decode – Execute",
+          text: "The CPU repeats this cycle billions of times a second. <strong>Fetch:</strong> the CU brings the next instruction from memory (using the address in the PC). <strong>Decode:</strong> the CU works out what the instruction means. <strong>Execute:</strong> the ALU performs it and the result goes into a register. Then the PC moves to the next instruction and it all starts again."
+        }
+      ],
+      keyword: "CPU = the brain of the computer, containing the ALU (does arithmetic and logic), the Control Unit (fetches, decodes and directs) and registers (tiny fast storage). Buses (data, address, control) carry information between the parts.",
+      mistake: "The Control Unit does NOT perform calculations — that is the ALU's job. The CU only directs and coordinates. Examiners specifically look for this distinction."
+    },
+
+    // 4 — Program Counter & Addressing Modes
+    {
+      subtopics: [
+        {
+          title: "What the Program Counter does",
+          text: "The <strong>Program Counter (PC)</strong>, also called the Instruction Pointer, always holds the <strong>address of the next instruction</strong> to be executed. After each fetch it automatically increases to point at the following instruction. When a jump or a function call happens, the PC is loaded with the new address instead — and that is how a program changes direction."
+        },
+        {
+          title: "Register Transfer Language (RTL)",
+          text: "RTL is a short symbolic notation for describing what moves where inside the CPU. <code>R1 ← R2</code> means 'copy the contents of register R2 into R1'. <code>R3 ← R1 + R2</code> means 'add R1 and R2 and store the result in R3'. It is simply a compact way to write hardware operations."
+        },
+        {
+          title: "The main addressing modes",
+          text: "<strong>Immediate:</strong> the value itself is inside the instruction (fastest, no lookup). <strong>Direct:</strong> the instruction gives the memory address of the data. <strong>Indirect:</strong> the instruction gives an address that contains <em>another</em> address, where the data actually is. <strong>Register:</strong> the data is in a register. <strong>Indexed:</strong> the final address = a base address + an index value — this is how arrays are accessed."
+        },
+        {
+          title: "Why so many modes exist",
+          text: "Different jobs need different ways of finding data. Indexed mode makes looping through an array simple and fast. Indirect mode lets a program work with data whose location is only known while running. More addressing modes means a more flexible and more powerful instruction set."
+        }
+      ],
+      keyword: "Program Counter (PC) = a special register that always holds the address of the next instruction to be executed. Addressing mode = the method used by an instruction to specify where its operand (data) is located.",
+      mistake: "Do not confuse the Program Counter with the Accumulator. The PC holds an ADDRESS (where to go next); the Accumulator holds a VALUE (the result of a calculation)."
+    },
+
+    // 5 — Memory & Storage
+    {
+      subtopics: [
+        {
+          title: "Volatile versus non-volatile — the key word",
+          text: "<strong>Volatile</strong> memory loses everything the moment power is cut — RAM is volatile. <strong>Non-volatile</strong> memory keeps its contents without power — ROM, hard disk, SSD, pen drive and CDs are all non-volatile. If you learn only one word from this topic, learn 'volatile'."
+        },
+        {
+          title: "RAM and its two types",
+          text: "RAM is the computer's working desk — the program currently running lives here. <strong>SRAM (Static RAM):</strong> faster, more expensive, used for cache memory, does not need refreshing. <strong>DRAM (Dynamic RAM):</strong> slower, cheaper, must be refreshed thousands of times per second, and is what your main memory is made of."
+        },
+        {
+          title: "ROM and its family",
+          text: "ROM holds instructions permanently, such as the BIOS that starts your computer. <strong>PROM:</strong> can be programmed once by the user. <strong>EPROM:</strong> can be erased using ultraviolet light and reprogrammed. <strong>EEPROM:</strong> can be erased electrically — and flash memory is built on this idea."
+        },
+        {
+          title: "Secondary storage: magnetic, optical, flash",
+          text: "<strong>Magnetic (hard disk, tape):</strong> stores data by magnetising a surface; cheap and huge, but has moving parts that can fail. <strong>Optical (CD, DVD, Blu-ray):</strong> a laser burns and reads pits on a disc. <strong>Flash (SSD, pen drive, memory card):</strong> no moving parts, fast, silent, and now the standard in laptops and phones."
+        },
+        {
+          title: "The memory hierarchy",
+          text: "Going down the pyramid — registers, cache, RAM, then secondary storage — memory becomes <strong>slower and cheaper but much bigger</strong>. Going up, it gets faster and costlier but smaller. This trade-off is why a computer needs all of them together rather than just one kind."
+        }
+      ],
+      keyword: "RAM = volatile main memory that loses data when power is off. ROM = non-volatile memory holding permanent startup instructions. Secondary storage (magnetic, optical, flash) is non-volatile, slower and much larger, used for permanent storage.",
+      mistake: "Cache memory is not the same as RAM. Cache is a very small, very fast memory placed between the CPU and RAM, holding the data the CPU is most likely to need next."
+    }
+  ],
+
+  quiz: [
+    {
+      q: "Which part of the CPU actually performs calculations and comparisons?",
+      options: ["Control Unit", "Arithmetic Logic Unit (ALU)", "Program Counter", "Data bus"],
+      answer: 1,
+      why: "The ALU does all arithmetic and logic. The Control Unit only fetches, decodes and directs — it never calculates."
+    },
+    {
+      q: "Your unsaved document disappears when the power suddenly goes off. Which memory was it in?",
+      options: ["ROM", "Hard disk", "RAM", "Pen drive"],
+      answer: 2,
+      why: "RAM is volatile — it needs constant power to hold data. Anything not yet saved to non-volatile storage is lost."
+    },
+    {
+      q: "'45, 67, 89' is a list of marks. What is this?",
+      options: ["Information", "Data", "Knowledge", "A report"],
+      answer: 1,
+      why: "Raw, unprocessed facts are data. It only becomes information after processing — for example 'average = 67, rank 2'."
+    },
+    {
+      q: "Which register always holds the address of the NEXT instruction to execute?",
+      options: ["Accumulator", "Instruction Register", "Program Counter", "MAR"],
+      answer: 2,
+      why: "The Program Counter is the CPU's bookmark. It holds the address of the next instruction and updates automatically after each fetch."
+    },
+    {
+      q: "Which technology defined the FOURTH generation of computers?",
+      options: ["Vacuum tubes", "Transistors", "Integrated circuits", "Microprocessors"],
+      answer: 3,
+      why: "The 4th generation (1971 onwards) brought the microprocessor — an entire CPU on one chip — which made personal computers possible."
+    },
+    {
+      q: "A touchscreen is classified as…",
+      options: ["Only an input device", "Only an output device", "Both an input and an output device", "A storage device"],
+      answer: 2,
+      why: "You touch it (input) and it displays to you (output), so it belongs in both categories. Same for a hard disk (read and write)."
+    },
+    {
+      q: "Which statement about the stored-program concept is correct?",
+      options: [
+        "Programs must be rewired physically each time",
+        "Programs are stored in memory along with data",
+        "Programs can only be stored on a CD",
+        "Programs run without any memory"
+      ],
+      answer: 1,
+      why: "Von Neumann's stored-program idea keeps instructions in memory just like data — which is why one machine can run any program without rewiring."
+    }
+  ]
+};

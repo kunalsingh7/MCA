@@ -1,0 +1,221 @@
+/* Deep content for Technical Communication (MCA 112) — Unit 1. */
+var DEEP = DEEP || {};
+DEEP.comm = {
+  objectives: [
+    "Explain what technical communication is, and how it differs from everyday conversation",
+    "Draw and label the communication cycle, naming all seven parts",
+    "Name the levels of communication and the four directions of flow in an organisation",
+    "Compare verbal, non-verbal and written communication, with an example of each",
+    "Identify the main barriers to communication and suggest a way to remove each one",
+    "List the 7 C's of effective communication and explain why cross-cultural awareness matters"
+  ],
+
+  topics: [
+    // 0 — Basics of Technical Communication
+    {
+      subtopics: [
+        {
+          title: "What makes communication 'technical'",
+          text: "Technical communication is the sharing of <strong>factual, work-related information</strong> with a specific audience, for a specific purpose, so they can understand, decide or act. It is not about beautiful language — it is about being clear, accurate and useful. A user manual, a bug report, a project proposal and a status email are all technical communication."
+        },
+        {
+          title: "General vs technical communication",
+          text: "<strong>General:</strong> personal, informal, emotional, no fixed format, and it may wander off topic. <strong>Technical:</strong> factual, formal, objective, follows a fixed structure, and stays strictly on the point. Chatting about your weekend is general; writing an incident report about a server crash is technical."
+        },
+        {
+          title: "The main features you should list",
+          text: "Good technical communication is <strong>accurate</strong> (facts are correct), <strong>clear</strong> (only one meaning is possible), <strong>concise</strong> (no extra words), <strong>audience-focused</strong> (matched to who is reading), and <strong>well-organised</strong> (headings, lists, logical order)."
+        },
+        {
+          title: "Why an engineer must learn this",
+          text: "Studies keep finding that working professionals spend well over half their working day communicating — in emails, meetings, documentation and reviews. Your technical skill gets you the interview, but your communication decides whether people understand your work, trust it, and let you lead it."
+        }
+      ],
+      keyword: "Technical communication = the process of sharing factual, work-related information with a specific audience for a specific purpose, in a clear, accurate, concise and objective way.",
+      mistake: "'Technical communication' does not mean using difficult technical words. It often means the opposite — explaining a complex idea in the simplest words your reader will understand."
+    },
+
+    // 1 — Process of Communication
+    {
+      subtopics: [
+        {
+          title: "The seven parts of the cycle",
+          text: "<strong>(1) Sender</strong> — the person with an idea. <strong>(2) Encoding</strong> — turning the idea into words, symbols or gestures. <strong>(3) Message</strong> — the actual content being sent. <strong>(4) Channel/Medium</strong> — how it travels (call, email, face-to-face). <strong>(5) Receiver</strong> — the person it reaches. <strong>(6) Decoding</strong> — the receiver interpreting it. <strong>(7) Feedback</strong> — the reply that shows whether it was understood."
+        },
+        {
+          title: "Feedback is what makes it a cycle",
+          text: "Without feedback, communication is only one-way — you sent something, but you have no idea if it landed. Feedback closes the loop and turns it into a true cycle. This is exactly why a teacher asks \"any doubts?\" and why an app shows 'Delivered' and 'Seen'."
+        },
+        {
+          title: "Noise can enter at any step",
+          text: "<strong>Noise</strong> is anything that distorts the message, and it is not only sound. Physical noise (traffic, bad network), psychological noise (stress, boredom), and semantic noise (a word the receiver understands differently) can all creep in at any point in the cycle."
+        },
+        {
+          title: "Choosing the right channel",
+          text: "Match the channel to the message. Urgent → phone call. Needs a written record → email. Complex or sensitive → face-to-face. Sending an urgent server alert by email at midnight is not a wording problem, it is a <strong>channel</strong> problem — and it is a very common real-world failure."
+        }
+      ],
+      keyword: "The communication cycle has seven elements: sender, encoding, message, channel, receiver, decoding and feedback. Noise is any disturbance that distorts the message at any stage.",
+      mistake: "Communication is not complete when you press 'send'. It is complete only when the receiver has understood and given feedback. Without feedback you cannot claim you communicated."
+    },
+
+    // 2 — Levels and Flow of Communication
+    {
+      subtopics: [
+        {
+          title: "The levels of communication",
+          text: "<strong>Intrapersonal:</strong> within yourself — thinking, planning, self-talk. <strong>Interpersonal:</strong> between two people. <strong>Group:</strong> within a small team, like a project discussion. <strong>Organisational:</strong> across a whole company. <strong>Mass:</strong> to a very large audience, through TV, newspaper or social media."
+        },
+        {
+          title: "The four directions of flow",
+          text: "<strong>Downward:</strong> from higher to lower level — orders, instructions, policies. <strong>Upward:</strong> from lower to higher — reports, suggestions, complaints, feedback. <strong>Horizontal (lateral):</strong> between people at the same level — coordination between teammates. <strong>Diagonal (crosswise):</strong> across different levels AND different departments, such as an intern emailing a manager in another team."
+        },
+        {
+          title: "Formal vs informal networks",
+          text: "<strong>Formal</strong> communication follows the official chain of command — memos, official emails, reports. <strong>Informal</strong> communication is the unofficial network, famously called the <strong>grapevine</strong>: canteen chats and corridor gossip. The grapevine travels remarkably fast, but it is unreliable and often distorted."
+        },
+        {
+          title: "Why upward flow usually fails",
+          text: "Downward messages travel easily, but upward ones get blocked — juniors fear being judged, or the bad news gets softened at every level until the top hears nothing wrong. Good organisations deliberately build channels (anonymous feedback, skip-level meetings) to keep the upward path open."
+        }
+      ],
+      keyword: "Levels of communication: intrapersonal, interpersonal, group, organisational and mass. Flow of communication in an organisation: downward, upward, horizontal (lateral) and diagonal (crosswise).",
+      mistake: "Horizontal and diagonal are not the same. Horizontal = same level. Diagonal = different level AND different department at once."
+    },
+
+    // 3 — Types of Communication
+    {
+      subtopics: [
+        {
+          title: "Verbal communication (oral)",
+          text: "Spoken words — conversations, phone calls, meetings, presentations, interviews. Its strengths are speed and instant feedback; you can clear a doubt in seconds. Its weakness is that there is <strong>no permanent record</strong>, so it is easily forgotten or later denied."
+        },
+        {
+          title: "Written communication",
+          text: "Emails, reports, letters, manuals, messages. Its strengths are a permanent record, the chance to draft carefully, and easy sharing with many people. Its weaknesses are slow feedback and total absence of tone — which is exactly why a short 'ok.' can feel rude even when you did not mean it."
+        },
+        {
+          title: "Non-verbal communication (and how big it is)",
+          text: "Everything communicated <strong>without words</strong>: facial expression, eye contact, posture, gestures, appearance, and even silence. Its sub-branches have proper names worth writing: <strong>Kinesics</strong> (body movement), <strong>Proxemics</strong> (use of space and distance), <strong>Chronemics</strong> (use of time, like punctuality), and <strong>Paralanguage</strong> (tone, pitch, speed, pauses — <em>how</em> you say it, not what)."
+        },
+        {
+          title: "When words and body disagree",
+          text: "If your words say \"I'm happy to help\" while your face and tone say otherwise, people will believe the <strong>non-verbal</strong> signal almost every time. This is why non-verbal communication is considered so powerful — and why it matters enormously in interviews and presentations."
+        }
+      ],
+      keyword: "Verbal = spoken words (fast, instant feedback, no record). Written = documented words (permanent record, no tone). Non-verbal = communication without words, including kinesics (body language), proxemics (space), chronemics (time) and paralanguage (tone and pitch).",
+      mistake: "Paralanguage is non-verbal, not verbal. It is not WHAT you say (the words) but HOW you say it — tone, pitch, speed and pauses."
+    },
+
+    // 4 — Barriers to Communication
+    {
+      subtopics: [
+        {
+          title: "Physical and physiological barriers",
+          text: "<strong>Physical:</strong> distance, noise, a weak network, closed doors, faulty equipment. <strong>Physiological:</strong> problems in the body — a hearing difficulty, poor eyesight, illness, or plain tiredness. Both block the message before it ever gets a chance to be understood."
+        },
+        {
+          title: "Semantic (language) barriers",
+          text: "'Semantic' means related to meaning. These include a language the receiver does not know well, technical <strong>jargon</strong>, ambiguous words with two meanings, and poor grammar that changes the sense of a sentence. Saying 'null pointer exception' to a non-technical person is a textbook semantic barrier."
+        },
+        {
+          title: "Psychological and emotional barriers",
+          text: "Anger, fear, stress, low confidence, prejudice, distrust and simply not paying attention. If a student is scared of the teacher, they will not ask the doubt — the message never even starts. Emotional state can block communication just as effectively as a broken phone line."
+        },
+        {
+          title: "Organisational and cultural barriers",
+          text: "<strong>Organisational:</strong> too many levels of hierarchy (the message gets distorted on the way), unclear rules, information overload. <strong>Cultural:</strong> different customs, values and gestures across regions and countries."
+        },
+        {
+          title: "How to remove barriers (always asked)",
+          text: "Use simple language suited to your audience; choose the right channel; always ask for feedback; practise <strong>active listening</strong>; keep messages short and organised; and be aware of your own tone and body language. Naming the barrier AND its remedy is what earns full marks."
+        }
+      ],
+      keyword: "Barriers to communication = obstacles that block or distort a message. Main types: physical, physiological, semantic (language), psychological/emotional, organisational and cultural. They are overcome by simple language, the right channel, active listening and feedback.",
+      mistake: "Noise is not only sound. In communication theory, 'noise' means ANY disturbance — including confusing words (semantic noise) and a distracted mind (psychological noise)."
+    },
+
+    // 5 — Essentials & Cross-cultural Variations
+    {
+      subtopics: [
+        {
+          title: "The 7 C's of effective communication",
+          text: "<strong>Clear</strong> — one meaning only. <strong>Concise</strong> — short, no padding. <strong>Concrete</strong> — specific facts, not vague claims. <strong>Correct</strong> — accurate facts, spelling and grammar. <strong>Coherent</strong> — logically connected. <strong>Complete</strong> — nothing important missing. <strong>Courteous</strong> — polite and respectful. (Some books list only 5 C's; write 7 and you have covered both.)"
+        },
+        {
+          title: "Concrete vs vague — see the difference",
+          text: "Vague: \"The report will be ready soon.\" Concrete: \"The report will be emailed by 4 PM on Friday.\" The second one cannot be misunderstood and needs no follow-up question. In professional writing, concrete language is what builds trust."
+        },
+        {
+          title: "Why culture changes meaning",
+          text: "The same signal can mean opposite things in different places. A thumbs-up is praise in India but offensive in parts of the Middle East. Direct eye contact shows confidence in the West but can seem disrespectful to elders in parts of Asia. Some cultures value blunt directness; others consider it rude."
+        },
+        {
+          title: "High-context and low-context cultures",
+          text: "In <strong>high-context</strong> cultures (India, Japan, the Arab world) much of the meaning is implied — through relationship, tone and what is left unsaid. In <strong>low-context</strong> cultures (USA, Germany) meaning is stated explicitly in the words themselves. A 'yes' that politely means 'maybe' in one culture is taken as a firm commitment in the other — a very real source of workplace conflict."
+        },
+        {
+          title: "Working with global teams",
+          text: "Practical habits that help: avoid slang and local idioms, confirm important points in writing, be careful with humour (it travels badly), respect time-zone differences, and when in doubt, politely ask rather than assume. This matters directly — many Indian IT professionals work with clients abroad from their very first project."
+        }
+      ],
+      keyword: "The 7 C's of effective communication: Clear, Concise, Concrete, Correct, Coherent, Complete and Courteous. Cross-cultural variation = the same words or gestures may carry different meanings in different cultures, so a global communicator must adapt.",
+      mistake: "Being concise does not mean being rude or dropping information. 'Concise' means removing unnecessary words — 'Complete' still requires that every necessary fact is present."
+    }
+  ],
+
+  quiz: [
+    {
+      q: "Which element makes communication a CYCLE rather than a one-way street?",
+      options: ["The channel", "Encoding", "Feedback", "The message"],
+      answer: 2,
+      why: "Feedback closes the loop. Without it you have only sent something — you have no proof it was understood."
+    },
+    {
+      q: "You email your manager a weekly progress report. This flow is…",
+      options: ["Downward", "Upward", "Horizontal", "Diagonal"],
+      answer: 1,
+      why: "Information moving from a lower level to a higher level (reports, suggestions, complaints) is upward communication."
+    },
+    {
+      q: "Tone, pitch, speed and pauses in your voice are called…",
+      options: ["Kinesics", "Proxemics", "Paralanguage", "Semantics"],
+      answer: 2,
+      why: "Paralanguage is HOW you say something rather than what you say. Kinesics is body movement and proxemics is the use of space."
+    },
+    {
+      q: "Explaining 'null pointer exception' to a non-technical customer creates which barrier?",
+      options: ["Physical barrier", "Semantic (language) barrier", "Physiological barrier", "Organisational barrier"],
+      answer: 1,
+      why: "Semantic barriers relate to meaning — jargon the receiver does not understand is a classic example."
+    },
+    {
+      q: "Which sentence is CONCRETE rather than vague?",
+      options: [
+        "We will finish it soon",
+        "The work is almost done",
+        "The report will be emailed by 4 PM on Friday",
+        "It should be ready shortly"
+      ],
+      answer: 2,
+      why: "Concrete communication gives specific, checkable facts — a date, a time, a number — instead of words like 'soon' that everyone interprets differently."
+    },
+    {
+      q: "In a HIGH-context culture, meaning is mostly carried by…",
+      options: [
+        "The exact words spoken",
+        "Context, relationship and what is left unsaid",
+        "Written contracts only",
+        "Loud speaking"
+      ],
+      answer: 1,
+      why: "High-context cultures (India, Japan) rely on implied meaning, tone and relationship. Low-context cultures (USA, Germany) state everything explicitly in words."
+    },
+    {
+      q: "The unofficial communication network in an office (canteen chats, gossip) is called…",
+      options: ["The chain", "The grapevine", "The channel", "The hierarchy"],
+      answer: 1,
+      why: "The grapevine is the informal network. It spreads very fast but is unreliable and often distorted."
+    }
+  ]
+};

@@ -1,0 +1,227 @@
+/* Deep content for Mathematical Foundation (MCA 110) — Unit 1. */
+var DEEP = DEEP || {};
+DEEP.maths = {
+  objectives: [
+    "Write what a set is, and tell whether a given set is countable or uncountable",
+    "Define a relation, and test whether it is reflexive, symmetric or transitive",
+    "Recognise an equivalence relation and a partial order, and give an example of each",
+    "Explain what makes a relation a function, and find the inverse and composition of simple functions",
+    "Use the Pigeonhole Principle to prove a simple statement in two lines",
+    "Prove a formula using Mathematical Induction, writing both the base step and the inductive step"
+  ],
+
+  topics: [
+    // 0 — Set Theory
+    {
+      subtopics: [
+        {
+          title: "What 'well-defined' means (and why it matters)",
+          text: "A set is a <strong>well-defined</strong> collection of objects. 'Well-defined' means there must be no argument about whether something belongs. \"All students in MCA 1st semester\" is a set — you can check the list. \"All good students\" is <strong>not</strong> a set, because 'good' means different things to different people."
+        },
+        {
+          title: "How we write sets",
+          text: "<strong>Roster form</strong> lists the members: A = {2, 4, 6, 8}. <strong>Set-builder form</strong> states the rule: A = {x : x is an even number, x &lt; 10}. Members are also called <strong>elements</strong>, and we write 4 ∈ A to mean '4 belongs to A', 5 ∉ A to mean '5 does not belong'."
+        },
+        {
+          title: "Finite, infinite, and the tricky word 'countable'",
+          text: "A <strong>finite</strong> set has a fixed number of elements: {1,2,3}. An <strong>infinite</strong> set never ends. Now the important part: an infinite set can still be <strong>countable</strong> if you can arrange its elements in a list — 1st, 2nd, 3rd… and reach any element eventually. Natural numbers are infinite but countable."
+        },
+        {
+          title: "Uncountable sets",
+          text: "A set is <strong>uncountable</strong> when no such list is possible. The real numbers between 0 and 1 are the standard example — however you try to list them, someone can always construct a number you missed. Remember the shortcut: <strong>can be listed = countable; cannot be listed = uncountable</strong>."
+        },
+        {
+          title: "Basic operations you should know",
+          text: "<strong>Union (A ∪ B)</strong> = everything in A or B. <strong>Intersection (A ∩ B)</strong> = only what is in both. <strong>Difference (A − B)</strong> = in A but not in B. <strong>Complement (A′)</strong> = everything outside A. The Venn diagram below shows the intersection clearly."
+        }
+      ],
+      keyword: "Set = a well-defined collection of distinct objects. A set is countable if its elements can be listed one by one (even if infinite); otherwise it is uncountable.",
+      mistake: "'Infinite' and 'uncountable' are NOT the same. Natural numbers are infinite but countable. Only sets that cannot be listed at all — like the reals between 0 and 1 — are uncountable."
+    },
+
+    // 1 — Relations
+    {
+      subtopics: [
+        {
+          title: "What a relation formally is",
+          text: "A relation R from set A to set B is simply a <strong>subset of the Cartesian product A × B</strong>. In plain words: out of all possible pairs you could form, a relation is the set of pairs you actually decided to connect. If (a, b) ∈ R, we say 'a is related to b'."
+        },
+        {
+          title: "The three properties you will be tested on",
+          text: "<strong>Reflexive:</strong> every element is related to itself — (a,a) ∈ R for all a. Example: 'is equal to'. <strong>Symmetric:</strong> if a→b then b→a. Example: 'is a sibling of'. <strong>Transitive:</strong> if a→b and b→c then a→c. Example: 'is less than'."
+        },
+        {
+          title: "How to actually test them in an exam",
+          text: "Given R = {(1,1),(2,2),(1,2)} on A = {1,2}: <strong>Reflexive?</strong> Need (1,1) and (2,2) — both present, so yes. <strong>Symmetric?</strong> We have (1,2), so we need (2,1) — it is missing, so no. <strong>Transitive?</strong> No pair breaks the rule, so yes. Always check element by element like this."
+        },
+        {
+          title: "Composition of relations",
+          text: "If R connects A→B and S connects B→C, then the composition <strong>S∘R</strong> connects A→C directly, whenever you can travel A→B→C. This is exactly the logic behind 'people you may know': you follow Bina, Bina follows Chetan, so the app suggests Chetan to you."
+        }
+      ],
+      keyword: "Relation R from A to B = a subset of the Cartesian product A × B. It is reflexive if every element relates to itself, symmetric if aRb implies bRa, and transitive if aRb and bRc implies aRc.",
+      mistake: "To disprove a property you need only ONE counter-example, but to prove it you must check EVERY element. Students often check one pair and wrongly declare the relation reflexive."
+    },
+
+    // 2 — Equivalence Relation & Partial Ordering
+    {
+      subtopics: [
+        {
+          title: "Equivalence relation = all three properties together",
+          text: "A relation is an <strong>equivalence relation</strong> only if it is reflexive AND symmetric AND transitive — all three, no exceptions. The classic example is 'has the same remainder when divided by 3'. Miss even one property and it is not an equivalence relation."
+        },
+        {
+          title: "Equivalence classes (what it actually gives you)",
+          text: "An equivalence relation neatly cuts the whole set into non-overlapping groups called <strong>equivalence classes</strong>. Every element lands in exactly one group, and no group is empty. For 'same remainder mod 3' on numbers 1–9, you get exactly three classes: {1,4,7}, {2,5,8} and {3,6,9}."
+        },
+        {
+          title: "Partial ordering relation",
+          text: "A relation is a <strong>partial order</strong> if it is reflexive, <strong>antisymmetric</strong> (if a→b and b→a then a and b must be the same element) and transitive. Note the change: symmetric is replaced by <em>anti</em>symmetric. Standard examples: 'less than or equal to' on numbers, and 'is a subset of' on sets."
+        },
+        {
+          title: "Why it is called 'partial'",
+          text: "Because some pairs simply cannot be compared. Under 'is a subset of', the sets {1,2} and {3,4} have no order between them at all — neither contains the other. When <em>every</em> pair can be compared, it is called a <strong>total order</strong> instead."
+        }
+      ],
+      keyword: "Equivalence relation = reflexive + symmetric + transitive; it divides a set into disjoint equivalence classes. Partial order = reflexive + antisymmetric + transitive; some pairs may be incomparable.",
+      mistake: "The only difference between the two definitions is the middle property: equivalence needs SYMMETRIC, partial order needs ANTI-symmetric. Mixing these two up is the most common error in this topic."
+    },
+
+    // 3 — Functions
+    {
+      subtopics: [
+        {
+          title: "Every function is a relation, but not the reverse",
+          text: "A function is a special relation with one strict extra rule: <strong>every input must have exactly one output</strong> — never zero, never two. So all functions are relations, but most relations are not functions. Write that line in the exam."
+        },
+        {
+          title: "Domain, codomain and range",
+          text: "For f : A → B, the <strong>domain</strong> is A (all allowed inputs), the <strong>codomain</strong> is B (all possible outputs), and the <strong>range</strong> is the part of B actually produced. The range is always inside the codomain, and may be smaller than it."
+        },
+        {
+          title: "Types of functions",
+          text: "<strong>One-one (injective):</strong> different inputs always give different outputs. <strong>Onto (surjective):</strong> every element of the codomain is actually produced — range equals codomain. <strong>Bijective:</strong> both one-one and onto at the same time. Important: <strong>only a bijective function has an inverse</strong>."
+        },
+        {
+          title: "Inverse and composition",
+          text: "The <strong>inverse</strong> f⁻¹ undoes the function: if f(3) = 5, then f⁻¹(5) = 3. <strong>Composition</strong> feeds one function's output into another: (g∘f)(x) means 'do f first, then g'. Careful — read composition right to left, and remember g∘f is usually not the same as f∘g."
+        }
+      ],
+      keyword: "Function f : A → B = a relation in which every element of A is mapped to exactly one element of B. It is one-one if distinct inputs give distinct outputs, onto if range = codomain, and bijective if both — only bijective functions have an inverse.",
+      mistake: "In (g∘f)(x) you apply <strong>f first</strong>, then g — even though g is written first. Reading it left to right is a very common and costly mistake."
+    },
+
+    // 4 — Recursion & Pigeonhole Principle
+    {
+      subtopics: [
+        {
+          title: "What makes a definition 'recursive'",
+          text: "A recursive definition always has two parts: a <strong>base case</strong> that stops the process, and a <strong>recursive case</strong> that defines the value using a smaller version of itself. For factorial: base case 0! = 1, recursive case n! = n × (n−1)!. Without the base case it would never stop."
+        },
+        {
+          title: "The Fibonacci example",
+          text: "Fibonacci needs two base cases: F(0) = 0 and F(1) = 1. Then F(n) = F(n−1) + F(n−2). So F(5) = F(4) + F(3), and each of those breaks down further until it reaches the base cases and starts returning answers back up."
+        },
+        {
+          title: "The Pigeonhole Principle, stated properly",
+          text: "If <strong>n items</strong> are placed into <strong>m containers</strong> and n &gt; m, then at least one container must hold more than one item. The generalised form: at least one container holds at least <strong>⌈n/m⌉</strong> items (that symbol means 'round up')."
+        },
+        {
+          title: "Where it is genuinely useful",
+          text: "It proves things that sound impossible to prove. In any group of 13 people, two must share a birth month (13 people, 12 months). In any group of 367 people, two must share a birthday. It is also why two different files can end up with the same hash value — there are more possible files than possible hashes."
+        }
+      ],
+      keyword: "Recursive definition = defines something in terms of a smaller case of itself, and must include a base case to stop. Pigeonhole Principle = if n items go into m containers and n > m, at least one container holds more than one item.",
+      mistake: "A recursive definition without a base case is not just wrong — in programming it causes an infinite loop and crashes. Always state the base case first."
+    },
+
+    // 5 — Mathematical Induction
+    {
+      subtopics: [
+        {
+          title: "The two steps (never skip either one)",
+          text: "<strong>Step 1 — Base case:</strong> prove the statement is true for the smallest value, usually n = 1. <strong>Step 2 — Inductive step:</strong> assume it is true for n = k (this assumption is called the <em>inductive hypothesis</em>), then prove it must also be true for n = k+1. If both steps hold, the statement is true for all n."
+        },
+        {
+          title: "Why assuming is allowed (this confuses everyone)",
+          text: "You are not assuming what you want to prove. You are proving a chain link: \"IF it works for k, THEN it works for k+1.\" Combine that link with the base case, and the truth spreads automatically to every number — exactly like dominoes."
+        },
+        {
+          title: "A full worked proof",
+          text: "Prove 1+2+…+n = n(n+1)/2. <strong>Base:</strong> n=1 → LHS = 1, RHS = 1(2)/2 = 1. True. <strong>Assume</strong> true for n=k: 1+2+…+k = k(k+1)/2. <strong>For k+1:</strong> add (k+1) to both sides → k(k+1)/2 + (k+1) = (k+1)(k+2)/2, which is exactly the formula with k+1 in place of n. Proved."
+        },
+        {
+          title: "How to score full marks",
+          text: "Examiners look for four things written clearly: (1) the base case checked with actual numbers, (2) the hypothesis stated in words, (3) the algebra for k+1 shown step by step, (4) a closing line: \"Hence by the principle of mathematical induction, it is true for all n.\" Write that final sentence — it carries marks."
+        }
+      ],
+      keyword: "Mathematical Induction = a proof method with two steps: prove the statement for the base case (n=1), then prove that if it is true for n=k it is also true for n=k+1. Together these prove it for all n.",
+      mistake: "Proving only the base case proves nothing about the rest. Both steps are compulsory — the base case starts the chain, the inductive step keeps it going."
+    }
+  ],
+
+  quiz: [
+    {
+      q: "Which of these is NOT a set?",
+      options: [
+        "All prime numbers below 20",
+        "All the tall students in the class",
+        "All the days in a week",
+        "All vowels in English"
+      ],
+      answer: 1,
+      why: "'Tall' is not well-defined — people would disagree about who counts. A set must be well-defined so membership is never in doubt."
+    },
+    {
+      q: "The set of natural numbers {1, 2, 3, …} is…",
+      options: ["Finite", "Infinite and countable", "Infinite and uncountable", "Not a set at all"],
+      answer: 1,
+      why: "It never ends, so it is infinite — but you can list its elements in order (1st, 2nd, 3rd…), which makes it countable."
+    },
+    {
+      q: "A relation must have which THREE properties to be an equivalence relation?",
+      options: [
+        "Reflexive, antisymmetric, transitive",
+        "Reflexive, symmetric, transitive",
+        "Symmetric, antisymmetric, transitive",
+        "Reflexive, symmetric, onto"
+      ],
+      answer: 1,
+      why: "Equivalence = reflexive + symmetric + transitive. If it were antisymmetric instead of symmetric, it would be a partial order."
+    },
+    {
+      q: "Why is a vending machine a good example of a function?",
+      options: [
+        "Because it is a machine",
+        "Because one button always gives the same one product",
+        "Because it accepts money",
+        "Because it has many buttons"
+      ],
+      answer: 1,
+      why: "A function must give exactly one output for each input. Press B4 and you always get the same item — never two different things randomly."
+    },
+    {
+      q: "In a group of 13 people, at least two must share a birth MONTH. Which principle proves this?",
+      options: ["Mathematical Induction", "Pigeonhole Principle", "Composition of relations", "Set difference"],
+      answer: 1,
+      why: "13 people (items) into 12 months (containers), and 13 > 12 — so at least one month must contain two people."
+    },
+    {
+      q: "In mathematical induction, what exactly do you do in the second step?",
+      options: [
+        "Check the formula for n = 1",
+        "Assume it is true for n = k, then prove it for n = k+1",
+        "Prove it separately for every number",
+        "Draw a graph of the formula"
+      ],
+      answer: 1,
+      why: "The inductive step builds the chain link: if it holds for k, it must hold for k+1. Combined with the base case, that covers every n."
+    },
+    {
+      q: "For (g∘f)(x), which function is applied FIRST?",
+      options: ["g", "f", "Both together", "Neither — it is undefined"],
+      answer: 1,
+      why: "Composition is read right to left. In g∘f you apply f first, then feed its output into g."
+    }
+  ]
+};

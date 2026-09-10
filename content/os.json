@@ -1,0 +1,204 @@
+/* Deep content for Operating System (MCA 108) — Unit 1.
+   topics[] must stay in the same order as data.json.
+   Loaded with a normal <script> tag, like the other data files. */
+var DEEP = DEEP || {};
+DEEP.os = {
+  objectives: [
+    "Say in one line what an Operating System really is, and why a computer is useless without one",
+    "Tell apart batch, multiprogramming, multitasking, timesharing and real-time systems — with an example of each",
+    "Explain multithreading, and how it is different from multitasking (a favourite exam question)",
+    "Describe the same OS from two sides: the normal user's view and the system programmer's view",
+    "Compare monolithic and layered OS structure, and say which is easier to fix and why"
+  ],
+
+  topics: [
+    // 0 — What is an OS & Why it Evolved
+    {
+      subtopics: [
+        {
+          title: "The four jobs an OS does all day",
+          text: "Every operating system, big or small, is doing these four things: <strong>(1)</strong> deciding which program gets the CPU and for how long, <strong>(2)</strong> giving memory to each program and taking it back when done, <strong>(3)</strong> managing files and folders on the disk, and <strong>(4)</strong> controlling devices like the keyboard, printer and screen. Notice that all four are about the same thing — sharing limited resources fairly between many programs."
+        },
+        {
+          title: "Why we say the OS sits 'in the middle'",
+          text: "Your apps never talk to the hardware directly. Chrome has no idea what brand of disk you have. It simply tells the OS \"save this file\", and the OS deals with all the messy hardware details. Because of this middle position, the OS is also called a <strong>resource manager</strong> — everything must go through it."
+        },
+        {
+          title: "The short story of how OS evolved",
+          text: "In the beginning there was <strong>no OS</strong> — a human operator loaded each program by hand and the CPU sat idle in between. Then came <strong>batch systems</strong>, which grouped similar jobs and ran them one after another. Then <strong>multiprogramming</strong> kept several jobs in memory so the CPU always had something to do. Then <strong>timesharing</strong> let many users work at the same moment. Today's OS does all of this, plus graphics, networking and security."
+        }
+      ],
+      keyword: "Operating System = system software that acts between the user and the hardware, manages all resources (CPU, memory, files, devices), and provides a convenient environment to run programs.",
+      mistake: "Never call the OS an 'application'. Chrome and Word are applications — they RUN ON the OS. The OS is system software that runs everything else."
+    },
+
+    // 1 — Batch, Multiprogramming and Multitasking
+    {
+      subtopics: [
+        {
+          title: "Batch system",
+          text: "Similar jobs are collected together into a 'batch' and run one after another, with nobody sitting in front of the machine. It was perfect for bulk work like printing salary slips overnight. The big problem: <strong>no interaction</strong>, and whenever a job waited for input or output, the whole CPU just sat idle doing nothing."
+        },
+        {
+          title: "Multiprogramming",
+          text: "Here the OS keeps <strong>several jobs in main memory at the same time</strong>. The moment the running job stops to wait (for the disk, the printer, anything), the OS immediately hands the CPU to another job that is ready. The goal of multiprogramming is simple: <strong>keep the CPU busy, never let it be idle</strong>."
+        },
+        {
+          title: "Multitasking",
+          text: "Multitasking is multiprogramming plus fast switching, done for a single user. The OS switches between your tasks so quickly that you can type in Word, play music and download a file, and all three feel active together. The goal here is not CPU efficiency — it is <strong>your comfort and quick response</strong>."
+        },
+        {
+          title: "The one line that gets you the mark",
+          text: "Batch = bulk work with no human. Multiprogramming = keep the <strong>CPU</strong> busy. Multitasking = keep the <strong>user</strong> happy. If you write the goal of each, examiners can see you actually understood the difference."
+        }
+      ],
+      keyword: "Multiprogramming = keeping more than one program in main memory so that whenever the running program waits for I/O, the CPU is immediately given to another program, keeping the CPU always busy.",
+      mistake: "Students write 'multitasking means many programs run at the same time'. Be careful — on a single CPU only ONE program truly runs at any instant. The OS switches so fast that it only FEELS simultaneous."
+    },
+
+    // 2 — Timesharing and Multithreading
+    {
+      subtopics: [
+        {
+          title: "Time-sharing systems",
+          text: "CPU time is cut into tiny slices called a <strong>time quantum</strong> (usually a few milliseconds). Each user or process gets one slice by turn. If a process does not finish inside its slice, it goes back into the queue and waits for its next turn. This is how one college server can serve fifty students at once."
+        },
+        {
+          title: "Why 'response time' is the star here",
+          text: "In a batch system we cared about finishing lots of work. In timesharing we care about something different — <strong>how quickly the system replies to YOU</strong>. A good timesharing system replies in under a second, so you never feel that you are sharing the machine with anyone."
+        },
+        {
+          title: "Process vs Thread (know this difference!)",
+          text: "A <strong>process</strong> is a full running program with its own separate memory. A <strong>thread</strong> is a smaller unit inside a process, and all threads of the same process <strong>share the same memory</strong>. Because of this sharing, creating a thread is much cheaper and faster than creating a whole new process. Threads are often called 'lightweight processes'."
+        },
+        {
+          title: "Multithreading in apps you already use",
+          text: "Your browser uses one thread to draw the page, another to download images, another to play a video. If one thread gets stuck waiting, the others keep working — that is exactly why you can still scroll a page while its images are still loading."
+        }
+      ],
+      keyword: "Time-sharing = CPU time is divided into small time slices (time quantum) shared among many users by turn, so every user gets fast response and feels the computer belongs to them alone.",
+      mistake: "Multitasking and multithreading are NOT the same thing. Multitasking = many PROGRAMS running together. Multithreading = many parts INSIDE one single program running together."
+    },
+
+    // 3 — Real-Time Operating System (RTOS)
+    {
+      subtopics: [
+        {
+          title: "What makes a system 'real-time'",
+          text: "In a real-time system, a correct answer delivered late is treated as a <strong>wrong answer</strong>. The system must guarantee a response within a fixed deadline — not usually, not most of the time, but every single time."
+        },
+        {
+          title: "Hard real-time",
+          text: "Missing the deadline is a complete failure, and often dangerous. Used in car airbags, heart pacemakers, aircraft control and nuclear plants. No delay is acceptable, not even a small one."
+        },
+        {
+          title: "Soft real-time",
+          text: "Missing the deadline lowers the quality but nothing breaks. Used in video streaming, online games and live calls. If your video lags for one second it is annoying, but nobody is harmed."
+        },
+        {
+          title: "Why a normal OS cannot do this job",
+          text: "Windows might pause your program for a few seconds to install a background update — perfectly fine for a laptop, deadly for a pacemaker. An RTOS is specially designed so that a critical task is <strong>never</strong> pushed aside like that."
+        }
+      ],
+      keyword: "Real-Time OS = an operating system that must complete a task within a strict, fixed deadline. Hard real-time cannot miss the deadline at all; soft real-time can tolerate small delays.",
+      mistake: "Real-time does NOT mean 'very fast'. It means 'always on time, guaranteed'. A slower system that never misses its deadline is more real-time than a fast system that is occasionally late."
+    },
+
+    // 4 — Views of an OS
+    {
+      subtopics: [
+        {
+          title: "The user's view",
+          text: "A normal user wants only convenience. They judge the OS by its screen, its icons, its speed and how easily they can open an app. They do not know — and do not need to know — how memory is being allocated behind the scenes."
+        },
+        {
+          title: "The system programmer's view (system view)",
+          text: "From this side, the OS is a <strong>resource allocator</strong> and a <strong>control program</strong>. It decides who gets the CPU, how much memory each program receives, which file can be opened and which device is free. It also acts as a police officer — stopping one program from damaging another."
+        },
+        {
+          title: "System calls — the doorway between them",
+          text: "A program talks to the OS through a <strong>system call</strong>: a formal request like \"open this file\", \"give me memory\", or \"print this line\". This is the actual doorway between an application and the operating system, and it is what a system programmer works with every day."
+        },
+        {
+          title: "Both views are correct at the same time",
+          text: "These are not two different operating systems — it is one OS described from two sides, exactly like a driver and a mechanic describing the same car in completely different words."
+        }
+      ],
+      keyword: "User view = focuses on ease of use and convenience for the person. System view = focuses on the OS as a resource allocator and control program that manages CPU, memory, files and devices.",
+      mistake: "Do not confuse 'user view' with 'user interface'. The user VIEW is a way of describing what the OS is for; the interface (GUI or command line) is only the part you actually see and touch."
+    },
+
+    // 5 — OS Structure: Layered vs Monolithic
+    {
+      subtopics: [
+        {
+          title: "Monolithic structure",
+          text: "The whole OS is written as one single large program, all in one space, where any part is allowed to call any other part directly. <strong>Advantage:</strong> very fast, because there is no extra cost in communication. <strong>Disadvantage:</strong> one bug anywhere can bring down the entire system, and it is very hard to modify or test."
+        },
+        {
+          title: "Layered structure",
+          text: "The OS is divided into layers, numbered from layer 0 (the hardware) upwards. The golden rule: <strong>each layer may use only the services of the layer directly below it</strong>, and it provides services to the layer directly above it. Nothing is allowed to jump across layers."
+        },
+        {
+          title: "Why that one rule helps so much",
+          text: "Because a layer depends on only one other layer, you can build and test one layer at a time. When something breaks, you know exactly which layer to inspect. And you can rewrite one layer without disturbing the rest of the system."
+        },
+        {
+          title: "The trade-off you must mention in the exam",
+          text: "Every request has to travel down through the layers and the results travel back up — and that passing takes time. So layered systems are much cleaner and safer, but a little <strong>slower</strong> than monolithic ones. Always write the trade-off, not just the advantage."
+        }
+      ],
+      keyword: "Monolithic = the entire OS is one big program where any part can call any other part (fast, but hard to maintain). Layered = the OS is divided into levels where each layer uses only the layer below it (easy to build and debug, but slower).",
+      mistake: "Never write 'layered is better' without a reason. In the exam, always give the trade-off: layered = easier to debug but slower; monolithic = faster but harder to maintain."
+    }
+  ],
+
+  quiz: [
+    {
+      q: "On a computer with a single CPU, what is REALLY happening when music and Word run 'at the same time'?",
+      options: [
+        "Both truly run at the exact same instant",
+        "The CPU switches between them very fast, so it only feels simultaneous",
+        "Word pauses completely until the music finishes",
+        "The OS secretly uses a second hidden CPU"
+      ],
+      answer: 1,
+      why: "A single CPU can run only one instruction stream at any instant. The OS switches between programs so quickly that it feels simultaneous — that is multitasking."
+    },
+    {
+      q: "Which system MUST respond within a strict deadline every single time?",
+      options: ["Batch system", "Time-sharing system", "Hard real-time system", "Multiprogramming system"],
+      answer: 2,
+      why: "A hard real-time system's entire purpose is a guaranteed deadline — like a car airbag. If it is late, it has failed completely."
+    },
+    {
+      q: "The main goal of multiprogramming is…",
+      options: [
+        "To make the screen look nicer",
+        "To keep the CPU busy so it is never idle",
+        "To connect many computers together",
+        "To make files take less space"
+      ],
+      answer: 1,
+      why: "Multiprogramming keeps several jobs in memory so that the moment one job waits for I/O, the CPU switches to another. Maximum CPU use is the whole point."
+    },
+    {
+      q: "Threads belonging to the same process share…",
+      options: ["Nothing at all", "The same memory space", "Different computers", "Separate operating systems"],
+      answer: 1,
+      why: "Threads inside one process share the same memory. That sharing is exactly why creating a thread is cheaper and faster than creating a whole new process."
+    },
+    {
+      q: "In a layered operating system, one layer is allowed to use…",
+      options: ["Any layer it wants", "Only the layer directly below it", "Only the topmost layer", "Only the hardware"],
+      answer: 1,
+      why: "That single restriction is what makes layered design easy to build and debug — each layer depends only on the one below it."
+    },
+    {
+      q: "\"I only care that the OS looks nice and opens my apps quickly.\" This person is describing the…",
+      options: ["System programmer's view", "User's view", "Real-time view", "Layered view"],
+      answer: 1,
+      why: "The user's view focuses on convenience and ease of use, not on how resources are managed inside the machine."
+    }
+  ]
+};
