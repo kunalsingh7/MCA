@@ -1,0 +1,492 @@
+/* Mathematical Foundation (MCA 110) — Unit 5. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.maths = UNITS.maths || [];
+UNITS.maths[4] = {
+  "num": 5,
+  "title": "Matrices and Eigenvalue Problems",
+  "problem": "You are given three equations in three unknowns. Do they have one answer, many answers, or no answer at all? Guessing by substitution takes ages and often goes wrong. And in graphics, machine learning and physics there is a second question: which directions does a matrix merely stretch, without twisting them at all?",
+  "solution": "Rank answers the first question with a simple number: compare the rank of A with the rank of the augmented matrix and the count of unknowns, and consistency is decided before you solve anything. Eigenvalues and eigenvectors answer the second, and the Cayley-Hamilton theorem turns the same characteristic equation into a quick way of finding an inverse.",
+  "objectives": [
+    "Apply the three elementary row operations correctly",
+    "Reduce a matrix to echelon form and read off its rank",
+    "Reduce a matrix to normal (canonical) form and confirm the rank from it",
+    "Write a system of equations as AX = B and build the augmented matrix [A|B]",
+    "Decide whether a system is consistent by comparing rank(A) with rank([A|B])",
+    "Say whether a consistent system has a unique solution or infinitely many, and solve it",
+    "Form the characteristic equation |A − λI| = 0 and find the eigenvalues of a 2×2 matrix",
+    "Find the eigenvector belonging to each eigenvalue and verify it satisfies AX = λX",
+    "State the Cayley-Hamilton theorem and use it to compute the inverse of a matrix"
+  ],
+  "topics": [
+    {
+      "title": "Elementary Row Operations — the One Tool You Need",
+      "teacher": "Before anything else in this unit, you need one skill: changing a matrix into a simpler matrix without changing what it really means. Only three moves are allowed, and every single thing in this unit — rank, echelon form, consistency, solving equations — is built from these same three moves. Learn them properly today and the rest of the unit is easy.",
+      "explain": "An <strong>elementary row operation</strong> is one of three allowed changes to the rows of a matrix. They are allowed because they <strong>never change the rank</strong> of the matrix, and when the matrix represents a system of equations they <strong>never change its solutions</strong> — they only make it look simpler.",
+      "keyPoints": [
+        "<strong>E1 — Interchange:</strong> swap two rows. Written <code>Ri ↔ Rj</code>.",
+        "<strong>E2 — Scaling:</strong> multiply a row by a <strong>non-zero</strong> number k. Written <code>Ri → kRi</code>.",
+        "<strong>E3 — Replacement:</strong> add a multiple of one row to another. Written <code>Ri → Ri + kRj</code>.",
+        "k must be <strong>non-zero</strong> in E2 — multiplying a row by 0 destroys information and is forbidden.",
+        "Two matrices linked by these operations are called <strong>row equivalent</strong>, written A ~ B.",
+        "Row operations <strong>never change the rank</strong>.",
+        "Column operations exist too (C1, C2, C3) but are used only for <strong>normal form</strong>, never for solving equations.",
+        "Always write the operation you used beside each new row — examiners give marks for the working, not just the answer."
+      ],
+      "subtopics": [
+        {
+          "title": "Why these three are 'safe'",
+          "text": "Think of the matrix as a set of equations. Swapping two equations obviously changes nothing. Multiplying an equation by 5 on both sides changes nothing. Adding one equation to another is exactly the elimination you already did in school. So the three operations rewrite the system without touching its answers — and that is precisely why they are permitted."
+        },
+        {
+          "title": "Never use column operations on equations",
+          "text": "Column operations mix up the <em>variables</em> themselves, not the equations, so they change the meaning of the system. Use row operations only whenever the matrix came from a set of equations. Column operations are permitted in exactly one place in this unit: reducing a matrix to <strong>normal form</strong>, where you only care about the rank and not about any solutions."
+        },
+        {
+          "title": "The elimination habit",
+          "text": "The standard plan is: use the top-left non-zero entry (called the <strong>pivot</strong>) to make everything below it zero, then move one step down and one step right and repeat. If your pivot position holds a 0, swap in a row from below that has a non-zero entry there. This one habit produces echelon form every time."
+        }
+      ],
+      "realLife": "It is exactly like simplifying a long kirana shop bill. You can reorder the lines, you can write ₹50 as 2 × ₹25, and you can combine two lines into one — the total you owe never changes. All you have done is make the bill easier to read.",
+      "worked": "<strong>Use row operations to make the entries below the first pivot zero.</strong><br>A = <br>[ 1 &nbsp; 2 &nbsp; 3 ]<br>[ 2 &nbsp; 3 &nbsp; 4 ]<br>[ 3 &nbsp; 5 &nbsp; 7 ]<br><br>The pivot is the <strong>1</strong> in position (1,1).<br><br><strong>R2 → R2 − 2R1:</strong> (2−2, 3−4, 4−6) = ( 0, −1, −2 )<br><strong>R3 → R3 − 3R1:</strong> (3−3, 5−6, 7−9) = ( 0, −1, −2 )<br><br>New matrix:<br>[ 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 ]<br>[ 0 &nbsp; −1 &nbsp; −2 ]<br>[ 0 &nbsp; −1 &nbsp; −2 ]<br><br>The first column below the pivot is now clear. Notice rows 2 and 3 came out identical — that is a real clue about this matrix, and the next topic will turn it into a number.",
+      "table": {
+        "headers": ["Name", "Symbol", "What it does", "Allowed?"],
+        "rows": [
+          ["Interchange", "Ri ↔ Rj", "Swap two rows", "Always"],
+          ["Scaling", "Ri → kRi", "Multiply a row by k", "Only if k ≠ 0"],
+          ["Replacement", "Ri → Ri + kRj", "Add k times another row", "Always (i ≠ j)"],
+          ["Multiply a row by 0", "Ri → 0·Ri", "Wipes a row out", "<strong>Never</strong>"]
+        ]
+      },
+      "mistake": "Doing two operations at once on the same row — for example R2 → 2R2 − 3R1 mixed together with R2 → R2 + R3 in one step. Do one operation at a time and write it down. Also, in R2 → R2 − 2R1, the row that <strong>changes is R2</strong>; R1 stays exactly as it was.",
+      "examAnswer": "The elementary row operations on a matrix are of three types: the interchange of any two rows, denoted Ri ↔ Rj; the multiplication of a row by a non-zero scalar k, denoted Ri → kRi; and the addition to one row of a scalar multiple of another row, denoted Ri → Ri + kRj. Two matrices are said to be row equivalent if one can be obtained from the other by a finite sequence of such operations. Elementary row operations do not alter the rank of a matrix, and when the matrix represents a system of linear equations they do not alter the solution set of that system; they are therefore the fundamental tool used to reduce a matrix to echelon form.",
+      "remember": "Only three moves: Swap, Scale (k ≠ 0), and Sum-a-multiple. None of them changes the rank.",
+      "why": "Every numerical method that solves equations inside a computer — from Gaussian elimination to the solvers inside MATLAB and NumPy — is built out of exactly these three operations.",
+      "practice": "Apply R2 → R2 − 3R1 and R3 → R3 − 2R1 to the matrix with rows (1, 1, 2), (3, 4, 7), (2, 3, 5) and write the resulting matrix."
+    },
+    {
+      "title": "Echelon Form",
+      "teacher": "Echelon means 'staircase'. That is genuinely all this is — you push the matrix around until the non-zero numbers form a neat downward staircase, with zeros below the steps. Once it looks like a staircase, the answer to almost every question in this unit can just be read off.",
+      "explain": "A matrix is in <strong>row echelon form</strong> when (i) every all-zero row sits at the bottom, and (ii) the first non-zero entry of each row — its <strong>pivot</strong> or leading entry — lies strictly to the <strong>right</strong> of the pivot in the row above. This produces the staircase shape, with only zeros underneath each pivot.",
+      "keyPoints": [
+        "<strong>Pivot (leading entry)</strong> = the first non-zero number in a row.",
+        "Condition 1: all zero rows are pushed to the <strong>bottom</strong>.",
+        "Condition 2: each pivot is strictly to the <strong>right</strong> of the pivot above it.",
+        "Therefore every entry <strong>below</strong> a pivot is 0.",
+        "<strong>Reduced row echelon form (RREF)</strong> adds two more rules: every pivot is 1, and it is the <em>only</em> non-zero entry in its column.",
+        "Echelon form is <strong>not unique</strong>; RREF <strong>is</strong> unique for a given matrix.",
+        "The number of non-zero rows in echelon form is the same whichever route you take — that number is the <strong>rank</strong>.",
+        "Get there by clearing column 1 below the pivot, then column 2, and so on (Gaussian elimination)."
+      ],
+      "subtopics": [
+        {
+          "title": "The staircase picture",
+          "text": "Draw a line just under the pivots and it looks like steps going down to the right. Below that line everything is zero. A matrix such as rows (1, 2, 3), (0, 4, 5), (0, 0, 6) is a perfect staircase — pivots at columns 1, 2, 3. A matrix with rows (1, 2, 3), (0, 0, 5), (0, 0, 0) is <em>also</em> echelon form: the second pivot is in column 3, which is still to the right of column 1, and the zero row is at the bottom."
+        },
+        {
+          "title": "Echelon versus reduced echelon",
+          "text": "Plain echelon form is enough for finding the <strong>rank</strong> and for testing <strong>consistency</strong>, and it is what most exam questions ask for. Reduced row echelon form does extra work — making every pivot 1 and clearing the entries <em>above</em> each pivot as well — and it hands you the solution of the system directly, with no back-substitution."
+        },
+        {
+          "title": "When the pivot position is zero",
+          "text": "If the entry you wanted to use as a pivot happens to be 0, you cannot divide by it. Look down that column for a row with a non-zero entry and <strong>swap</strong> it up (operation E1). If the whole column below is zero, leave that column alone and move right to the next column — that is exactly how a pivot ends up skipping a column."
+        }
+      ],
+      "realLife": "Merit lists work this way. Rank 1 is at the top, then rank 2, then rank 3, and below each name nothing can outrank it. The staircase is how you read a sorted list at a glance instead of scanning every row.",
+      "worked": "<strong>Reduce to echelon form.</strong><br>A = <br>[ 1 &nbsp; 2 &nbsp; 3 ]<br>[ 2 &nbsp; 3 &nbsp; 4 ]<br>[ 3 &nbsp; 5 &nbsp; 7 ]<br><br><strong>Step 1 — clear column 1 using the pivot 1.</strong><br>R2 → R2 − 2R1 → ( 0, −1, −2 )<br>R3 → R3 − 3R1 → ( 0, −1, −2 )<br>[ 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 ]<br>[ 0 &nbsp; −1 &nbsp; −2 ]<br>[ 0 &nbsp; −1 &nbsp; −2 ]<br><br><strong>Step 2 — clear column 2 using the pivot −1 in row 2.</strong><br>R3 → R3 − R2 → ( 0−0, −1−(−1), −2−(−2) ) = ( 0, 0, 0 )<br><br><strong>Echelon form:</strong><br>[ 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 ]<br>[ 0 &nbsp; −1 &nbsp; −2 ]<br>[ 0 &nbsp; &nbsp;0 &nbsp; &nbsp;0 ]<br><br>Pivots are the 1 in column 1 and the −1 in column 2 — each strictly right of the one above, and the zero row is at the bottom ✅ This is echelon form, with <strong>2 non-zero rows</strong>.",
+      "mistake": "Leaving a zero row in the middle of the matrix and calling it echelon form. Every all-zero row must be moved to the <strong>bottom</strong>. The other frequent error is stopping before the entries below a pivot are all zero.",
+      "examAnswer": "A matrix is said to be in row echelon form if all of its zero rows, if any, occur below all of its non-zero rows, and if the leading non-zero entry of each non-zero row, called the pivot, occurs strictly to the right of the leading entry of the preceding row. It follows that all entries lying below a pivot are zero. Any matrix may be reduced to echelon form by a finite sequence of elementary row operations, a process known as Gaussian elimination. If in addition every pivot is unity and is the only non-zero entry in its column, the matrix is said to be in reduced row echelon form, which is unique for a given matrix.",
+      "remember": "Echelon = staircase. Zeros below every pivot, zero rows at the bottom.",
+      "why": "Echelon form is the single step that unlocks rank, consistency and the actual solution of a system — so getting it right is worth more marks than any other skill in this unit.",
+      "practice": "Reduce the matrix with rows (1, 1, 2), (2, 3, 5), (3, 4, 7) to echelon form and count the non-zero rows."
+    },
+    {
+      "title": "Rank of a Matrix",
+      "teacher": "Suppose a teacher gives you three equations, but the third one is just the first two added together. It looks like three pieces of information — but really you only have two. Rank is the honest count of how much information a matrix actually carries, once all the repetition is stripped out.",
+      "explain": "The <strong>rank</strong> of a matrix A, written ρ(A) or rank(A), is the number of <strong>non-zero rows</strong> when A is reduced to echelon form. Equivalently, it is the order of the largest non-zero minor (determinant of a square sub-matrix) inside A. In plain words, rank = the number of genuinely independent rows.",
+      "keyPoints": [
+        "<strong>rank = number of non-zero rows in echelon form.</strong> That is the practical definition.",
+        "Alternative definition: the order of the <strong>largest non-zero minor</strong> of A.",
+        "For an m × n matrix, <strong>rank ≤ min(m, n)</strong>.",
+        "rank of the <strong>zero matrix is 0</strong> — that is the only matrix with rank 0.",
+        "An n × n matrix is <strong>non-singular</strong> (det ≠ 0, inverse exists) exactly when its rank is <strong>n</strong>.",
+        "If rank &lt; n for an n × n matrix, then det A = 0 and A has <strong>no inverse</strong>.",
+        "Elementary row <em>and</em> column operations never change the rank.",
+        "rank(A) is the same whether you count independent rows or independent columns.",
+        "A matrix of rank r is called of <strong>full rank</strong> when r = min(m, n)."
+      ],
+      "subtopics": [
+        {
+          "title": "Two ways to find rank — pick the easy one",
+          "text": "The <strong>minor method</strong>: find the biggest square sub-matrix whose determinant is not zero; its order is the rank. This is fine for 2×2 or 3×3 but painful for anything larger. The <strong>echelon method</strong>: row-reduce and count the non-zero rows. Always prefer the echelon method in an exam — it is faster, it is systematic, and it never involves hunting for which minor to try."
+        },
+        {
+          "title": "What rank is really counting",
+          "text": "A row that is a combination of other rows carries no new information, and elimination turns it into a row of zeros. So the surviving non-zero rows are exactly the independent ones. In the worked example the third row equals row 1 plus row 2 (check: (1,2,3) + (2,3,4) = (3,5,7)), which is precisely why it collapses to zero and why the rank is 2 and not 3."
+        },
+        {
+          "title": "Rank and the inverse",
+          "text": "For a square n × n matrix the three statements 'rank = n', 'det A ≠ 0' and 'A⁻¹ exists' all mean exactly the same thing. So finding the rank is a way of checking invertibility without evaluating a determinant — and if the rank comes out less than n, you can stop immediately: there is no inverse."
+        }
+      ],
+      "realLife": "Three friends tell you about a cricket match. The third one only repeats what the first two already said. You heard three reports but you gained only two facts. Rank is exactly that count of real, non-repeated facts.",
+      "worked": "<strong>Find the rank of the 3 × 3 matrix</strong><br>A = <br>[ 1 &nbsp; 2 &nbsp; 3 ]<br>[ 2 &nbsp; 3 &nbsp; 4 ]<br>[ 3 &nbsp; 5 &nbsp; 7 ]<br><br><strong>Step 1 — R2 → R2 − 2R1</strong><br>( 2−2·1, 3−2·2, 4−2·3 ) = ( 0, −1, −2 )<br><br><strong>Step 2 — R3 → R3 − 3R1</strong><br>( 3−3·1, 5−3·2, 7−3·3 ) = ( 0, −1, −2 )<br><br>Matrix now:<br>[ 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 ]<br>[ 0 &nbsp; −1 &nbsp; −2 ]<br>[ 0 &nbsp; −1 &nbsp; −2 ]<br><br><strong>Step 3 — R3 → R3 − R2</strong><br>( 0, −1−(−1), −2−(−2) ) = ( 0, 0, 0 )<br><br><strong>Echelon form:</strong><br>[ 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 ]<br>[ 0 &nbsp; −1 &nbsp; −2 ]<br>[ 0 &nbsp; &nbsp;0 &nbsp; &nbsp;0 ]<br><br><strong>Step 4 — count the non-zero rows: 2.</strong><br>Therefore <strong>ρ(A) = 2</strong>.<br><br><strong>Verification 1 — the determinant must be 0</strong> (since rank &lt; 3):<br>det A = 1(3·7 − 4·5) − 2(2·7 − 4·3) + 3(2·5 − 3·3)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1(21 − 20) − 2(14 − 12) + 3(10 − 9)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1 − 4 + 3 = <strong>0</strong> ✅ so the rank is certainly less than 3.<br><br><strong>Verification 2 — a non-zero 2 × 2 minor exists:</strong><br>Take the top-left 2 × 2 block: | 1 &nbsp;2 ; 2 &nbsp;3 | = (1)(3) − (2)(2) = 3 − 4 = <strong>−1 ≠ 0</strong> ✅ so the rank is at least 2.<br>Rank &lt; 3 and rank ≥ 2 → <strong>ρ(A) = 2</strong>, confirmed by both methods.<br><br><em>Why it happened:</em> R1 + R2 = (1,2,3) + (2,3,4) = (3,5,7) = R3. The third row was never new information.",
+      "table": {
+        "headers": ["Situation", "Rank", "Meaning"],
+        "rows": [
+          ["Zero matrix", "0", "No information at all"],
+          ["n × n with det ≠ 0", "n", "Full rank; inverse exists"],
+          ["n × n with det = 0", "&lt; n", "Singular; no inverse"],
+          ["m × n matrix", "≤ min(m, n)", "Can never exceed the smaller dimension"],
+          ["Our example A", "2", "One row was a repeat of the other two"]
+        ]
+      },
+      "mistake": "Counting the <em>total</em> number of rows instead of the number of <strong>non-zero</strong> rows after reduction. A 3 × 3 matrix does not automatically have rank 3. Another common slip is stopping the reduction early and counting a row that would still have collapsed to zero.",
+      "examAnswer": "The rank of a matrix A, denoted ρ(A), is defined as the order of the largest square sub-matrix of A whose determinant is non-zero; equivalently, it is the number of non-zero rows obtained when A is reduced to echelon form by elementary row operations. Since elementary row and column operations do not alter the rank, the echelon method provides a systematic procedure for determining it. For an m × n matrix, ρ(A) ≤ min(m, n), and the rank of the null matrix is zero. A square matrix of order n is non-singular, and therefore possesses an inverse, if and only if its rank is equal to n.",
+      "remember": "Rank = non-zero rows after reduction = how many rows are genuinely NEW information.",
+      "why": "Rank is the single number that decides whether a system of equations has no solution, one solution or infinitely many — the entire next topic depends on it.",
+      "practice": "Find the rank of the matrix with rows (1, 2, 3), (2, 4, 6), (1, 1, 1) by reducing it to echelon form. State the rank and say whether the matrix is singular."
+    },
+    {
+      "title": "Normal Form (Canonical Form)",
+      "teacher": "Echelon form is the tidy staircase. Normal form goes one step further and strips the matrix down to its absolute skeleton — an identity block in the corner and zeros everywhere else. And the size of that identity block is the rank, sitting right there where you can see it.",
+      "explain": "Every matrix A of rank r can be reduced, using <strong>both row and column</strong> elementary operations, to the <strong>normal form</strong> <code>[ Ir &nbsp; O ; O &nbsp; O ]</code> — an r × r identity matrix in the top-left corner and zeros everywhere else. This is also called the <strong>canonical form</strong> or the first canonical form.",
+      "keyPoints": [
+        "Normal form: <strong>[ Ir O ; O O ]</strong> where Ir is the identity matrix of order r.",
+        "<strong>r is exactly the rank</strong> of the matrix — you can read it straight off.",
+        "Both <strong>row and column</strong> operations are allowed here (unlike when solving equations).",
+        "Column operations are written <code>Ci ↔ Cj</code>, <code>Ci → kCi</code>, <code>Ci → Ci + kCj</code>.",
+        "There exist non-singular matrices P and Q with <strong>PAQ = [ Ir O ; O O ]</strong>.",
+        "If A is n × n and non-singular, its normal form is simply the full identity <strong>In</strong>.",
+        "Normal form is the cleanest way to <em>display</em> a rank, and gives the same answer as echelon form.",
+        "Never use normal form to solve a system — column operations scramble the variables."
+      ],
+      "subtopics": [
+        {
+          "title": "The plan for getting there",
+          "text": "First reduce to echelon form using row operations. Then make each pivot equal to 1 by scaling its row. Then clear the entries <em>above</em> the pivots (still row operations) so the pivot columns are clean. Finally use <strong>column</strong> operations to wipe out everything remaining to the right of the pivots. What is left is an identity block sitting in the corner."
+        },
+        {
+          "title": "Why P and Q appear",
+          "text": "Each row operation is the same as multiplying on the <strong>left</strong> by an elementary matrix, and each column operation is the same as multiplying on the <strong>right</strong>. Collect all the left multipliers into one matrix P and all the right multipliers into Q, and the whole reduction is summarised as PAQ = [ Ir O ; O O ]. That equation is often what an exam question means by 'reduce A to normal form'."
+        },
+        {
+          "title": "Echelon or normal — which does the question want?",
+          "text": "If the question just says 'find the rank', echelon form is faster and completely acceptable. If it says 'reduce to normal form' or 'find P and Q such that PAQ = normal form', you must use column operations too. Read the wording carefully, because doing column operations on an equations question loses marks."
+        }
+      ],
+      "realLife": "It is like clearing your desk down to one notebook. Everything unnecessary is pushed away, and what remains is the smallest set of things you genuinely need. The size of that remaining pile is the rank.",
+      "worked": "<strong>Reduce the same matrix A to normal form.</strong><br>A = <br>[ 1 &nbsp; 2 &nbsp; 3 ]<br>[ 2 &nbsp; 3 &nbsp; 4 ]<br>[ 3 &nbsp; 5 &nbsp; 7 ]<br><br><strong>Step 1 — echelon form</strong> (from the previous topic):<br>[ 1 &nbsp; &nbsp;2 &nbsp; &nbsp;3 ]<br>[ 0 &nbsp; −1 &nbsp; −2 ]<br>[ 0 &nbsp; &nbsp;0 &nbsp; &nbsp;0 ]<br><br><strong>Step 2 — make the second pivot equal to 1: R2 → (−1)R2</strong><br>[ 1 &nbsp; 2 &nbsp; 3 ]<br>[ 0 &nbsp; 1 &nbsp; 2 ]<br>[ 0 &nbsp; 0 &nbsp; 0 ]<br><br><strong>Step 3 — clear above the second pivot: R1 → R1 − 2R2</strong><br>( 1, 2−2·1, 3−2·2 ) = ( 1, 0, −1 )<br>[ 1 &nbsp; 0 &nbsp; −1 ]<br>[ 0 &nbsp; 1 &nbsp; &nbsp;2 ]<br>[ 0 &nbsp; 0 &nbsp; &nbsp;0 ]<br><br><strong>Step 4 — now column operations. C3 → C3 + C1</strong><br>Column 3 entries become: −1+1 = 0, &nbsp; 2+0 = 2, &nbsp; 0+0 = 0<br>[ 1 &nbsp; 0 &nbsp; 0 ]<br>[ 0 &nbsp; 1 &nbsp; 2 ]<br>[ 0 &nbsp; 0 &nbsp; 0 ]<br><br><strong>Step 5 — C3 → C3 − 2C2</strong><br>Column 3 entries become: 0−0 = 0, &nbsp; 2−2 = 0, &nbsp; 0−0 = 0<br>[ 1 &nbsp; 0 &nbsp; 0 ]<br>[ 0 &nbsp; 1 &nbsp; 0 ]<br>[ 0 &nbsp; 0 &nbsp; 0 ]<br><br><strong>Normal form = [ I2 &nbsp; O ; O &nbsp; O ]</strong>, with an identity block of order <strong>2</strong>.<br>Hence <strong>ρ(A) = 2</strong> ✅ — exactly the same answer the echelon method gave.",
+      "mistake": "Using column operations while solving a system of equations. Columns represent the <em>variables</em> x, y, z — mixing them changes what the system is asking. Column operations are legal only when the question is purely about rank or normal form.",
+      "examAnswer": "Every matrix A of order m × n and rank r can be reduced, by means of a finite sequence of elementary row and column operations, to the form [ Ir O ; O O ], where Ir denotes the identity matrix of order r and O denotes null matrices of appropriate size. This is called the normal form or canonical form of A, and the order r of the identity block is precisely the rank of A. Equivalently, there exist non-singular matrices P and Q such that PAQ = [ Ir O ; O O ]. Since elementary operations do not alter rank, the normal form provides an alternative and particularly transparent method of determining the rank of a matrix.",
+      "remember": "Normal form = identity block in the corner, zeros elsewhere. The size of that block IS the rank.",
+      "why": "It is the cleanest proof that rank is a genuine property of the matrix and not an accident of how you reduced it — and it is a standard 7-mark question in this unit.",
+      "practice": "Reduce the matrix with rows (1, 2), (2, 4) to normal form and state its rank."
+    },
+    {
+      "title": "Systems of Linear Equations and the Augmented Matrix",
+      "teacher": "Three equations with x, y and z look frightening written out in full. But almost all of that writing is just repeating 'x', 'y', 'z' and '=' over and over. Strip those away and you are left with a small grid of numbers, and suddenly the whole problem fits in your hand.",
+      "explain": "A system of m linear equations in n unknowns can be written in matrix form as <strong>AX = B</strong>, where A is the <strong>coefficient matrix</strong>, X is the column of unknowns and B is the column of constants. Attaching B to A as an extra column gives the <strong>augmented matrix [A | B]</strong>, which holds the entire system in one grid.",
+      "keyPoints": [
+        "Matrix form: <strong>AX = B</strong>.",
+        "<strong>A</strong> = coefficient matrix (m × n) · <strong>X</strong> = column of unknowns (n × 1) · <strong>B</strong> = column of constants (m × 1).",
+        "<strong>Augmented matrix [A | B]</strong> = A with B added as one extra column, separated by a vertical bar.",
+        "<strong>Non-homogeneous</strong> system: B ≠ O.",
+        "<strong>Homogeneous</strong> system: B = O, i.e. AX = O.",
+        "A homogeneous system is <strong>always consistent</strong> — X = O (the trivial solution) always works.",
+        "Row-reduce <strong>[A | B] together</strong>, never A alone, or you lose the constants.",
+        "n = number of unknowns. Keep this number written down — the consistency rules need it.",
+        "Write the terms in the same variable order in every equation, and put 0 where a variable is missing."
+      ],
+      "subtopics": [
+        {
+          "title": "Building the augmented matrix carefully",
+          "text": "For x + y + z = 6, x + 2y + 3z = 14, x + 4y + 7z = 30 the coefficient matrix has rows (1,1,1), (1,2,3), (1,4,7) and the constants are 6, 14, 30. So [A | B] has rows (1,1,1 | 6), (1,2,3 | 14), (1,4,7 | 30). If an equation were 2x + 3z = 5 with no y term, you must write the coefficient of y as <strong>0</strong>: the row is (2, 0, 3 | 5). Skipping the zero shifts everything one column and ruins the whole problem."
+        },
+        {
+          "title": "Homogeneous systems are special",
+          "text": "When B = O the system AX = O always has at least the trivial solution x = y = z = 0, so it can never be inconsistent. The real question is whether a <strong>non-trivial</strong> solution exists, and the answer is: yes, exactly when rank(A) &lt; n, the number of unknowns. If rank(A) = n, the only solution is the trivial one."
+        },
+        {
+          "title": "Gaussian elimination and back substitution",
+          "text": "Reduce [A | B] to echelon form, then read the equations back starting from the <strong>bottom</strong> row, which contains the fewest unknowns. Solve for that variable, substitute it upward into the row above, and keep climbing. This is called <strong>back substitution</strong>, and it is far quicker and safer than the substitution guesswork done in school."
+        }
+      ],
+      "realLife": "Your mess bill: three months of charges where each month had a different number of meals, laundry loads and guest coupons at unknown per-unit rates. Three months, three unknown rates, three equations. A holds the quantities, B holds the amounts you paid, and X is the rate list you want to discover.",
+      "worked": "<strong>Write this system in matrix form.</strong><br>x + y + z = 6<br>x + 2y + 3z = 14<br>x + 4y + 7z = 30<br><br><strong>Coefficient matrix A:</strong><br>[ 1 &nbsp; 1 &nbsp; 1 ]<br>[ 1 &nbsp; 2 &nbsp; 3 ]<br>[ 1 &nbsp; 4 &nbsp; 7 ]<br><br><strong>Unknowns X = ( x, y, z )ᵀ &nbsp;·&nbsp; Constants B = ( 6, 14, 30 )ᵀ</strong><br><br><strong>Augmented matrix [A | B]:</strong><br>[ 1 &nbsp; 1 &nbsp; 1 &nbsp; | &nbsp; 6 &nbsp;]<br>[ 1 &nbsp; 2 &nbsp; 3 &nbsp; | &nbsp;14 ]<br>[ 1 &nbsp; 4 &nbsp; 7 &nbsp; | &nbsp;30 ]<br><br>Number of unknowns <strong>n = 3</strong>. This one grid now contains the complete system — and in the next topic it decides the whole question of consistency.",
+      "mistake": "Reducing A on its own and forgetting to apply the same operations to the constant column B. Every row operation must run across the <strong>entire augmented row</strong>, constants included, or the system you end up solving is not the one you were given.",
+      "examAnswer": "A system of m linear equations in n unknowns may be expressed in matrix form as AX = B, where A is the m × n coefficient matrix, X is the n × 1 column matrix of unknowns and B is the m × 1 column matrix of constant terms. The matrix obtained by adjoining the column B to the matrix A, written [A | B], is called the augmented matrix of the system and contains complete information about it. If B is the null matrix the system is said to be homogeneous, and such a system is always consistent since X = O is always a solution; otherwise the system is non-homogeneous. The system is solved by reducing the augmented matrix to echelon form by elementary row operations and then applying back substitution.",
+      "remember": "AX = B. Augmented = [A | B] — always carry the constants along with you.",
+      "why": "Circuit analysis, structural engineering, economics models, computer graphics transforms and the normal equations of linear regression are all just AX = B with bigger matrices.",
+      "practice": "Write the system 2x + 3y = 8, x − y = 1 in the form AX = B and write its augmented matrix."
+    },
+    {
+      "title": "Consistency of a System of Linear Equations",
+      "teacher": "Here is the genuinely beautiful part of this unit. Before doing any algebra at all, you can find out whether a system has no answer, exactly one answer, or infinitely many — just by comparing two ranks and one number. Three ranks compared, and the question is settled.",
+      "explain": "A system AX = B is <strong>consistent</strong> if it has at least one solution. The test compares <strong>rank(A)</strong>, <strong>rank([A | B])</strong> and <strong>n</strong>, the number of unknowns. If the two ranks differ, there is no solution at all. If they are equal, the system is consistent — and whether the solution is unique depends on how the common rank compares with n.",
+      "keyPoints": [
+        "<strong>rank(A) ≠ rank([A|B]) → INCONSISTENT.</strong> No solution exists.",
+        "<strong>rank(A) = rank([A|B]) = n → CONSISTENT with a UNIQUE solution.</strong>",
+        "<strong>rank(A) = rank([A|B]) = r &lt; n → CONSISTENT with INFINITELY many solutions.</strong>",
+        "In the infinite case the solutions contain <strong>n − r free parameters</strong>.",
+        "The tell-tale sign of inconsistency in echelon form is a row like <strong>(0 0 0 | k)</strong> with k ≠ 0 — it says 0 = k, which is impossible.",
+        "Reduce <strong>[A|B] once</strong>; read rank(A) from the left part and rank([A|B]) from the whole row.",
+        "For a homogeneous system AX = O: always consistent; non-trivial solutions exist iff rank(A) &lt; n.",
+        "This result is known as the <strong>Rouché–Capelli theorem</strong>.",
+        "Always state n explicitly in your answer — marks are lost by comparing ranks and forgetting n."
+      ],
+      "subtopics": [
+        {
+          "title": "Why unequal ranks mean no solution",
+          "text": "If rank([A|B]) is bigger than rank(A), the constant column has brought in information the coefficients cannot support. In echelon form this shows up as a row where the left-hand side is all zeros but the right-hand constant is not — the row is literally claiming 0 = 4. Since that can never be true, no values of x, y, z can satisfy all the equations at once."
+        },
+        {
+          "title": "The geometry, in three lines",
+          "text": "With two unknowns, each equation is a straight line. <strong>Unique solution</strong> = the lines cross at one point. <strong>Infinitely many</strong> = they are the same line drawn twice. <strong>Inconsistent</strong> = they are parallel lines that never meet. With three unknowns the same story happens with planes instead of lines."
+        },
+        {
+          "title": "Writing the general solution when there are infinitely many",
+          "text": "When r &lt; n you get n − r <strong>free variables</strong>. Set each free variable to a parameter such as k, then back-substitute to express the remaining variables in terms of k. Every choice of k gives a genuine solution. Always check one specific value of k against the original equations — it takes ten seconds and catches nearly every arithmetic slip."
+        }
+      ],
+      "realLife": "Suppose a shopkeeper says a pen costs ₹10 and a pencil ₹5, so 2 pens + 2 pencils = ₹30. A second bill says the same 2 pens + 2 pencils cost ₹50. These two statements simply cannot both be true — that is an inconsistent system, and rank spots it instantly without you solving anything.",
+      "worked": "<strong>Case 1 — INFINITELY MANY solutions.</strong><br>x + y + z = 6 &nbsp;·&nbsp; x + 2y + 3z = 14 &nbsp;·&nbsp; x + 4y + 7z = 30 &nbsp;&nbsp;(n = 3)<br><br>[A | B] =<br>[ 1 &nbsp; 1 &nbsp; 1 &nbsp;| &nbsp;6 &nbsp;]<br>[ 1 &nbsp; 2 &nbsp; 3 &nbsp;| &nbsp;14 ]<br>[ 1 &nbsp; 4 &nbsp; 7 &nbsp;| &nbsp;30 ]<br><br><strong>R2 → R2 − R1:</strong> ( 0, 1, 2 | 8 )<br><strong>R3 → R3 − R1:</strong> ( 0, 3, 6 | 24 )<br>[ 1 &nbsp; 1 &nbsp; 1 &nbsp;| &nbsp;6 ]<br>[ 0 &nbsp; 1 &nbsp; 2 &nbsp;| &nbsp;8 ]<br>[ 0 &nbsp; 3 &nbsp; 6 &nbsp;| &nbsp;24 ]<br><br><strong>R3 → R3 − 3R2:</strong> ( 0, 3−3, 6−6 | 24−24 ) = ( 0, 0, 0 | 0 )<br>[ 1 &nbsp; 1 &nbsp; 1 &nbsp;| &nbsp;6 ]<br>[ 0 &nbsp; 1 &nbsp; 2 &nbsp;| &nbsp;8 ]<br>[ 0 &nbsp; 0 &nbsp; 0 &nbsp;| &nbsp;0 ]<br><br><strong>rank(A) = 2</strong> (left part has 2 non-zero rows) &nbsp;·&nbsp; <strong>rank([A|B]) = 2</strong> &nbsp;·&nbsp; <strong>n = 3</strong><br>Ranks equal → consistent. Rank 2 &lt; 3 → <strong>infinitely many solutions</strong>, with 3 − 2 = <strong>1 free parameter</strong>.<br><br><em>General solution:</em> put z = k.<br>Row 2: y + 2k = 8 → <strong>y = 8 − 2k</strong><br>Row 1: x + y + z = 6 → x = 6 − (8 − 2k) − k = <strong>k − 2</strong><br>So ( x, y, z ) = ( k − 2, &nbsp;8 − 2k, &nbsp;k ) for any k.<br><em>Check with k = 2 → (0, 4, 2):</em> 0+4+2 = 6 ✅ &nbsp; 0+8+6 = 14 ✅ &nbsp; 0+16+14 = 30 ✅<br><br><strong>Case 2 — INCONSISTENT (no solution).</strong><br>x + y = 3 &nbsp;·&nbsp; 2x + 2y = 10 &nbsp;&nbsp;(n = 2)<br>[A | B] = [ 1 &nbsp;1 | 3 ] ; [ 2 &nbsp;2 | 10 ]<br><strong>R2 → R2 − 2R1:</strong> ( 2−2, 2−2 | 10−6 ) = ( 0, 0 | <strong>4</strong> )<br>[ 1 &nbsp; 1 &nbsp;| &nbsp;3 ]<br>[ 0 &nbsp; 0 &nbsp;| &nbsp;4 ]<br><strong>rank(A) = 1</strong> but <strong>rank([A|B]) = 2</strong> → the ranks differ → <strong>INCONSISTENT, no solution.</strong><br>The last row reads 0x + 0y = 4, that is 0 = 4 — impossible.<br><br><strong>Case 3 — UNIQUE solution.</strong><br>x + y + z = 6 &nbsp;·&nbsp; x + 2y + 3z = 14 &nbsp;·&nbsp; x + 3y + 2z = 13 &nbsp;&nbsp;(n = 3)<br>[ 1 &nbsp; 1 &nbsp; 1 &nbsp;| &nbsp;6 ]<br>[ 1 &nbsp; 2 &nbsp; 3 &nbsp;| &nbsp;14 ]<br>[ 1 &nbsp; 3 &nbsp; 2 &nbsp;| &nbsp;13 ]<br><strong>R2 → R2 − R1:</strong> ( 0, 1, 2 | 8 ) &nbsp;·&nbsp; <strong>R3 → R3 − R1:</strong> ( 0, 2, 1 | 7 )<br><strong>R3 → R3 − 2R2:</strong> ( 0, 0, 1−4 | 7−16 ) = ( 0, 0, −3 | −9 )<br>[ 1 &nbsp; 1 &nbsp; &nbsp;1 &nbsp;| &nbsp;6 ]<br>[ 0 &nbsp; 1 &nbsp; &nbsp;2 &nbsp;| &nbsp;8 ]<br>[ 0 &nbsp; 0 &nbsp; −3 &nbsp;| &nbsp;−9 ]<br><strong>rank(A) = rank([A|B]) = 3 = n → unique solution.</strong><br><em>Back substitution:</em> −3z = −9 → <strong>z = 3</strong>; then y + 2(3) = 8 → <strong>y = 2</strong>; then x + 2 + 3 = 6 → <strong>x = 1</strong>.<br><em>Check:</em> 1+2+3 = 6 ✅ &nbsp; 1+4+9 = 14 ✅ &nbsp; 1+6+6 = 13 ✅",
+      "table": {
+        "headers": ["Condition", "Consistent?", "Number of solutions", "Geometry (2 unknowns)"],
+        "rows": [
+          ["rank(A) ≠ rank([A|B])", "<strong>No</strong>", "None", "Parallel lines — never meet"],
+          ["rank(A) = rank([A|B]) = n", "Yes", "<strong>Exactly one</strong>", "Lines cross at one point"],
+          ["rank(A) = rank([A|B]) = r &lt; n", "Yes", "<strong>Infinitely many</strong> (n − r parameters)", "Same line drawn twice"],
+          ["Homogeneous, rank(A) = n", "Yes", "Only the trivial solution X = O", "—"],
+          ["Homogeneous, rank(A) &lt; n", "Yes", "Infinitely many non-trivial solutions", "—"]
+        ]
+      },
+      "mistake": "Comparing the two ranks but forgetting to compare them with <strong>n</strong>. Equal ranks only tell you a solution <em>exists</em>; it is the comparison with n that decides between one solution and infinitely many. Also remember to read rank(A) from the coefficient part only, not from the whole augmented row.",
+      "examAnswer": "A system of linear equations AX = B is said to be consistent if it possesses at least one solution. By the Rouché–Capelli theorem, the system is consistent if and only if the rank of the coefficient matrix A is equal to the rank of the augmented matrix [A | B]. If these ranks are unequal the system is inconsistent and has no solution. If the ranks are equal and their common value r equals n, the number of unknowns, the system possesses a unique solution; if r is less than n, the system possesses infinitely many solutions involving n − r arbitrary parameters. A homogeneous system AX = O is always consistent, since the trivial solution X = O always satisfies it, and it possesses a non-trivial solution if and only if the rank of A is less than n.",
+      "remember": "Ranks differ → NO solution. Ranks equal and = n → ONE solution. Ranks equal but &lt; n → INFINITE solutions.",
+      "why": "Before wasting twenty minutes solving a system, two ranks tell you in two minutes whether a solution even exists — and the same test is what every numerical solver runs internally.",
+      "practice": "Test for consistency and solve if possible: x + 2y = 4, 2x + 4y = 8. Find rank(A), rank([A|B]) and n, then state the number of solutions."
+    },
+    {
+      "title": "Eigenvalues and the Characteristic Equation",
+      "teacher": "A matrix usually does two things to a vector — it stretches it AND it turns it. But a few very special directions refuse to turn. The matrix only stretches or shrinks them and leaves them pointing exactly the same way. Those directions are the eigenvectors, and how much they stretch is the eigenvalue. This is one of the most useful ideas in all of applied mathematics.",
+      "explain": "For a square matrix A, a non-zero vector X is an <strong>eigenvector</strong> and the number λ is its <strong>eigenvalue</strong> if <strong>AX = λX</strong> — multiplying by the matrix has the same effect as multiplying by a single number. Rearranging gives (A − λI)X = O, which has a non-zero solution only when <strong>|A − λI| = 0</strong>. That is the <strong>characteristic equation</strong>.",
+      "keyPoints": [
+        "<strong>Definition: AX = λX with X ≠ O.</strong> The zero vector is never an eigenvector.",
+        "<strong>Characteristic equation: |A − λI| = 0.</strong> Solve it for λ.",
+        "An n × n matrix has exactly n eigenvalues (counting repeats).",
+        "<strong>Sum of all eigenvalues = trace of A</strong> (the sum of the diagonal entries).",
+        "<strong>Product of all eigenvalues = det A.</strong>",
+        "Use both of these as a <strong>free check</strong> on your answers.",
+        "For a 2 × 2 matrix the characteristic equation is <strong>λ² − (trace)λ + det = 0</strong>.",
+        "A matrix is singular (det = 0) exactly when <strong>0 is one of its eigenvalues</strong>.",
+        "For a triangular or diagonal matrix, the eigenvalues are simply the <strong>diagonal entries</strong>.",
+      ],
+      "subtopics": [
+        {
+          "title": "Where the characteristic equation comes from",
+          "text": "Start from AX = λX. Write λX as λIX so both sides carry a matrix, then move everything to one side: (A − λI)X = O. This is a homogeneous system, and from the previous topic it has a <strong>non-zero</strong> solution only when the coefficient matrix is singular — that is, when its determinant is zero. Hence <strong>|A − λI| = 0</strong>, and that single line is the derivation examiners want."
+        },
+        {
+          "title": "The 2 × 2 shortcut worth memorising",
+          "text": "For A = [ a b ; c d ], |A − λI| = (a − λ)(d − λ) − bc, which expands to <strong>λ² − (a + d)λ + (ad − bc) = 0</strong>, that is <strong>λ² − (trace)λ + det = 0</strong>. So you can write the characteristic equation straight from the trace and the determinant, without expanding anything."
+        },
+        {
+          "title": "The 3 × 3 form and easy cases",
+          "text": "For a 3 × 3 matrix the characteristic equation is λ³ − S1λ² + S2λ − S3 = 0, where S1 is the trace, S2 is the sum of the three principal 2 × 2 minors and S3 is det A. There is one lovely shortcut: if the matrix is triangular or diagonal, the eigenvalues are simply the diagonal entries. For the diagonal matrix with diagonal (2, 3, 5), the eigenvalues are just <strong>2, 3 and 5</strong> — no calculation needed."
+        }
+      ],
+      "realLife": "Spin a globe on its stand. Almost every point on the surface moves. But the two points on the axis — the poles — do not move direction at all. That axis is the eigenvector of the spinning operation. Engineers use the same idea to find the frequency at which a bridge will vibrate dangerously.",
+      "worked": "<strong>Find the eigenvalues of A = [ 4 &nbsp;1 ; 2 &nbsp;3 ].</strong><br><br><strong>Step 1 — write A − λI:</strong><br>[ 4 − λ &nbsp; &nbsp;1 &nbsp; &nbsp; ]<br>[ 2 &nbsp; &nbsp; &nbsp; 3 − λ ]<br><br><strong>Step 2 — set the determinant to zero:</strong><br>|A − λI| = (4 − λ)(3 − λ) − (1)(2) = 0<br><br><strong>Step 3 — expand:</strong><br>(4 − λ)(3 − λ) = 12 − 4λ − 3λ + λ² = λ² − 7λ + 12<br>So λ² − 7λ + 12 − 2 = 0 → <strong>λ² − 7λ + 10 = 0</strong><br><br><em>Cross-check using the shortcut:</em> trace = 4 + 3 = 7 and det = (4)(3) − (1)(2) = 10, so λ² − 7λ + 10 = 0 ✅ same equation.<br><br><strong>Step 4 — solve the quadratic:</strong><br>λ² − 7λ + 10 = 0 → (λ − 2)(λ − 5) = 0<br>→ <strong>λ = 2 and λ = 5</strong><br><br><strong>Step 5 — verify with the two free checks:</strong><br>Sum of eigenvalues = 2 + 5 = 7 = trace of A ✅<br>Product of eigenvalues = 2 × 5 = 10 = det A ✅<br><br>Both checks pass, so the eigenvalues are certainly <strong>λ = 2, 5</strong>.",
+      "mistake": "Writing |A − λ| = 0 instead of |A − λI| = 0. You cannot subtract a plain number from a matrix — λ must be multiplied by the identity matrix first, so that it is subtracted from the <strong>diagonal entries only</strong>. The other frequent error is calling X = O an eigenvector; it never is.",
+      "examAnswer": "Let A be a square matrix of order n. A non-zero column vector X is called an eigenvector of A, and the scalar λ the corresponding eigenvalue, if AX = λX. This relation may be rewritten as (A − λI)X = O, which is a homogeneous system of equations possessing a non-trivial solution if and only if the coefficient matrix is singular, that is, if and only if |A − λI| = 0. This determinantal equation is called the characteristic equation of A, and its roots are the eigenvalues of A. An n × n matrix has exactly n eigenvalues counted with multiplicity, the sum of the eigenvalues equals the trace of A and their product equals the determinant of A. Geometrically, an eigenvector represents a direction which the matrix merely scales by the factor λ without changing its orientation.",
+      "remember": "|A − λI| = 0. For 2×2: λ² − (trace)λ + det = 0. Check: sum of λ = trace, product of λ = det.",
+      "why": "Eigenvalues drive Google's PageRank, Principal Component Analysis in machine learning, vibration and stability analysis in engineering, and quantum mechanics — this one idea appears everywhere.",
+      "practice": "Find the eigenvalues of A = [ 2 &nbsp;1 ; 1 &nbsp;2 ] using |A − λI| = 0, and verify your answers with the trace and determinant checks."
+    },
+    {
+      "title": "Finding Eigenvectors",
+      "teacher": "The eigenvalue told you how much the stretch is. Now let us find the actual direction that gets stretched. The good news: once you have λ, finding the eigenvector is just solving a small homogeneous system — something you already learned two topics ago.",
+      "explain": "For each eigenvalue λ, substitute it into <strong>(A − λI)X = O</strong> and solve the resulting homogeneous system. Because the determinant is zero by construction, the equations will be dependent and you will get infinitely many solutions — a whole <strong>line</strong> of eigenvectors. Any non-zero vector on that line is a valid answer.",
+      "keyPoints": [
+        "<strong>Substitute one λ at a time</strong> into (A − λI)X = O and solve.",
+        "The equations you get will always be dependent — that is expected, not a mistake.",
+        "You will get a <strong>relation</strong> between the components, e.g. x2 = x1, not fixed values.",
+        "Pick any convenient non-zero value (usually x1 = 1) to write one eigenvector.",
+        "Every non-zero multiple of an eigenvector is also an eigenvector — the answer is <strong>not unique</strong>.",
+        "Different eigenvalues always give <strong>linearly independent</strong> eigenvectors.",
+        "The set of all eigenvectors for one λ, together with O, is called the <strong>eigenspace</strong>.",
+        "Always verify by computing AX and checking it equals λX."
+      ],
+      "subtopics": [
+        {
+          "title": "Why you get a relation, not a number",
+          "text": "The system (A − λI)X = O is homogeneous with a singular coefficient matrix, so by the consistency rules its rank is less than n and there are infinitely many solutions. This is exactly right: an eigenvector describes a <strong>direction</strong>, and every arrow along that direction — long or short — is stretched by the same factor λ. So the natural answer is a relation, and you simply choose one representative vector from the line."
+        },
+        {
+          "title": "Verification takes ten seconds",
+          "text": "Once you write down a candidate eigenvector X, multiply it out: compute AX and check it equals λX exactly. If it does, your answer is certainly correct, whatever algebra you used to get there. Never leave an eigenvector unverified in an exam — this check costs almost nothing."
+        }
+      ],
+      "realLife": "Think of a rubber sheet being stretched sideways. A dot placed along the stretch direction just slides further out along the same line — it never tilts. That line is the eigenvector, and how many times further it slides is the eigenvalue.",
+      "worked": "<strong>Find the eigenvectors of A = [ 4 &nbsp;1 ; 2 &nbsp;3 ], whose eigenvalues are λ = 2 and λ = 5.</strong><br><br><strong>Case λ = 5:</strong><br>A − 5I = [ 4−5 &nbsp; 1 ; 2 &nbsp; 3−5 ] = [ −1 &nbsp; 1 ; 2 &nbsp; −2 ]<br>The equations are: &nbsp; −x₁ + x₂ = 0 &nbsp; and &nbsp; 2x₁ − 2x₂ = 0<br>Both say the same thing: <strong>x₂ = x₁</strong> (the second row is just −2 times the first).<br>Take x₁ = 1 → <strong>X₁ = ( 1, 1 )ᵀ</strong><br><em>Verify AX₁ = 5X₁:</em><br>AX₁ = ( 4(1) + 1(1), &nbsp; 2(1) + 3(1) ) = ( 5, 5 ) = 5 × ( 1, 1 ) ✅<br><br><strong>Case λ = 2:</strong><br>A − 2I = [ 4−2 &nbsp; 1 ; 2 &nbsp; 3−2 ] = [ 2 &nbsp; 1 ; 2 &nbsp; 1 ]<br>The equations are: &nbsp; 2x₁ + x₂ = 0 &nbsp; and &nbsp; 2x₁ + x₂ = 0 — identical.<br>So <strong>x₂ = −2x₁</strong>. Take x₁ = 1 → <strong>X₂ = ( 1, −2 )ᵀ</strong><br><em>Verify AX₂ = 2X₂:</em><br>AX₂ = ( 4(1) + 1(−2), &nbsp; 2(1) + 3(−2) ) = ( 2, −4 ) = 2 × ( 1, −2 ) ✅<br><br><strong>Answer:</strong> λ = 5 with eigenvector ( 1, 1 )ᵀ, and λ = 2 with eigenvector ( 1, −2 )ᵀ.<br><em>Note:</em> ( 3, 3 )ᵀ and ( −1, −1 )ᵀ are equally correct answers for λ = 5 — any non-zero multiple works.",
+      "mistake": "Panicking when the two equations turn out identical and thinking you made an error. Dependent equations are <strong>guaranteed</strong> here, because |A − λI| = 0 was the whole point. The real error would be getting independent equations — that would mean your λ is wrong.",
+      "examAnswer": "Having obtained the eigenvalues of a square matrix A from its characteristic equation, the eigenvector corresponding to a particular eigenvalue λ is found by substituting that value into the homogeneous system (A − λI)X = O and solving it. Since |A − λI| = 0 by construction, the coefficient matrix is singular and the system therefore possesses infinitely many solutions, which yield a relation between the components of X rather than unique values. Any non-zero vector satisfying this relation is an eigenvector corresponding to λ, and every non-zero scalar multiple of it is also an eigenvector; the set of all such vectors together with the null vector forms the eigenspace of λ. Eigenvectors corresponding to distinct eigenvalues are always linearly independent.",
+      "remember": "Put λ back in, solve (A − λI)X = O, get a RELATION, pick x₁ = 1. Then check AX = λX.",
+      "why": "Eigenvectors are the axes along which data really varies — that is exactly what Principal Component Analysis extracts when it compresses a large dataset into a few meaningful features.",
+      "practice": "For A = [ 2 &nbsp;1 ; 1 &nbsp;2 ] with eigenvalues λ = 1 and λ = 3, find one eigenvector for each and verify AX = λX in both cases."
+    },
+    {
+      "title": "Cayley-Hamilton Theorem and Finding the Inverse",
+      "teacher": "Here is a result that sounds almost like a magic trick. Every square matrix obeys its own characteristic equation. Put the matrix itself in place of λ, and the equation comes out as the zero matrix. And that trick hands you a genuinely quick way to find an inverse.",
+      "explain": "The <strong>Cayley-Hamilton theorem</strong> states that <strong>every square matrix satisfies its own characteristic equation</strong>. So if the characteristic equation is λ² − 7λ + 10 = 0, then <strong>A² − 7A + 10I = O</strong> — where the constant term becomes a multiple of the identity matrix I, never a bare number. Multiplying this identity through by A⁻¹ gives a formula for the inverse.",
+      "keyPoints": [
+        "<strong>Statement:</strong> every square matrix satisfies its own characteristic equation.",
+        "Replace λ by A, λ² by A², and the <strong>constant term c by cI</strong> — never by the plain number c.",
+        "The right-hand side becomes the <strong>null matrix O</strong>, not the number 0.",
+        "For 2 × 2: from λ² − (tr)λ + det = 0 you get <strong>A² − (tr)A + (det)I = O</strong>.",
+        "To find the inverse: <strong>multiply the whole equation by A⁻¹</strong> and rearrange.",
+        "2 × 2 result: <strong>A⁻¹ = ( (tr)I − A ) / det</strong>, valid whenever det ≠ 0.",
+        "3 × 3 result: from A³ − S1A² + S2A − S3I = O you get <strong>A⁻¹ = (A² − S1A + S2I) / S3</strong>.",
+        "<strong>The inverse exists only if det A ≠ 0</strong> — otherwise you would be dividing by zero.",
+        "Always finish by verifying <strong>A · A⁻¹ = I</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "The one step that gets it wrong",
+          "text": "When you substitute A for λ, the constant term <strong>must</strong> become that constant times I. Writing A² − 7A + 10 = 0 is meaningless, because you cannot add a plain number to a matrix. Write <strong>A² − 7A + 10I = O</strong>. Marks are lost for this every single year, and it is a ten-second fix."
+        },
+        {
+          "title": "Deriving the inverse formula yourself",
+          "text": "Start from A² − 7A + 10I = O. Multiply every term on the left by A⁻¹: &nbsp;A⁻¹A² − 7A⁻¹A + 10A⁻¹I = A⁻¹O, which simplifies to &nbsp;A − 7I + 10A⁻¹ = O. Now make A⁻¹ the subject: &nbsp;10A⁻¹ = 7I − A, &nbsp;so <strong>A⁻¹ = (7I − A)/10</strong>. Do not memorise the final formula — derive it in three lines each time, because that is what earns the marks."
+        },
+        {
+          "title": "Using it to compute high powers cheaply",
+          "text": "From A² = 7A − 10I you can express any power in terms of A and I alone. For example A³ = A·A² = A(7A − 10I) = 7A² − 10A = 7(7A − 10I) − 10A = 49A − 70I − 10A = <strong>39A − 70I</strong>. No repeated matrix multiplication is needed — a real saving for large exponents."
+        }
+      ],
+      "realLife": "It is like discovering that a shopkeeper's own price list already contains the discount formula. You do not need any outside information — the matrix's own characteristic equation contains everything needed to invert it.",
+      "worked": "<strong>Use the Cayley-Hamilton theorem to find A⁻¹ for A = [ 4 &nbsp;1 ; 2 &nbsp;3 ].</strong><br><br><strong>Step 1 — characteristic equation.</strong><br>trace = 4 + 3 = 7, &nbsp; det = (4)(3) − (1)(2) = 12 − 2 = 10<br>λ² − 7λ + 10 = 0<br><br><strong>Step 2 — apply Cayley-Hamilton (replace λ by A, constant by 10I):</strong><br><strong>A² − 7A + 10I = O</strong><br><br><strong>Step 3 — verify the theorem holds (optional but convincing).</strong><br>A² = [ 4 &nbsp;1 ; 2 &nbsp;3 ] × [ 4 &nbsp;1 ; 2 &nbsp;3 ]<br>entry (1,1) = 4(4) + 1(2) = 18<br>entry (1,2) = 4(1) + 1(3) = 7<br>entry (2,1) = 2(4) + 3(2) = 14<br>entry (2,2) = 2(1) + 3(3) = 11<br>So A² = [ 18 &nbsp;7 ; 14 &nbsp;11 ]<br>7A = [ 28 &nbsp;7 ; 14 &nbsp;21 ] &nbsp;and&nbsp; 10I = [ 10 &nbsp;0 ; 0 &nbsp;10 ]<br>A² − 7A + 10I = [ 18−28+10 &nbsp; 7−7+0 ; 14−14+0 &nbsp; 11−21+10 ] = [ 0 &nbsp;0 ; 0 &nbsp;0 ] = <strong>O</strong> ✅ The theorem checks out.<br><br><strong>Step 4 — multiply through by A⁻¹.</strong><br>A⁻¹(A² − 7A + 10I) = A⁻¹O<br>→ A − 7I + 10A⁻¹ = O<br><br><strong>Step 5 — make A⁻¹ the subject.</strong><br>10A⁻¹ = 7I − A<br><strong>A⁻¹ = (1/10)(7I − A)</strong><br><br><strong>Step 6 — compute it.</strong><br>7I = [ 7 &nbsp;0 ; 0 &nbsp;7 ]<br>7I − A = [ 7−4 &nbsp; 0−1 ; 0−2 &nbsp; 7−3 ] = [ 3 &nbsp; −1 ; −2 &nbsp; 4 ]<br><strong>A⁻¹ = (1/10) [ 3 &nbsp; −1 ; −2 &nbsp; 4 ] = [ 0.3 &nbsp; −0.1 ; −0.2 &nbsp; 0.4 ]</strong><br><br><strong>Step 7 — verify A · A⁻¹ = I.</strong><br>A · A⁻¹ = (1/10) [ 4 &nbsp;1 ; 2 &nbsp;3 ] × [ 3 &nbsp;−1 ; −2 &nbsp;4 ]<br>entry (1,1) = (4)(3) + (1)(−2) = 12 − 2 = 10<br>entry (1,2) = (4)(−1) + (1)(4) = −4 + 4 = 0<br>entry (2,1) = (2)(3) + (3)(−2) = 6 − 6 = 0<br>entry (2,2) = (2)(−1) + (3)(4) = −2 + 12 = 10<br>= (1/10) [ 10 &nbsp;0 ; 0 &nbsp;10 ] = [ 1 &nbsp;0 ; 0 &nbsp;1 ] = <strong>I</strong> ✅<br><br><em>Cross-check with the standard 2 × 2 formula:</em> A⁻¹ = (1/det)[ d &nbsp;−b ; −c &nbsp;a ] = (1/10)[ 3 &nbsp;−1 ; −2 &nbsp;4 ] — <strong>identical</strong> ✅",
+      "table": {
+        "headers": ["Step", "2 × 2 matrix A", "What you write"],
+        "rows": [
+          ["Characteristic equation", "λ² − (tr)λ + det = 0", "λ² − 7λ + 10 = 0"],
+          ["Cayley-Hamilton", "A² − (tr)A + (det)I = O", "A² − 7A + 10I = O"],
+          ["Multiply by A⁻¹", "A − (tr)I + (det)A⁻¹ = O", "A − 7I + 10A⁻¹ = O"],
+          ["Rearrange", "A⁻¹ = ((tr)I − A) / det", "A⁻¹ = (7I − A)/10"],
+          ["Result", "—", "[ 0.3 &nbsp;−0.1 ; −0.2 &nbsp;0.4 ]"]
+        ]
+      },
+      "mistake": "Writing the constant term as a plain number — 'A² − 7A + 10 = 0'. A number cannot be added to a matrix. It must be <strong>10I</strong>, and the right-hand side must be the null matrix <strong>O</strong>. Second most common error: forgetting to check det ≠ 0 before claiming an inverse exists.",
+      "examAnswer": "The Cayley-Hamilton theorem states that every square matrix satisfies its own characteristic equation. That is, if the characteristic equation of a matrix A of order n is λⁿ + c₁λⁿ⁻¹ + … + cₙ = 0, then Aⁿ + c₁Aⁿ⁻¹ + … + cₙI = O, where I is the identity matrix of order n and O is the null matrix. The theorem provides a convenient method of computing the inverse of a non-singular matrix: multiplying the matrix equation throughout by A⁻¹ and rearranging expresses A⁻¹ as a polynomial in A. For example, if A satisfies A² − 7A + 10I = O, then multiplication by A⁻¹ gives A − 7I + 10A⁻¹ = O, whence A⁻¹ = (7I − A)/10. The method is applicable only when A is non-singular, that is, when the constant term of the characteristic equation, equal to ± det A, is non-zero.",
+      "remember": "Put A in place of λ, and the constant becomes constant × I. Then multiply by A⁻¹ and rearrange.",
+      "why": "It gives an inverse without computing a single cofactor, it reduces large matrix powers to simple expressions, and it is one of the most reliably asked questions in this whole unit.",
+      "practice": "For A = [ 2 &nbsp;1 ; 1 &nbsp;2 ], write the characteristic equation, state the Cayley-Hamilton result, and use it to find A⁻¹. Verify your answer by computing A · A⁻¹."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Which of these is NOT an elementary row operation?",
+      "options": [
+        "Swapping two rows",
+        "Multiplying a row by 5",
+        "Multiplying a row by 0",
+        "Adding 3 times row 1 to row 2"
+      ],
+      "answer": 2,
+      "why": "Scaling is allowed only by a NON-ZERO number. Multiplying a row by 0 wipes out that row's information and would change the rank, so it is forbidden."
+    },
+    {
+      "q": "A matrix in echelon form has rows (1, 2, 3), (0, 4, 5) and (0, 0, 0). What is its rank?",
+      "options": ["0", "1", "2", "3"],
+      "answer": 2,
+      "why": "Rank is the number of NON-ZERO rows in echelon form. Two rows are non-zero, so the rank is 2 — not 3, even though the matrix has three rows."
+    },
+    {
+      "q": "For a 3 × 4 matrix, the rank can be at most…",
+      "options": ["2", "3", "4", "7"],
+      "answer": 1,
+      "why": "rank ≤ min(m, n) = min(3, 4) = 3. The rank can never exceed the smaller of the two dimensions."
+    },
+    {
+      "q": "A system AX = B has rank(A) = 2 and rank([A|B]) = 3. The system is…",
+      "options": [
+        "Consistent with a unique solution",
+        "Consistent with infinitely many solutions",
+        "Inconsistent — no solution",
+        "Homogeneous"
+      ],
+      "answer": 2,
+      "why": "When the two ranks differ, the system is inconsistent and has no solution at all. In echelon form this shows up as a row reading 0 = k with k ≠ 0."
+    },
+    {
+      "q": "A system in 4 unknowns has rank(A) = rank([A|B]) = 2. How many solutions?",
+      "options": [
+        "No solution",
+        "Exactly one solution",
+        "Infinitely many, with 2 free parameters",
+        "Infinitely many, with 4 free parameters"
+      ],
+      "answer": 2,
+      "why": "The ranks are equal, so it is consistent. Since r = 2 < n = 4, there are infinitely many solutions with n − r = 4 − 2 = 2 free parameters."
+    },
+    {
+      "q": "The characteristic equation of a square matrix A is…",
+      "options": [
+        "|A| = 0",
+        "|A − λI| = 0",
+        "|A − λ| = 0",
+        "AX = 0"
+      ],
+      "answer": 1,
+      "why": "λ must be multiplied by the identity matrix before subtracting, so that it is removed only from the diagonal. |A − λ| = 0 is meaningless because a number cannot be subtracted from a matrix."
+    },
+    {
+      "q": "For A = [ 4 1 ; 2 3 ], the sum of the eigenvalues is…",
+      "options": ["5", "7", "10", "12"],
+      "answer": 1,
+      "why": "The sum of the eigenvalues equals the trace, which is 4 + 3 = 7. (The eigenvalues are 2 and 5, and 2 + 5 = 7. Their product 10 equals the determinant.)"
+    },
+    {
+      "q": "The Cayley-Hamilton theorem says that a square matrix…",
+      "options": [
+        "Always has an inverse",
+        "Satisfies its own characteristic equation",
+        "Has all eigenvalues real",
+        "Is always of full rank"
+      ],
+      "answer": 1,
+      "why": "Substituting the matrix A itself for λ in its characteristic equation, with the constant term written as constant × I, gives the null matrix. This is what makes the inverse trick work."
+    },
+    {
+      "q": "If the characteristic equation of A is λ² − 7λ + 10 = 0, then by Cayley-Hamilton…",
+      "options": [
+        "A² − 7A + 10 = 0",
+        "A² − 7A + 10I = O",
+        "A² − 7A = 10",
+        "A − 7 + 10A⁻¹ = 0"
+      ],
+      "answer": 1,
+      "why": "The constant term must become 10I, since a plain number cannot be added to a matrix, and the right-hand side must be the null matrix O. This is the single most common error in the topic."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Define the rank of a matrix. Reduce the matrix with rows (1, 2, 3), (2, 3, 4) and (3, 5, 7) to echelon form, showing every row operation, and hence find its rank.",
+      "hint": "Clear column 1 first using R2 → R2 − 2R1 and R3 → R3 − 3R1, then count the non-zero rows."
+    },
+    {
+      "q": "State the conditions for consistency of the system AX = B in terms of rank(A), rank([A|B]) and the number of unknowns n. Test the system x + y + z = 6, x + 2y + 3z = 14, x + 4y + 7z = 30 for consistency and find its complete solution.",
+      "hint": "Reduce the augmented matrix, compare the two ranks with n = 3, and put z = k for the free variable."
+    },
+    {
+      "q": "Define eigenvalues and eigenvectors. Find the eigenvalues and the corresponding eigenvectors of A = [ 4 1 ; 2 3 ], verifying each eigenvector satisfies AX = λX."
+    },
+    {
+      "q": "State the Cayley-Hamilton theorem and use it to find the inverse of A = [ 4 1 ; 2 3 ]. Verify your answer by computing A · A⁻¹.",
+      "hint": "Characteristic equation first, then replace λ by A with the constant term as a multiple of I, then multiply through by A⁻¹."
+    },
+    {
+      "q": "Explain, in your own simple words, what an eigenvector means geometrically, and why an eigenvector is never allowed to be the zero vector."
+    }
+  ]
+};

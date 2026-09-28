@@ -1,0 +1,568 @@
+/* Fundamentals of Computer Technologies (MCA 111) — Unit 2. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.fct = UNITS.fct || [];
+UNITS.fct[1] = {
+  "num": 2,
+  "title": "Number Systems, Codes & Logic Gates",
+  "problem": "A computer has only wires that are either ON or OFF. So how does it store the number 45, the letter 'A', a photo, and then actually ADD two numbers — using nothing but on and off?",
+  "solution": "This unit teaches the language of 0 and 1. You'll learn to convert numbers between decimal, binary, octal and hexadecimal, do arithmetic in binary, represent negative numbers using 2's complement, encode letters, catch transmission errors, and finally build and simplify the logic circuits that do all this work.",
+  "objectives": [
+    "Write the positional value of every digit in decimal, binary, octal and hexadecimal",
+    "Convert a number between decimal, binary, octal and hexadecimal in both directions",
+    "Perform binary addition, subtraction, multiplication and division by hand",
+    "Find the 1's complement and 2's complement of any binary number",
+    "Represent negative numbers in 2's complement and subtract using addition",
+    "Encode data in BCD, Excess-3, Gray code and ASCII",
+    "Detect errors using parity bits and locate a single-bit error using Hamming code",
+    "Draw the symbol and complete truth table of all seven logic gates",
+    "Prove why NAND and NOR are called universal gates",
+    "State the Boolean algebra laws and both De Morgan's theorems",
+    "Write a function in SOP and POS form and minimise it using a Karnaugh map"
+  ],
+  "topics": [
+    {
+      "title": "Number Systems and Positional Value",
+      "teacher": "Why does 5 mean 'five' in 45, but 'fifty' in 54? Same digit, different meaning. The secret is <em>position</em> — and once you see it, every number system in this unit becomes the same one idea wearing four different costumes.",
+      "explain": "A number system is defined by its <strong>base (or radix)</strong> — how many different digits it uses. In every positional system, the value of a digit is <strong>digit × base^position</strong>, counting positions from 0 at the rightmost digit. Computers use base 2 because a wire has only two states: OFF (0) and ON (1).",
+      "keyPoints": [
+        "<strong>Base</strong> = how many symbols the system uses.",
+        "<strong>Decimal</strong>, base 10 — digits 0 to 9. Used by humans.",
+        "<strong>Binary</strong>, base 2 — digits 0 and 1 only. Used by computers.",
+        "<strong>Octal</strong>, base 8 — digits 0 to 7.",
+        "<strong>Hexadecimal</strong>, base 16 — digits 0-9 then A,B,C,D,E,F (A=10 ... F=15).",
+        "Value of a digit = <strong>digit × base^position</strong>, positions start at 0 on the right.",
+        "One binary digit is called a <strong>bit</strong>; 4 bits = 1 <strong>nibble</strong>; 8 bits = 1 <strong>byte</strong>.",
+        "The leftmost bit is the <strong>MSB</strong> (Most Significant Bit), the rightmost is the <strong>LSB</strong>.",
+        "With <em>n</em> bits you can write <strong>2^n</strong> different values, from 0 to 2^n−1."
+      ],
+      "subtopics": [
+        {
+          "title": "Positional value, shown properly",
+          "text": "In decimal 45, the 4 sits in position 1 so it is worth 4 × 10^1 = 40, and the 5 sits in position 0 so it is worth 5 × 10^0 = 5. Total 45. In binary 101101, the same rule uses powers of 2: 32 + 8 + 4 + 1 = 45. The rule never changes — only the base changes."
+        },
+        {
+          "title": "Why base 2 for machines, base 16 for humans",
+          "text": "An electronic switch is either off or on, so base 2 matches the hardware perfectly. But long binary strings are painful for people to read. Because 16 = 2^4, one hex digit stands for exactly four bits, so hexadecimal is just a short, human-friendly way of writing the same binary. Octal does the same job with three bits per digit."
+        },
+        {
+          "title": "Fractions have positions too",
+          "text": "To the right of the point, positions are negative: 10^−1, 10^−2 in decimal, and 2^−1 (a half), 2^−2 (a quarter) in binary. So binary 0.101 = 0.5 + 0 + 0.125 = 0.625 in decimal."
+        }
+      ],
+      "realLife": "Colour codes in web design are hexadecimal — <code>#FF0000</code> is pure red. FF is just 255 written in base 16, which is the same as 11111111 in binary. The designer sees two easy characters; the screen sees eight bits.",
+      "table": {
+        "headers": [
+          "System",
+          "Base",
+          "Digits used",
+          "45 written in it"
+        ],
+        "rows": [
+          [
+            "Decimal",
+            "10",
+            "0-9",
+            "45"
+          ],
+          [
+            "Binary",
+            "2",
+            "0, 1",
+            "101101"
+          ],
+          [
+            "Octal",
+            "8",
+            "0-7",
+            "55"
+          ],
+          [
+            "Hexadecimal",
+            "16",
+            "0-9, A-F",
+            "2D"
+          ]
+        ]
+      },
+      "worked": "<strong>Find the decimal value of binary 101101.</strong><br>Write the positional weights above each bit, starting from 0 on the right:<br><code>bit&nbsp;&nbsp;&nbsp;:&nbsp; 1&nbsp;&nbsp; 0&nbsp;&nbsp; 1&nbsp;&nbsp; 1&nbsp;&nbsp; 0&nbsp;&nbsp; 1</code><br><code>weight:&nbsp;32&nbsp; 16&nbsp;&nbsp; 8&nbsp;&nbsp; 4&nbsp;&nbsp; 2&nbsp;&nbsp; 1</code><br>Now add only the weights that sit under a 1:<br>32 + 8 + 4 + 1 = <strong>45</strong><br><br><strong>Same method for hexadecimal 2AF:</strong><br>2 × 16^2 = 2 × 256 = 512<br>A (=10) × 16^1 = 10 × 16 = 160<br>F (=15) × 16^0 = 15 × 1 = 15<br>512 + 160 + 15 = <strong>687</strong>",
+      "mistake": "Students forget that hexadecimal letters are digits, not variables. A, B, C, D, E, F simply mean 10, 11, 12, 13, 14, 15. Also, positions start at <strong>0</strong>, not 1 — the rightmost weight is always base^0 = 1.",
+      "examAnswer": "A number system is a method of representing numbers using a fixed set of symbols, and it is characterised by its base or radix, which is the number of distinct digits it uses. In a positional number system, the value contributed by a digit is the digit multiplied by the base raised to the power of its position, where positions are numbered from zero at the least significant digit. The decimal system uses base ten, the binary system base two, the octal system base eight and the hexadecimal system base sixteen. Computers use the binary system because electronic devices have two stable states, while octal and hexadecimal are used as compact human-readable forms of binary, since one octal digit represents three bits and one hexadecimal digit represents four bits.",
+      "remember": "Base tells you how many digits. Position tells you the power. Value = digit × base^position.",
+      "why": "Everything else in this unit — conversion, arithmetic, complements, codes — is just this one rule applied again and again. Get it right here and the rest becomes easy.",
+      "practice": "Write the positional weights for the binary number 110110 and find its decimal value. Then find the decimal value of hexadecimal 1D5."
+    },
+    {
+      "title": "Converting Between Number Systems",
+      "teacher": "Here is the good news — there are only three conversion tricks in the whole unit, and you will use the same number, 45, to learn all of them. Divide to go down, multiply-and-add to come back, group the bits to hop between binary, octal and hex.",
+      "explain": "To go from <strong>decimal to any base</strong>, divide repeatedly by that base and read the remainders <strong>bottom to top</strong>. To go from <strong>any base to decimal</strong>, multiply each digit by its positional weight and add. Between binary, octal and hexadecimal, you never touch decimal at all — you just <strong>group the bits</strong>: 3 bits per octal digit, 4 bits per hex digit.",
+      "keyPoints": [
+        "<strong>Decimal → base b:</strong> divide by b repeatedly, collect remainders, read them <strong>upwards</strong>.",
+        "<strong>Base b → decimal:</strong> multiply each digit by b^position and add.",
+        "<strong>Binary → octal:</strong> group bits in <strong>3s from the right</strong>, write each group as one octal digit.",
+        "<strong>Binary → hex:</strong> group bits in <strong>4s from the right</strong>, write each group as one hex digit.",
+        "<strong>Octal/hex → binary:</strong> replace each digit by its 3-bit / 4-bit pattern.",
+        "Pad the leftmost group with leading zeros if it is short — zeros on the left change nothing.",
+        "For octal ↔ hex, always go <strong>through binary</strong>. Never convert directly.",
+        "<strong>Decimal fraction → binary:</strong> multiply the fraction by 2 repeatedly and read the carries <strong>downwards</strong>.",
+        "Always check your answer by converting it back."
+      ],
+      "subtopics": [
+        {
+          "title": "Why remainders are read bottom to top",
+          "text": "The first division gives you the remainder for the <strong>smallest</strong> weight (the LSB), and the last division gives the remainder for the largest weight (the MSB). Since we write numbers with the largest weight on the left, the last remainder must come first. Reading the list the wrong way round is the single most common mistake in this whole unit."
+        },
+        {
+          "title": "Why grouping bits works",
+          "text": "Because 8 = 2^3 and 16 = 2^4. Three bits can hold exactly the eight values 0 to 7, which is exactly one octal digit, and four bits hold exactly the sixteen values 0 to 15, which is exactly one hex digit. So the grouping is not a trick — it is an exact mathematical fit, and that is why no arithmetic is needed."
+        },
+        {
+          "title": "The 4-bit table worth memorising",
+          "text": "0000=0, 0001=1, 0010=2, 0011=3, 0100=4, 0101=5, 0110=6, 0111=7, 1000=8, 1001=9, 1010=A, 1011=B, 1100=C, 1101=D, 1110=E, 1111=F. If you know these sixteen patterns, binary-to-hex conversion takes seconds and never goes wrong."
+        }
+      ],
+      "realLife": "A MAC address on your Wi-Fi router looks like <code>3C:5A:B4:0F:22:9D</code>. That is 48 bits of hardware identity, but nobody wants to read 48 ones and zeros — so it is shown as 12 hex digits, four bits each.",
+      "worked": "<strong>ONE number, 45, converted into every base.</strong><br><br><strong>Step 1 — Decimal 45 to binary (repeated division by 2):</strong><br><code>45 ÷ 2 = 22, remainder 1</code>  ← LSB<br><code>22 ÷ 2 = 11, remainder 0</code><br><code>11 ÷ 2 =  5, remainder 1</code><br><code>&nbsp;5 ÷ 2 =  2, remainder 1</code><br><code>&nbsp;2 ÷ 2 =  1, remainder 0</code><br><code>&nbsp;1 ÷ 2 =  0, remainder 1</code>  ← MSB<br>Read the remainders <strong>bottom to top</strong>: <strong>(45)₁₀ = (101101)₂</strong><br><em>Check:</em> 32 + 8 + 4 + 1 = 45 ✓<br><br><strong>Step 2 — Decimal 45 to octal (divide by 8):</strong><br><code>45 ÷ 8 = 5, remainder 5</code><br><code>&nbsp;5 ÷ 8 = 0, remainder 5</code><br>Reading upwards: <strong>(45)₁₀ = (55)₈</strong> &nbsp; <em>Check:</em> 5×8 + 5 = 45 ✓<br><br><strong>Step 3 — Decimal 45 to hexadecimal (divide by 16):</strong><br><code>45 ÷ 16 = 2, remainder 13 → D</code><br><code>&nbsp;2 ÷ 16 = 0, remainder 2</code><br>Reading upwards: <strong>(45)₁₀ = (2D)₁₆</strong> &nbsp; <em>Check:</em> 2×16 + 13 = 45 ✓<br><br><strong>Step 4 — Binary to octal by grouping 3 bits from the right:</strong><br><code>101101 → 101 | 101 → 5 | 5 → (55)₈</code> ✓<br><br><strong>Step 5 — Binary to hexadecimal by grouping 4 bits from the right:</strong><br><code>101101 → pad to 00101101 → 0010 | 1101 → 2 | D → (2D)₁₆</code> ✓<br><br><strong>Step 6 — Going backwards.</strong> Hex 2D → binary: 2 = 0010, D = 1101, so 00101101 = 101101 ✓. Octal 55 → binary: 5 = 101, 5 = 101, so 101101 ✓. Every road leads back to the same number.<br><br><strong>Bonus — a decimal fraction.</strong> Convert 0.625 to binary by multiplying by 2:<br><code>0.625 × 2 = 1.25 → carry 1</code><br><code>0.25&nbsp; × 2 = 0.5&nbsp; → carry 0</code><br><code>0.5&nbsp;&nbsp; × 2 = 1.0&nbsp; → carry 1, fraction now 0, stop</code><br>Read the carries <strong>downwards</strong>: (0.625)₁₀ = <strong>(0.101)₂</strong> &nbsp; <em>Check:</em> 0.5 + 0.125 = 0.625 ✓",
+      "mistake": "Two errors cost marks every year. First, reading the remainders top-to-bottom instead of bottom-to-top — that gives you the number backwards. Second, grouping bits from the <strong>left</strong> instead of the right; grouping must always start at the LSB, and it is the leftmost group that gets padded with zeros.",
+      "examAnswer": "Conversion from decimal to another base is performed by repeatedly dividing the decimal number by the target base and recording the remainders, which are then read in reverse order, from the last remainder to the first. Conversion from any base to decimal is performed by multiplying each digit by the base raised to the power of its position and summing the products. Conversion between binary and octal is achieved by grouping the binary digits into sets of three from the right, and between binary and hexadecimal by grouping into sets of four, because eight and sixteen are the third and fourth powers of two respectively. Conversion between octal and hexadecimal is therefore carried out by first converting to binary. For example, the decimal number 45 is 101101 in binary, 55 in octal and 2D in hexadecimal.",
+      "remember": "DOWN you divide (read remainders UP). UP you multiply and add. Sideways you just group bits: 3 for octal, 4 for hex.",
+      "why": "Every memory address, colour code, error code and machine instruction you will ever see is written in hex. Being able to move between bases quickly is a skill you will use in programming for years, not just in the exam.",
+      "practice": "Convert (156)₁₀ to binary, octal and hexadecimal. Then convert (1D5)₁₆ to binary and octal, and check your answer by converting back to decimal."
+    },
+    {
+      "title": "Binary Arithmetic",
+      "teacher": "You already know how to add — you did it in class 2. Binary addition is actually <em>easier</em>, because there are only four possible sums instead of a hundred. The only new thing is that carrying happens much sooner, at 2 instead of at 10.",
+      "explain": "Binary arithmetic follows exactly the same column method you use in decimal, but you carry whenever a column reaches 2 instead of 10. There are only four addition rules and four subtraction rules to learn, and multiplication is just shift-and-add.",
+      "keyPoints": [
+        "<strong>Addition:</strong> 0+0=0 · 0+1=1 · 1+0=1 · <strong>1+1=0 with carry 1</strong> · 1+1+1=1 with carry 1.",
+        "<strong>Subtraction:</strong> 0−0=0 · 1−0=1 · 1−1=0 · <strong>0−1=1 with a borrow 1</strong> from the next column.",
+        "<strong>Multiplication:</strong> 0×0=0 · 0×1=0 · 1×0=0 · 1×1=1. Then shift each partial product left by one and add.",
+        "<strong>Division:</strong> same long-division method as decimal — compare, subtract, bring down the next bit.",
+        "Multiplying by 2 = shifting <strong>left</strong> by one bit. Dividing by 2 = shifting <strong>right</strong> by one bit.",
+        "Multiplication in binary is easy because every partial product is either the number itself or all zeros.",
+        "<strong>Overflow</strong> happens when the answer needs more bits than the register has.",
+        "Always verify by converting both inputs and the answer to decimal."
+      ],
+      "subtopics": [
+        {
+          "title": "Addition — the only rule you must not forget",
+          "text": "1 + 1 = 10 in binary, which you write as a 0 in that column and carry a 1 to the next. When a carry also arrives, 1 + 1 + 1 = 11, so you write 1 and carry 1. Every binary addition is built from just these cases, however long the numbers are."
+        },
+        {
+          "title": "Subtraction by borrowing",
+          "text": "The only awkward case is 0 − 1. You borrow 1 from the next higher column, which is worth 2 in the current column, so 2 − 1 = 1 and the column you borrowed from is reduced by 1. In practice, computers avoid borrowing entirely by using 2's complement addition instead — that is the next topic."
+        },
+        {
+          "title": "Shifting: the free multiplication",
+          "text": "In decimal, adding a zero on the right multiplies by 10. In binary, shifting left by one bit multiplies by 2, and shifting right divides by 2. This is why hardware loves binary: multiplication by powers of two costs nothing at all, just a rewiring of which bit goes where."
+        }
+      ],
+      "realLife": "When a game counter 'rolls over' from 255 back to 0, that is binary overflow. An 8-bit register can only hold up to 11111111 (255); add 1 more and the carry falls off the end, leaving 00000000.",
+      "worked": "<strong>1. Addition: 1011 + 1101</strong> (that is 11 + 13 in decimal)<br><code>&nbsp;carry:&nbsp;1 1 1 1</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 0 1 1</code><br><code>&nbsp;&nbsp;&nbsp;+&nbsp;&nbsp;&nbsp;&nbsp;1 1 0 1</code><br><code>&nbsp;&nbsp;&nbsp;-----------</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;1 1 0 0 0</code><br>Column by column from the right: 1+1 = 0 carry 1 · 1+0+1 = 0 carry 1 · 0+1+1 = 0 carry 1 · 1+1+1 = 1 carry 1 · the final carry 1 is written out.<br>Answer <strong>11000 = 24</strong>, and 11 + 13 = 24 ✓<br><br><strong>2. Subtraction: 1101 − 1011</strong> (13 − 11)<br>Rightmost: 1−1 = 0. Next: 0−1 needs a borrow, so 10−1 = 1. Next column was 1, now 0, and 0−0 = 0. Leftmost: 1−1 = 0.<br>Answer <strong>0010 = 2</strong>, and 13 − 11 = 2 ✓<br><br><strong>3. Multiplication: 1011 × 101</strong> (11 × 5)<br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 0 1 1</code><br><code>&nbsp;&nbsp;&nbsp;×&nbsp;&nbsp;&nbsp;1 0 1</code><br><code>&nbsp;&nbsp;&nbsp;-----------</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 0 1 1</code> &nbsp;(× the 1, no shift)<br><code>&nbsp;&nbsp;&nbsp;&nbsp;0 0 0 0 .</code> &nbsp;(× the 0, shifted left 1)<br><code>&nbsp;&nbsp;1 0 1 1 . .</code> &nbsp;(× the 1, shifted left 2)<br><code>&nbsp;&nbsp;-------------</code><br><code>&nbsp;&nbsp;1 1 0 1 1 1</code><br>Answer <strong>110111 = 55</strong>, and 11 × 5 = 55 ✓<br><br><strong>4. Division: 1011 ÷ 10</strong> (11 ÷ 2)<br>Long division gives quotient <strong>101</strong> and remainder <strong>1</strong>, that is 5 remainder 1 — and 11 ÷ 2 = 5 remainder 1 ✓",
+      "mistake": "Students often write 1 + 1 = 2 in a binary column. There is no digit 2 in binary. It is 1 + 1 = 0 <strong>carry 1</strong>. Also, in multiplication, do not forget to shift each partial product one place further left, exactly as you do in decimal.",
+      "examAnswer": "Binary arithmetic is performed using the same positional column methods as decimal arithmetic, but with a base of two. In binary addition the rules are 0+0=0, 0+1=1, 1+0=1 and 1+1=0 with a carry of 1 into the next higher column. In binary subtraction the rules are 0−0=0, 1−0=1, 1−1=0 and 0−1=1 with a borrow taken from the next higher column. Binary multiplication uses the rules 0×0=0, 0×1=0, 1×0=0 and 1×1=1, with each partial product shifted one position to the left before the partial products are added, while binary division follows the ordinary long-division procedure. Because every partial product is either the multiplicand itself or zero, binary multiplication reduces to a sequence of shift and add operations, which is why it is simple to implement in hardware.",
+      "remember": "Only one rule is new: 1 + 1 = 0, carry 1. Everything else is ordinary arithmetic.",
+      "why": "The ALU inside every CPU does exactly this, billions of times a second. When you understand binary addition, you understand what the adder circuit in a processor is physically doing.",
+      "practice": "Compute in binary: (a) 11010 + 1011, (b) 10110 − 1101, (c) 1101 × 11. Verify each answer in decimal."
+    },
+    {
+      "title": "1's Complement, 2's Complement and Signed Numbers",
+      "teacher": "Here is a real problem. A computer has no minus key — a wire cannot be 'negative on'. So how do you store −45? The answer is one of the most elegant ideas in computing: make subtraction <em>become</em> addition. Once you see how, you will never forget it.",
+      "explain": "The <strong>1's complement</strong> of a binary number is obtained by flipping every bit. The <strong>2's complement</strong> is the 1's complement plus 1. Computers store negative numbers in 2's complement form, because then <strong>A − B can be computed as A + (2's complement of B)</strong> — so a single adder circuit does both addition and subtraction.",
+      "keyPoints": [
+        "<strong>1's complement</strong> = flip every bit (0→1, 1→0).",
+        "<strong>2's complement</strong> = 1's complement + 1.",
+        "Shortcut for 2's complement: from the right, copy bits up to and including the <strong>first 1</strong>, then flip everything else.",
+        "In <strong>signed magnitude</strong>, the MSB is only a sign flag: 0 = positive, 1 = negative.",
+        "Signed magnitude has <strong>two zeros</strong> (+0 = 00000000 and −0 = 10000000) — a real defect.",
+        "In <strong>2's complement</strong>, the MSB is still 1 for negative, but there is only <strong>one zero</strong>.",
+        "8-bit signed magnitude range: <strong>−127 to +127</strong>. 8-bit 2's complement range: <strong>−128 to +127</strong>.",
+        "<strong>Subtraction rule:</strong> A − B = A + (2's complement of B). Carry out of the MSB → <strong>discard it</strong>, the answer is positive. No carry out → the answer is negative and still in 2's complement form, so take its 2's complement to read the size.",
+        "<strong>Overflow</strong> in signed addition: adding two positives gives a negative, or two negatives give a positive."
+      ],
+      "subtopics": [
+        {
+          "title": "Signed magnitude versus 2's complement",
+          "text": "Signed magnitude is the obvious idea: use one bit for the sign and the rest for the size. It is easy for humans to read, but bad for hardware — it needs two separate circuits (one for add, one for subtract), and it wastes a pattern on a useless second zero. 2's complement fixes both problems, which is why every modern processor uses it."
+        },
+        {
+          "title": "Why 2's complement makes subtraction free",
+          "text": "In an <em>n</em>-bit register, the 2's complement of B is exactly 2^n − B. So A + (2's complement of B) = A − B + 2^n. That extra 2^n is a 1 in bit position <em>n</em>, which simply falls off the end of the register — which is why you are told to discard the final carry. The remaining bits are precisely A − B."
+        },
+        {
+          "title": "Reading a 2's complement number",
+          "text": "Look at the MSB first. If it is 0, the number is positive and you read it normally. If it is 1, the number is negative — take the 2's complement of the whole pattern to get the magnitude, then put a minus sign in front. For example 11010011 has MSB 1, its 2's complement is 00101101 = 45, so the value is −45."
+        },
+        {
+          "title": "Overflow, and how to spot it",
+          "text": "Overflow means the true answer is too large for the register. In signed 2's complement addition it can only happen when the two numbers have the <strong>same</strong> sign and the result has the <strong>opposite</strong> sign. Adding a positive and a negative can never overflow, because the answer is always smaller than the larger input."
+        }
+      ],
+      "realLife": "A car odometer that reads 000000 and is rolled backwards by one shows 999999 — which in that six-digit world behaves exactly like −1. That is 10's complement, the decimal cousin of 2's complement, and it is the same idea working in base 10.",
+      "table": {
+        "headers": [
+          "",
+          "Signed Magnitude",
+          "1's Complement",
+          "2's Complement"
+        ],
+        "rows": [
+          [
+            "How −45 looks (8-bit)",
+            "10101101",
+            "11010010",
+            "11010011"
+          ],
+          [
+            "Number of zeros",
+            "Two (+0 and −0)",
+            "Two (+0 and −0)",
+            "One only"
+          ],
+          [
+            "8-bit range",
+            "−127 to +127",
+            "−127 to +127",
+            "−128 to +127"
+          ],
+          [
+            "Arithmetic",
+            "Needs separate subtract circuit",
+            "Needs end-around carry",
+            "Plain addition, discard carry"
+          ],
+          [
+            "Used in real CPUs?",
+            "Rarely",
+            "Rarely",
+            "Yes, universally"
+          ]
+        ]
+      },
+      "worked": "<strong>Part 1 — Find the 1's and 2's complement of +45 in 8 bits.</strong><br>+45 in binary, padded to 8 bits: <code>00101101</code><br>Flip every bit → 1's complement: <code>11010010</code><br>Add 1 → 2's complement: <code>11010010 + 1 = 11010011</code><br>So <strong>−45 = 11010011</strong> in 8-bit 2's complement.<br><em>Proof it is really −45:</em> 00101101 + 11010011 = 1 00000000. Discard the carry → 00000000 = 0. Since 45 + (−45) = 0, the representation is correct ✓<br><br><em>Shortcut check:</em> take 00101101, copy from the right up to and including the first 1 (that is the final '1'), then flip everything to its left: 0010110<u>1</u> → 1101001<u>1</u> — same answer ✓<br><br><strong>Part 2 — Subtract 45 − 20 using 2's complement (8-bit).</strong><br>45 = <code>00101101</code> &nbsp;&nbsp; 20 = <code>00010100</code><br>2's complement of 20: flip → <code>11101011</code>, add 1 → <code>11101100</code><br>Now add:<br><code>&nbsp;&nbsp;&nbsp;00101101</code><br><code>&nbsp;+&nbsp;11101100</code><br><code>&nbsp;-----------</code><br><code>&nbsp;1 00011001</code><br>A carry came out of the MSB, so <strong>discard it</strong>. Answer = <code>00011001</code> = 16 + 8 + 1 = <strong>25</strong>. And 45 − 20 = 25 ✓<br><br><strong>Part 3 — The other direction: 20 − 45.</strong><br>2's complement of 45 = <code>11010011</code><br><code>&nbsp;&nbsp;&nbsp;00010100</code><br><code>&nbsp;+&nbsp;11010011</code><br><code>&nbsp;-----------</code><br><code>&nbsp;&nbsp;&nbsp;11100111</code> &nbsp; (no carry out)<br>No carry out → the answer is <strong>negative</strong> and is in 2's complement form. Take its 2's complement to read the size: flip 11100111 → 00011000, add 1 → <code>00011001</code> = 25.<br>So the answer is <strong>−25</strong>, and 20 − 45 = −25 ✓",
+      "mistake": "Do not forget the '+1' — the 1's complement alone is <strong>not</strong> the negative number. And do not read 11010011 as 211. In a signed context, an MSB of 1 means negative, so that pattern is −45, not 211. The <em>same bits</em> mean different numbers depending on whether the register is signed or unsigned.",
+      "examAnswer": "The 1's complement of a binary number is obtained by replacing every 0 with 1 and every 1 with 0, and the 2's complement is obtained by adding 1 to the 1's complement. Signed numbers may be represented in signed magnitude form, in which the most significant bit indicates the sign and the remaining bits the magnitude, or in 2's complement form, which is used in practically all modern computers. The 2's complement representation has the advantage that it possesses a unique representation of zero and that subtraction can be performed using the same adder circuit as addition, since A minus B is computed as A plus the 2's complement of B, with any carry out of the most significant position being discarded. For an n-bit register, the 2's complement representation covers the range from −2^(n−1) to +2^(n−1) − 1, which for eight bits is −128 to +127.",
+      "remember": "Flip = 1's complement. Flip and add one = 2's complement. Subtract by adding, then throw the last carry away.",
+      "why": "Every integer variable in C, Java or Python is stored this way. It also explains a famous bug class: why an 8-bit counter at 127 jumps to −128 when you add 1.",
+      "practice": "Using 8-bit 2's complement, compute 60 − 35 and 35 − 60. Show the 2's complement step each time and state clearly whether a carry came out."
+    },
+    {
+      "title": "Digital Codes: BCD, Excess-3, Gray and ASCII",
+      "teacher": "Your name is not a number. Neither is the letter 'A', or the position of a rotating shaft. Yet all of them have to be stored as 0s and 1s. The answer is a <em>code</em> — an agreed dictionary that maps things to bit patterns. Let's meet the four codes your exam cares about.",
+      "explain": "A <strong>digital code</strong> is an agreed way of representing information as a fixed pattern of bits. <strong>Numeric codes</strong> like BCD and Excess-3 represent decimal digits, <strong>Gray code</strong> is designed so that only one bit changes at a time, and <strong>alphanumeric codes</strong> like ASCII represent letters, digits and symbols.",
+      "keyPoints": [
+        "<strong>BCD (8421 code)</strong> — each decimal digit is written separately as 4 bits. 45 → 0100 0101.",
+        "BCD wastes the six patterns 1010 to 1111; they are <strong>invalid</strong> in BCD.",
+        "BCD is easy for humans and for digital displays, but uses more bits than pure binary.",
+        "<strong>Excess-3</strong> = BCD value + 3. Digit 5 → 0101 + 0011 = 1000. It is a <strong>self-complementing</strong> code.",
+        "<strong>Gray code</strong> — successive numbers differ in exactly <strong>one bit</strong>. Also called the unit-distance or reflected code.",
+        "Binary → Gray: keep the MSB, then each Gray bit = XOR of the two binary bits above it.",
+        "Gray → binary: keep the MSB, then each binary bit = XOR of the previous binary bit with the current Gray bit.",
+        "<strong>ASCII</strong> — 7-bit alphanumeric code, 128 characters. 'A' = 65, 'a' = 97, '0' = 48, space = 32.",
+        "Extended ASCII uses 8 bits (256 characters), <strong>Unicode</strong> covers every world script, and <strong>EBCDIC</strong> is an older 8-bit IBM mainframe code."
+      ],
+      "subtopics": [
+        {
+          "title": "BCD is NOT the same as binary",
+          "text": "Pure binary 45 is 101101 — six bits, one single number. BCD 45 is 0100 0101 — eight bits, two separate digits glued together. They look similar but are completely different. BCD wastes space, but it makes driving a seven-segment display or printing a decimal number trivially easy, which is why calculators and digital meters use it."
+        },
+        {
+          "title": "Why Excess-3 is 'self-complementing'",
+          "text": "In Excess-3, the 1's complement of a digit's code is the code of its 9's complement. For example 4 is coded 0111; flipping the bits gives 1000, which is the Excess-3 code for 5, and 4 + 5 = 9. This property made subtraction simpler in older decimal arithmetic hardware."
+        },
+        {
+          "title": "Why Gray code exists — a real hardware problem",
+          "text": "Consider a sensor counting 3 → 4. In normal binary that is 011 → 100, and all three bits change at once. If they do not change at exactly the same instant, the sensor might briefly read 111 = 7, a completely wrong value. In Gray code only one bit ever changes, so this error is impossible. Gray code is used in rotary encoders, shaft position sensors and K-maps."
+        },
+        {
+          "title": "ASCII — the numbers worth remembering",
+          "text": "'A' to 'Z' are 65 to 90, 'a' to 'z' are 97 to 122, and '0' to '9' are 48 to 57. Notice that uppercase and lowercase differ by exactly 32, which is a single bit — that is why converting case in a program is so cheap. The character '5' is 53, not 5, which is why you must convert a character to a number before doing arithmetic on it."
+        }
+      ],
+      "realLife": "When you type your name into a form, each letter travels as an ASCII number. Your 'K' is really 75, or 1001011 in binary. The screen at the other end looks 75 up in the same dictionary and draws a K.",
+      "table": {
+        "headers": [
+          "Decimal",
+          "Pure Binary (4-bit)",
+          "BCD (8421)",
+          "Excess-3",
+          "Gray code"
+        ],
+        "rows": [
+          ["0", "0000", "0000", "0011", "0000"],
+          ["1", "0001", "0001", "0100", "0001"],
+          ["2", "0010", "0010", "0101", "0011"],
+          ["3", "0011", "0011", "0110", "0010"],
+          ["4", "0100", "0100", "0111", "0110"],
+          ["5", "0101", "0101", "1000", "0111"],
+          ["6", "0110", "0110", "1001", "0101"],
+          ["7", "0111", "0111", "1010", "0100"],
+          ["8", "1000", "1000", "1011", "1100"],
+          ["9", "1001", "1001", "1100", "1101"]
+        ]
+      },
+      "worked": "<strong>1. Write decimal 45 in BCD.</strong><br>Take each digit separately: 4 → 0100, 5 → 0101<br>BCD of 45 = <strong>0100 0101</strong> (8 bits)<br>Compare with pure binary 45 = 101101 (6 bits). Different, and that is the point.<br><br><strong>2. Write decimal 45 in Excess-3.</strong><br>Digit 4 → 4 + 3 = 7 → 0111<br>Digit 5 → 5 + 3 = 8 → 1000<br>Excess-3 of 45 = <strong>0111 1000</strong><br><br><strong>3. Convert binary 1011 to Gray code.</strong><br>Rule: MSB stays; each next Gray bit = XOR of the two binary bits above it.<br><code>Binary:&nbsp; 1&nbsp;&nbsp; 0&nbsp;&nbsp; 1&nbsp;&nbsp; 1</code><br><code>Gray&nbsp;&nbsp;:&nbsp; 1&nbsp;&nbsp; 1&nbsp;&nbsp; 1&nbsp;&nbsp; 0</code><br>MSB = 1 (copied) · 1⊕0 = 1 · 0⊕1 = 1 · 1⊕1 = 0<br>Answer: <strong>Gray 1110</strong><br><br><strong>4. Convert Gray 1110 back to binary.</strong><br>Rule: MSB stays; each next binary bit = previous <em>binary</em> bit ⊕ current Gray bit.<br>b3 = 1 · b2 = 1⊕1 = 0 · b1 = 0⊕1 = 1 · b0 = 1⊕0 = 1<br>Answer: <strong>binary 1011</strong> ✓ — we are back where we started.<br><br><strong>5. Write the word 'Hi' in ASCII.</strong><br>'H' = 72 = 1001000 &nbsp;&nbsp; 'i' = 105 = 1101001<br>So 'Hi' travels as <strong>1001000 1101001</strong>.",
+      "mistake": "The biggest trap is treating BCD as binary. BCD 45 = 0100 0101 is <strong>not</strong> the binary number 01000101 (which is 69). In BCD you must read the nibbles as separate decimal digits. Also remember that 1010 through 1111 are illegal BCD patterns.",
+      "examAnswer": "A digital code is an agreed scheme for representing information as patterns of binary digits. Binary Coded Decimal, also called the 8421 code, represents each decimal digit individually by its four-bit binary equivalent, so that the decimal number 45 is written as 0100 0101; the six combinations from 1010 to 1111 are invalid in BCD. The Excess-3 code is obtained by adding three to the BCD value of each digit and is a self-complementing code, since the 1's complement of a digit's code gives the code of its 9's complement. The Gray code, also called the unit-distance or reflected code, is arranged so that successive values differ in only one bit position, which prevents transient errors in position sensors and encoders. ASCII, the American Standard Code for Information Interchange, is a seven-bit alphanumeric code providing 128 characters, in which the letter A is 65 and the digit character zero is 48.",
+      "remember": "BCD = each digit separately. Excess-3 = BCD plus 3. Gray = only one bit changes. ASCII = letters become numbers.",
+      "why": "Codes are the bridge between human information and machine bits. Every file, message and sensor reading crosses that bridge, and knowing which code is in use is often the difference between readable data and garbage.",
+      "practice": "Write decimal 297 in BCD and in Excess-3. Then convert binary 11010 to Gray code and convert your Gray answer back to binary to check it."
+    },
+    {
+      "title": "Error Detection Codes: Parity and Hamming",
+      "teacher": "Data travelling through a wire can get hit by electrical noise, and a 0 can flip into a 1. The receiver has no idea it happened. So how do we catch a mistake we cannot see? We deliberately send a few <em>extra</em> bits — and those extra bits do all the detective work.",
+      "explain": "An <strong>error detection code</strong> adds redundant bits to the data so that a corrupted message can be recognised. A <strong>parity bit</strong> detects any odd number of bit errors but cannot locate or fix them. A <strong>Hamming code</strong> adds several parity bits positioned so that they together point at the exact bit that went wrong, allowing single-bit errors to be corrected.",
+      "keyPoints": [
+        "<strong>Redundancy</strong> = extra bits added purely for checking, carrying no new information.",
+        "<strong>Even parity</strong>: the parity bit is chosen so the total number of 1s (data + parity) is <strong>even</strong>. <strong>Odd parity</strong>: chosen so that total is <strong>odd</strong>.",
+        "A single parity bit <strong>detects</strong> a single-bit error but cannot say <em>where</em> it is, and cannot correct it.",
+        "Parity <strong>fails</strong> on an even number of errors — two flipped bits cancel out and go unnoticed.",
+        "<strong>Checksum</strong> — send the sum of all the data blocks; the receiver re-adds and compares. <strong>CRC</strong> — division by a generator polynomial, much stronger, used in networks and disks.",
+        "<strong>Hamming code</strong> — an error <strong>correcting</strong> code, it locates the faulty bit.",
+        "Parity bits sit at positions that are powers of 2: <strong>1, 2, 4, 8, ...</strong>; data bits fill the rest.",
+        "Number of parity bits <em>r</em> for <em>m</em> data bits must satisfy <strong>2^r ≥ m + r + 1</strong>. For 4 data bits, r = 3, giving the (7,4) Hamming code.",
+        "The recomputed parity bits form the <strong>syndrome</strong>; read as a binary number it is the position of the wrong bit. Syndrome 000 means no error."
+      ],
+      "subtopics": [
+        {
+          "title": "What each parity bit covers in Hamming code",
+          "text": "Parity bit P1 (position 1) checks every position whose number has bit 0 set: positions 1, 3, 5, 7. P2 (position 2) checks positions whose number has bit 1 set: 2, 3, 6, 7. P4 (position 4) checks positions 4, 5, 6, 7. Every data position is covered by a unique combination of parity bits — and that unique combination is exactly what identifies it when something goes wrong."
+        },
+        {
+          "title": "The syndrome — how the code points at the error",
+          "text": "At the receiver, each parity check is recomputed. If a check passes, write 0; if it fails, write 1. Writing these results as C4 C2 C1 gives a binary number. If it is 000 the data is clean. If it is anything else, that number is the <em>position</em> of the corrupted bit — simply flip that bit and the data is repaired."
+        },
+        {
+          "title": "Detection versus correction",
+          "text": "Detection only tells you 'something is wrong, please resend'. Correction repairs the data on the spot without asking again. Correction always costs more extra bits. So the choice depends on the situation: a network can just ask for a resend, but a spacecraft eight light-minutes away really cannot."
+        }
+      ],
+      "realLife": "Your Aadhaar number and your bank card number both end in a check digit computed from the others. Type one digit wrong and the website rejects it instantly, before contacting any server. That is exactly the parity idea, working in decimal.",
+      "worked": "<strong>Part 1 — Parity bits for the data 1011001.</strong><br>Count the 1s: 1, 1, 1, 1 → <strong>four</strong> ones, which is even.<br><strong>Even parity:</strong> the count is already even, so the parity bit is <strong>0</strong> → transmitted as <code>1011001 0</code><br><strong>Odd parity:</strong> we need an odd total, so the parity bit is <strong>1</strong> → transmitted as <code>1011001 1</code><br><br><strong>Part 2 — Build the (7,4) Hamming code for the data 1011 (even parity).</strong><br>Step 1 — lay out 7 positions. Positions 1, 2, 4 are parity bits; positions 3, 5, 6, 7 take the four data bits in order:<br><code>Position:&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp; 3&nbsp;&nbsp; 4&nbsp;&nbsp; 5&nbsp;&nbsp; 6&nbsp;&nbsp; 7</code><br><code>Bit&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp; P1&nbsp; P2&nbsp; 1&nbsp;&nbsp; P4&nbsp; 0&nbsp;&nbsp; 1&nbsp;&nbsp; 1</code><br><br>Step 2 — compute each parity bit for <em>even</em> parity:<br>P1 covers positions 1,3,5,7 → data bits there are 1, 0, 1 → two 1s, already even → <strong>P1 = 0</strong><br>P2 covers positions 2,3,6,7 → data bits there are 1, 1, 1 → three 1s, odd → <strong>P2 = 1</strong><br>P4 covers positions 4,5,6,7 → data bits there are 0, 1, 1 → two 1s, already even → <strong>P4 = 0</strong><br><br>Step 3 — the transmitted 7-bit codeword:<br><code>Position: 1 2 3 4 5 6 7</code><br><code>Codeword: 0 1 1 0 0 1 1</code><br><br><strong>Part 3 — Now suppose bit 5 gets corrupted in transit.</strong><br>Received: <code>0 1 1 0 <u>1</u> 1 1</code><br>Recheck each parity group (write 1 if the check FAILS):<br>C1 (positions 1,3,5,7) = 0,1,1,1 → three 1s, odd → check fails → <strong>C1 = 1</strong><br>C2 (positions 2,3,6,7) = 1,1,1,1 → four 1s, even → check passes → <strong>C2 = 0</strong><br>C4 (positions 4,5,6,7) = 0,1,1,1 → three 1s, odd → check fails → <strong>C4 = 1</strong><br>Syndrome = C4 C2 C1 = <strong>101 = 5</strong> in decimal.<br>So <strong>bit 5 is the wrong one</strong>. Flip it back from 1 to 0 and the original codeword 0110011 is restored ✓<br>The code found the error <em>and</em> fixed it, without asking the sender for anything.",
+      "mistake": "Two classic errors. First, the syndrome is read as <strong>C4 C2 C1</strong>, with C1 as the least significant bit — reversing the order points at the wrong position. Second, students claim a single parity bit can correct errors. It cannot. It only announces that something is wrong, and it stays silent if <em>two</em> bits flip.",
+      "examAnswer": "Error detection codes add redundant bits to transmitted data so that corruption can be recognised by the receiver. The simplest such scheme is the parity bit, in which one extra bit is appended so that the total number of 1s in the message is even for even parity or odd for odd parity; a single parity bit can detect any odd number of bit errors but cannot locate or correct them, and it fails entirely when an even number of bits are corrupted. The Hamming code is an error correcting code in which parity bits are placed at positions that are powers of two, namely 1, 2, 4, 8 and so on, with each parity bit checking a distinct group of positions. At the receiver the parity checks are recomputed to form a syndrome; if the syndrome is zero the data is correct, and otherwise the value of the syndrome gives the position of the erroneous bit, which can then be inverted to correct the data. For m data bits, the number of parity bits r must satisfy 2^r ≥ m + r + 1.",
+      "remember": "Parity says 'something is wrong'. Hamming says 'bit number 5 is wrong'. Parity bits live at positions 1, 2, 4, 8.",
+      "why": "Every hard disk, memory module, Wi-Fi packet and QR code you use has error checking built in. Without it, a single cosmic ray hitting a RAM chip could silently corrupt your bank balance.",
+      "practice": "Construct the 7-bit even-parity Hamming code for the data bits 1101. Then corrupt bit 6 yourself, compute the syndrome, and show that it correctly identifies position 6."
+    },
+    {
+      "title": "Logic Gates: The Seven Basic Gates",
+      "teacher": "Everything in this unit so far has been about <em>storing</em> 0s and 1s. Now we build the things that <em>act</em> on them. And there are only seven — that's it. Seven small circuits, and from them comes every computer ever built. Think of them as the alphabet of hardware.",
+      "explain": "A <strong>logic gate</strong> is a small electronic circuit that takes one or more binary inputs and produces one binary output according to a fixed rule. That rule is written as a <strong>truth table</strong>, which lists the output for every possible combination of inputs. With <em>n</em> inputs, a truth table has <strong>2^n</strong> rows.",
+      "keyPoints": [
+        "<strong>NOT (Inverter)</strong> — one input. Output is the opposite: 0→1, 1→0. Written <code>A'</code> or <code>Ā</code>.",
+        "<strong>AND</strong> — output 1 <strong>only if ALL</strong> inputs are 1. Written <code>A·B</code> or <code>AB</code>. Behaves like multiplication.",
+        "<strong>OR</strong> — output 1 if <strong>ANY</strong> input is 1. Written <code>A + B</code>. Behaves like addition (but 1+1=1).",
+        "<strong>NAND</strong> = NOT of AND. Output 0 <strong>only when all</strong> inputs are 1; 1 otherwise.",
+        "<strong>NOR</strong> = NOT of OR. Output 1 <strong>only when all</strong> inputs are 0; 0 otherwise.",
+        "<strong>XOR (Exclusive-OR)</strong> — output 1 when the inputs are <strong>different</strong>. Written <code>A ⊕ B</code>.",
+        "<strong>XNOR (Exclusive-NOR)</strong> — output 1 when the inputs are the <strong>same</strong>. Also called the equivalence gate.",
+        "A small circle (bubble) on a gate symbol always means 'inverted output'.",
+        "XOR is the heart of the adder: it gives the SUM bit while AND gives the CARRY bit. Also, XOR with 1 flips a bit, XOR with 0 leaves it unchanged, and A ⊕ A = 0."
+      ],
+      "subtopics": [
+        {
+          "title": "AND and OR in everyday words",
+          "text": "AND is strict — a lift moves only if the door is closed AND the button is pressed. Both conditions must hold. OR is generous — an alarm rings if the front door OR the back door is opened. Any one condition is enough. This is exactly how the gates behave, and remembering the sentence is easier than remembering the table."
+        },
+        {
+          "title": "NAND and NOR are just inverted outputs",
+          "text": "Do not learn NAND and NOR as new tables. Work out the AND column, then flip every entry — that is NAND. Work out the OR column, then flip every entry — that is NOR. The bubble on the symbol is the picture of that flip. This halves what you have to memorise."
+        },
+        {
+          "title": "XOR — the 'different' detector",
+          "text": "XOR outputs 1 exactly when its two inputs disagree. That makes it a comparator: if A ⊕ B = 0, the two bits are identical. XOR is used for the sum bit in adders, for parity generation, for simple encryption, and for detecting change. XNOR is its opposite — it outputs 1 when the inputs agree."
+        },
+        {
+          "title": "The half adder, built from two gates",
+          "text": "Take two bits A and B. The SUM is A ⊕ B and the CARRY is A · B. Check it: 1 + 1 gives sum 0 (since 1⊕1 = 0) and carry 1 (since 1·1 = 1) — exactly the binary addition rule from earlier. So one XOR gate plus one AND gate is a complete half adder."
+        }
+      ],
+      "realLife": "A washing machine will only start if the lid is closed AND the start button is pressed — that is an AND gate. The buzzer sounds if the cycle is finished OR the lid is opened mid-wash — that is an OR gate. Real appliances really are built from these.",
+      "table": {
+        "headers": ["A", "B", "AND (A·B)", "OR (A+B)", "NAND", "NOR", "XOR (A⊕B)", "XNOR"],
+        "rows": [
+          ["0", "0", "0", "0", "1", "1", "0", "1"],
+          ["0", "1", "0", "1", "1", "0", "1", "0"],
+          ["1", "0", "0", "1", "1", "0", "1", "0"],
+          ["1", "1", "1", "1", "0", "0", "0", "1"]
+        ]
+      },
+      "worked": "<strong>The NOT gate (only 2 rows, since it has one input):</strong><br><code>A | A'</code><br><code>0 |&nbsp; 1</code><br><code>1 |&nbsp; 0</code><br><br><strong>Reading the big table above, row by row:</strong><br>Row A=0, B=0 → AND needs both 1s, so 0. OR needs any 1, so 0. NAND = flip AND = 1. NOR = flip OR = 1. Inputs are the SAME, so XOR = 0 and XNOR = 1.<br>Row A=0, B=1 → AND = 0, OR = 1, NAND = 1, NOR = 0. Inputs DIFFER, so XOR = 1, XNOR = 0.<br>Row A=1, B=0 → identical to the row above by symmetry: 0, 1, 1, 0, 1, 0.<br>Row A=1, B=1 → AND = 1, OR = 1, NAND = 0, NOR = 0. Inputs are the SAME, so XOR = 0, XNOR = 1.<br><br><strong>A worked circuit: evaluate F = (A · B)' + C for A=1, B=1, C=0.</strong><br>Step 1: A · B = 1 · 1 = 1<br>Step 2: (A · B)' = 1' = 0<br>Step 3: F = 0 + C = 0 + 0 = <strong>0</strong><br>Now try A=1, B=0, C=0: A·B = 0, its complement = 1, F = 1 + 0 = <strong>1</strong>.<br><br><strong>Half adder check — add 1 + 1:</strong><br>SUM = A ⊕ B = 1 ⊕ 1 = <strong>0</strong><br>CARRY = A · B = 1 · 1 = <strong>1</strong><br>Result 10 in binary = 2 in decimal ✓ — exactly what 1 + 1 should give.",
+      "mistake": "In Boolean algebra <strong>1 + 1 = 1</strong>, not 2 and not 10. The '+' symbol means OR here, not arithmetic addition. Students who have just finished the binary arithmetic topic get caught by this every single year — watch for which context you are in.",
+      "examAnswer": "A logic gate is an electronic circuit that performs a basic logical operation on one or more binary inputs and produces a single binary output. The NOT gate, or inverter, has one input and produces its complement. The AND gate produces an output of 1 only when all its inputs are 1, while the OR gate produces an output of 1 when at least one input is 1. The NAND and NOR gates produce the complements of the AND and OR outputs respectively. The Exclusive-OR gate produces an output of 1 when its inputs are unequal, and the Exclusive-NOR gate produces an output of 1 when its inputs are equal. The behaviour of each gate is completely specified by its truth table, which lists the output for all 2^n combinations of n inputs.",
+      "remember": "AND = all. OR = any. N in front = flip the answer. X = different (XOR) or same (XNOR).",
+      "why": "Every adder, multiplier, memory cell and control circuit inside a CPU is built entirely from these seven gates. Nothing else is needed — this really is the complete alphabet of hardware.",
+      "practice": "Draw the complete truth table for a 3-input AND gate and a 3-input NOR gate. How many rows does each table have, and why?"
+    },
+    {
+      "title": "Boolean Algebra, De Morgan's Theorems and Universal Gates",
+      "teacher": "Two circuits can look totally different on paper and yet do the same job — one with nine gates, one with three. Boolean algebra is the set of rules that lets you shrink the nine down to three. Fewer gates means cheaper, faster, cooler hardware. Real money rides on this topic.",
+      "explain": "<strong>Boolean algebra</strong> is the mathematics of variables that can only be 0 or 1, with three operations: AND (·), OR (+) and NOT ('). Its laws let you simplify an expression without changing its truth table. <strong>De Morgan's theorems</strong> are the two rules for pushing a NOT across a bracket, and they are what make NAND and NOR <strong>universal gates</strong> — gates from which any other gate can be built.",
+      "keyPoints": [
+        "<strong>Identity:</strong> A + 0 = A, A · 1 = A. &nbsp; <strong>Null:</strong> A + 1 = 1, A · 0 = 0",
+        "<strong>Idempotent:</strong> A + A = A, A · A = A. &nbsp; <strong>Complement:</strong> A + A' = 1, A · A' = 0. &nbsp; <strong>Double negation:</strong> (A')' = A",
+        "<strong>Commutative:</strong> A + B = B + A, A·B = B·A. &nbsp; <strong>Associative:</strong> A + (B + C) = (A + B) + C, A(BC) = (AB)C",
+        "<strong>Distributive:</strong> A(B + C) = AB + AC &nbsp;·&nbsp; A + BC = (A + B)(A + C)",
+        "<strong>Absorption:</strong> A + AB = A &nbsp;·&nbsp; A(A + B) = A",
+        "<strong>Redundancy:</strong> A + A'B = A + B &nbsp;·&nbsp; A(A' + B) = AB",
+        "<strong>De Morgan 1:</strong> <code>(A · B)' = A' + B'</code> — NOT of AND is OR of NOTs.",
+        "<strong>De Morgan 2:</strong> <code>(A + B)' = A' · B'</code> — NOT of OR is AND of NOTs.",
+        "<strong>NAND and NOR are universal</strong> — every other gate can be built from copies of just one of them."
+      ],
+      "subtopics": [
+        {
+          "title": "De Morgan in plain English",
+          "text": "'It is NOT true that both are tall' means 'at least one of them is not tall'. That is (A·B)' = A' + B'. And 'It is NOT true that either is tall' means 'both of them are not tall'. That is (A+B)' = A'·B'. The mechanical rule to remember: <strong>break the bar, change the sign</strong> — the NOT splits onto each variable, and AND swaps with OR."
+        },
+        {
+          "title": "Why NAND is universal",
+          "text": "NOT: tie both NAND inputs together — A NAND A = (A·A)' = A'. AND: take a NAND and invert its output with another NAND — (A NAND B) NAND (A NAND B) = A·B. OR: invert both inputs first — A' NAND B' = (A'·B')' = A + B, by De Morgan. Since NOT, AND and OR can all be built, and those three can build anything, NAND alone is enough for every digital circuit."
+        },
+        {
+          "title": "Why NOR is universal too",
+          "text": "By the mirror argument. NOT: A NOR A = (A+A)' = A'. OR: a NOR followed by an inverting NOR gives A + B. AND: invert both inputs first — A' NOR B' = (A'+B')' = A·B, again by De Morgan. So NOR alone is also complete."
+        },
+        {
+          "title": "Why factories actually care",
+          "text": "A NAND gate needs fewer transistors than an AND gate in CMOS technology, because AND is physically built as NAND followed by an inverter. So using only NAND gates means fewer transistors, less silicon area, lower cost and less heat. The universality of NAND is not just a maths curiosity — it is how real chips get manufactured."
+        }
+      ],
+      "realLife": "Think of a shop that stocks only one type of Lego brick but can still build any model. NAND is that brick. Chip factories keep one highly optimised NAND cell and build entire processors from repeated copies of it.",
+      "table": {
+        "headers": ["Gate to build", "Using only NAND gates", "Using only NOR gates"],
+        "rows": [
+          ["NOT", "A NAND A", "A NOR A"],
+          ["AND", "(A NAND B) NAND (A NAND B)", "(A NOR A) NOR (B NOR B)"],
+          ["OR", "(A NAND A) NAND (B NAND B)", "(A NOR B) NOR (A NOR B)"],
+          ["Gates needed for AND", "2", "3"],
+          ["Gates needed for OR", "3", "2"]
+        ]
+      },
+      "worked": "<strong>1. Verify De Morgan's first theorem: (A·B)' = A' + B'</strong><br><code>A B | A·B | (A·B)' | A' | B' | A'+B'</code><br><code>0 0 |&nbsp; 0&nbsp; |&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; |&nbsp; 1 |&nbsp; 1 |&nbsp;&nbsp; 1</code><br><code>0 1 |&nbsp; 0&nbsp; |&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; |&nbsp; 1 |&nbsp; 0 |&nbsp;&nbsp; 1</code><br><code>1 0 |&nbsp; 0&nbsp; |&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; |&nbsp; 0 |&nbsp; 1 |&nbsp;&nbsp; 1</code><br><code>1 1 |&nbsp; 1&nbsp; |&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp; |&nbsp; 0 |&nbsp; 0 |&nbsp;&nbsp; 0</code><br>Column 4 and column 7 are identical in every row → the theorem holds ✓<br><br><strong>2. Simplify F = AB + AB' + A'B using the laws.</strong><br>F = AB + AB' + A'B<br>= A(B + B') + A'B &nbsp;&nbsp; <em>(distributive, factor out A)</em><br>= A · 1 + A'B &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>(complement law: B + B' = 1)</em><br>= A + A'B &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>(identity law: A · 1 = A)</em><br>= <strong>A + B</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>(redundancy law: A + A'B = A + B)</em><br>Three product terms became one OR gate.<br><em>Check with a truth table:</em> the original is 1 for AB(11), AB'(10) and A'B(01) — that is every row except 00. And A + B is also 1 everywhere except 00 ✓<br><br><strong>3. Build an OR gate using only NAND gates.</strong><br>Step 1: invert A → A NAND A = A'<br>Step 2: invert B → B NAND B = B'<br>Step 3: feed both into a third NAND → (A' · B')'<br>By De Morgan's second theorem, (A' · B')' = (A')' + (B')' = <strong>A + B</strong> ✓<br>So three NAND gates make one OR gate.<br><br><strong>4. Apply De Morgan to a longer expression: simplify (A + B·C)'</strong><br>(A + BC)' = A' · (BC)' &nbsp;&nbsp; <em>(De Morgan 2)</em><br>= A' · (B' + C') &nbsp;&nbsp;&nbsp;&nbsp; <em>(De Morgan 1 on the inner bracket)</em><br>= <strong>A'B' + A'C'</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>(distributive)</em>",
+      "mistake": "The most common error is writing (A·B)' = A'·B'. That is wrong — the operator must <strong>change</strong> when the bar breaks. AND becomes OR and OR becomes AND. Say it out loud every time: 'break the bar, change the sign'.",
+      "examAnswer": "Boolean algebra is an algebraic system operating on variables that take only the values 0 and 1, using the operations AND, OR and NOT. Its principal laws include the identity, null, idempotent, complement, commutative, associative, distributive and absorption laws, and these are used to simplify logical expressions without altering their truth tables. De Morgan's theorems state that the complement of a product equals the sum of the complements, that is (A·B)' = A' + B', and that the complement of a sum equals the product of the complements, that is (A + B)' = A'·B'. These theorems establish that the NAND and NOR gates are universal gates, since the NOT, AND and OR functions can each be realised using only NAND gates or only NOR gates. This property is of great practical importance because it allows an entire digital system to be fabricated from a single repeated gate type, reducing manufacturing cost and complexity.",
+      "remember": "De Morgan: break the bar, change the sign. NAND and NOR are universal — one brick builds everything.",
+      "why": "Simplification directly reduces the number of transistors on a chip. Fewer gates means a cheaper, faster, cooler processor — and in the exam it is usually a full 7-mark question.",
+      "practice": "Prove De Morgan's second theorem (A + B)' = A'·B' with a truth table. Then simplify F = A'B'C + A'BC + AB'C using Boolean laws, and build a NOT gate and an AND gate using only NOR gates."
+    },
+    {
+      "title": "SOP, POS and Karnaugh Map Minimisation",
+      "teacher": "Boolean laws work, but you have to <em>spot</em> which law to use, and under exam pressure that is hard. The Karnaugh map turns the whole thing into something you can see with your eyes — draw a grid, circle the groups, read off the answer. Honestly, it feels like cheating. Let's learn it properly.",
+      "explain": "A <strong>minterm</strong> is an AND term containing every variable, corresponding to one row where the function is 1; the <strong>SOP (Sum of Products)</strong> form is the OR of all minterms. A <strong>maxterm</strong> corresponds to a row where the function is 0, and the <strong>POS (Product of Sums)</strong> form is the AND of all maxterms. A <strong>Karnaugh map</strong> is a grid arrangement of the truth table in which physically adjacent cells differ by exactly one variable, so circling adjacent 1s automatically cancels variables and gives the minimal expression.",
+      "keyPoints": [
+        "<strong>Minterm</strong>: variable plain if its bit is 1, complemented if 0 — row A=1,B=0,C=1 gives <code>AB'C</code>. <strong>Maxterm</strong>: the opposite rule — row A=1,B=0,C=0 gives <code>(A' + B + C)</code>.",
+        "<strong>SOP</strong> = OR of the minterms where F = 1, written <code>F = Σm(...)</code>. <strong>POS</strong> = AND of the maxterms where F = 0, written <code>F = ΠM(...)</code>. Both describe exactly the same function.",
+        "A K-map for <em>n</em> variables has <strong>2^n cells</strong>: 4 cells for 2 variables, 8 for 3, 16 for 4.",
+        "Row and column labels must be in <strong>Gray code order</strong> (00, 01, 11, 10) — this is what makes neighbours differ by one bit.",
+        "<strong>Rule 1:</strong> group sizes must be powers of 2 — 1, 2, 4, 8, 16, never 3, 5 or 6. <strong>Rule 2:</strong> groups must be rectangular and contain only 1s (for SOP).",
+        "<strong>Rule 3:</strong> make each group as <strong>large as possible</strong> — bigger groups remove more variables. <strong>Rule 4:</strong> groups <strong>may overlap</strong>, and every 1 must be in at least one group.",
+        "<strong>Rule 5:</strong> the map <strong>wraps around</strong> — left edge touches right edge, top touches bottom, and the four corners are neighbours.",
+        "A group of 2 removes 1 variable, a group of 4 removes 2, a group of 8 removes 3.",
+        "<strong>Don't-care</strong> conditions (marked X) may be included in a group if that makes it bigger, or ignored if not."
+      ],
+      "subtopics": [
+        {
+          "title": "How to write SOP and POS from a truth table",
+          "text": "Go down the output column. For every row where F = 1, write a minterm and OR them all together — that is the SOP. For every row where F = 0, write a maxterm and AND them all together — that is the POS. Both describe exactly the same function. SOP is usually preferred because it maps directly onto AND gates feeding one OR gate."
+        },
+        {
+          "title": "Why the Gray-code ordering is essential",
+          "text": "The columns are labelled 00, 01, 11, 10 — <em>not</em> 00, 01, 10, 11. In Gray order, moving one step sideways changes exactly one variable. That is the whole engine of the method: when two adjacent cells are both 1, the one variable that differs between them appears once as X and once as X', and since X + X' = 1 it simply disappears. Use ordinary binary order and the map stops working."
+        },
+        {
+          "title": "The grouping procedure, step by step",
+          "text": "First circle any 1 that has no neighbours at all (an isolated 1) — it stays as a full minterm. Then find the largest possible groups of 8, then 4, then 2, remembering the wrap-around. Keep going until every 1 is inside at least one group. Finally, discard any group whose 1s are all already covered by other groups — that group is redundant."
+        },
+        {
+          "title": "Reading a group to get its term",
+          "text": "Inside one group, look at each variable in turn. If the variable is 0 in every cell of the group, write it complemented. If it is 1 in every cell, write it plain. If it changes within the group, <strong>drop it entirely</strong>. AND together whatever survives — that is the group's product term. Then OR all the group terms to get the final SOP expression."
+        }
+      ],
+      "realLife": "Designing the circuit that decides when a lift door may open: inputs are 'lift stopped', 'at a floor', 'no obstacle', 'button pressed'. That is a 4-variable Boolean function, and a K-map is exactly how an engineer reduces it to the smallest safe circuit.",
+      "worked": "<strong>Part 1 — Write SOP and POS for a 3-variable function.</strong><br>Take F(A,B,C) = Σm(1, 3, 5, 7), meaning F = 1 for rows 1, 3, 5 and 7.<br>Row 1 = 001 → minterm <code>A'B'C</code><br>Row 3 = 011 → minterm <code>A'BC</code><br>Row 5 = 101 → minterm <code>AB'C</code><br>Row 7 = 111 → minterm <code>ABC</code><br><strong>SOP:</strong> F = A'B'C + A'BC + AB'C + ABC<br>F is 0 in rows 0, 2, 4, 6, so the <strong>POS</strong> is F = (A+B+C)(A+B'+C)(A'+B+C)(A'+B'+C)<br>Notice every minterm contains C plain, and every maxterm contains C plain — so both simplify to just <strong>F = C</strong>.<br><br><strong>Part 2 — A full 3-variable K-map: simplify F(A,B,C) = Σm(0, 1, 2, 3, 5, 7).</strong><br><br><strong>Step 1 — draw the grid.</strong> One row per value of A, columns labelled BC in <em>Gray order</em> 00, 01, 11, 10:<br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BC=00&nbsp;&nbsp;BC=01&nbsp;&nbsp;BC=11&nbsp;&nbsp;BC=10</code><br><code>A=0 |&nbsp;&nbsp; m0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m2</code><br><code>A=1 |&nbsp;&nbsp; m4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m6</code><br><br><strong>Step 2 — fill in the 1s</strong> for minterms 0, 1, 2, 3, 5, 7:<br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BC=00&nbsp;&nbsp;BC=01&nbsp;&nbsp;BC=11&nbsp;&nbsp;BC=10</code><br><code>A=0 |&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</code><br><code>A=1 |&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</code><br><br><strong>Step 3 — form the largest possible groups.</strong><br><em>Group 1 (a quad):</em> the entire top row — cells m0, m1, m3, m2.<br>In this group A = 0 in every cell, so A survives as <code>A'</code>. B changes (0,0,1,1) so B is dropped. C changes (0,1,1,0) so C is dropped.<br>→ Group 1 gives the term <strong>A'</strong><br><br><em>Group 2 (a quad):</em> the two middle columns BC=01 and BC=11, across both rows — cells m1, m3, m5, m7.<br>Here A changes (0 and 1) so A is dropped. B changes (0 and 1) so B is dropped. C = 1 in all four cells, so C survives plain.<br>→ Group 2 gives the term <strong>C</strong><br><br><strong>Step 4 — check every 1 is covered.</strong> m0 ✓ and m2 ✓ by Group 1; m1 and m3 by both groups (overlap is allowed); m5 ✓ and m7 ✓ by Group 2. All six 1s covered.<br><br><strong>Step 5 — OR the group terms:</strong><br><strong>F = A' + C</strong><br><br><strong>Verification.</strong> The original SOP had six product terms of three variables each. The answer has one NOT gate and one OR gate. Test the two rows where F should be 0: m4 = (A=1, B=0, C=0) → A' = 0 and C = 0 → F = 0 ✓. m6 = (A=1, B=1, C=0) → A' = 0 and C = 0 → F = 0 ✓. Every other row gives 1 ✓<br><br><strong>Part 3 — a 4-variable map: simplify F(A,B,C,D) = Σm(0, 1, 2, 5, 8, 9, 10).</strong><br>Rows are AB in Gray order 00, 01, 11, 10; columns are CD in Gray order 00, 01, 11, 10.<br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CD=00&nbsp;&nbsp;CD=01&nbsp;&nbsp;CD=11&nbsp;&nbsp;CD=10</code><br><code>AB=00 |&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</code>&nbsp;&nbsp;(m0, m1, m3, m2)<br><code>AB=01 |&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</code>&nbsp;&nbsp;(m4, m5, m7, m6)<br><code>AB=11 |&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</code>&nbsp;&nbsp;(m12, m13, m15, m14)<br><code>AB=10 |&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</code>&nbsp;&nbsp;(m8, m9, m11, m10)<br><br><em>Group 1 (quad):</em> m0, m1, m8, m9 — the first two columns of the top and bottom rows, joined by the <strong>vertical wrap-around</strong>. Here B = 0 and C = 0 throughout, while A and D change → term <strong>B'C'</strong><br><em>Group 2 (quad):</em> m0, m2, m8, m10 — the first and last columns of the top and bottom rows, joined by <strong>both</strong> wrap-arounds (these are the four corners). Here B = 0 and D = 0 throughout → term <strong>B'D'</strong><br><em>Group 3 (pair):</em> m1, m5 — CD=01 in rows AB=00 and AB=01. Here A = 0, C = 0, D = 1, while B changes → term <strong>A'C'D</strong><br><br>All seven 1s are covered: m0, m1, m8, m9 by Group 1; m2, m10 by Group 2; m5 by Group 3.<br><strong>F = B'C' + B'D' + A'C'D</strong>",
+      "mistake": "Three killers. (1) Labelling the columns 00, 01, <strong>10, 11</strong> instead of Gray order 00, 01, <strong>11, 10</strong> — this breaks adjacency and every answer after it is wrong. (2) Making a group of 3 or 6 cells; group sizes must be powers of 2. (3) Forgetting the wrap-around, so the four corner cells are never grouped together — that costs an entire simplification step.",
+      "examAnswer": "A Boolean function may be expressed in canonical Sum of Products form as the logical OR of the minterms corresponding to the input combinations for which the function is 1, or in canonical Product of Sums form as the logical AND of the maxterms corresponding to the combinations for which the function is 0. The Karnaugh map is a graphical method of minimising such functions, in which the truth table is arranged as a grid of 2^n cells whose row and column labels follow Gray code order, so that adjacent cells differ in exactly one variable. Minimisation is performed by grouping adjacent cells containing 1 into rectangular groups whose sizes are powers of two, making each group as large as possible, allowing groups to overlap and treating opposite edges of the map as adjacent. Within each group, any variable that changes value is eliminated and the remaining variables form a product term; the logical sum of these product terms is the minimal Sum of Products expression. A group of two cells eliminates one variable, a group of four eliminates two, and a group of eight eliminates three.",
+      "remember": "Gray order labels. Groups are powers of 2. Bigger is better. Overlap is allowed. Edges wrap. Variable changes inside the group → delete it.",
+      "why": "This is almost always the longest question in the digital-logic section of the paper, and it is the most reliably scorable — the method is mechanical, so with practice you get full marks every time.",
+      "practice": "Simplify F(A,B,C,D) = Σm(0, 2, 5, 7, 8, 10, 13, 15) using a 4-variable K-map. Draw the grid, mark the 1s, show every group you form and write the final minimised SOP expression."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "What is the decimal value of the binary number 1011?",
+      "options": ["9", "11", "13", "15"],
+      "answer": 1,
+      "why": "Add the weights under the 1s: 8 + 0 + 2 + 1 = 11. The weights from left to right are 8, 4, 2, 1."
+    },
+    {
+      "q": "What is the 2's complement of the 4-bit number 0101?",
+      "options": ["1010", "1011", "0011", "1101"],
+      "answer": 1,
+      "why": "First flip every bit to get the 1's complement, 1010. Then add 1, giving 1011. Forgetting the '+1' and stopping at 1010 is the most common error."
+    },
+    {
+      "q": "Convert the binary number 11011010 to hexadecimal.",
+      "options": ["AD", "DA", "BC", "2D"],
+      "answer": 1,
+      "why": "Group into 4 bits from the right: 1101 | 1010. 1101 = D and 1010 = A, so the answer is DA."
+    },
+    {
+      "q": "What is the range of values an 8-bit register can hold in 2's complement form?",
+      "options": ["−127 to +127", "−128 to +127", "0 to 255", "−255 to +255"],
+      "answer": 1,
+      "why": "The range is −2^7 to +2^7 − 1. 2's complement has only one zero, so the extra pattern is used for −128, giving one more negative value than positive."
+    },
+    {
+      "q": "Which pair of gates are called the universal gates?",
+      "options": ["AND and OR", "NAND and NOR", "XOR and XNOR", "NOT and AND"],
+      "answer": 1,
+      "why": "NAND and NOR are universal because NOT, AND and OR can each be built using only copies of one of them, so any circuit at all can be made from a single gate type."
+    },
+    {
+      "q": "An XOR gate outputs 1 when…",
+      "options": ["both inputs are 1", "both inputs are 0", "the two inputs are different", "the two inputs are the same"],
+      "answer": 2,
+      "why": "XOR is the 'difference detector': 0⊕1 = 1 and 1⊕0 = 1, but 0⊕0 = 0 and 1⊕1 = 0. XNOR is the one that outputs 1 when the inputs are the same."
+    },
+    {
+      "q": "According to De Morgan's theorem, (A · B)' is equal to…",
+      "options": ["A' · B'", "A' + B'", "A + B", "(A + B)'"],
+      "answer": 1,
+      "why": "Break the bar and change the sign: the NOT splits onto each variable AND the operator changes from AND to OR. Writing A'·B' is the classic mistake."
+    },
+    {
+      "q": "In a Karnaugh map, a group of 4 adjacent 1s eliminates how many variables?",
+      "options": ["1", "2", "3", "4"],
+      "answer": 1,
+      "why": "A group of 2^k cells eliminates k variables. A group of 4 = 2^2, so 2 variables are eliminated. A group of 2 eliminates 1, and a group of 8 eliminates 3."
+    },
+    {
+      "q": "Which code is designed so that only ONE bit changes between consecutive numbers?",
+      "options": ["BCD", "ASCII", "Gray code", "Excess-3"],
+      "answer": 2,
+      "why": "Gray code is the unit-distance code. It is used in position sensors and rotary encoders, because if several bits changed at once a momentary misreading could produce a completely wrong value."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Convert the decimal number 156 into binary, octal and hexadecimal. Show every step of the division method, and verify each answer by converting it back to decimal.",
+      "hint": "Divide by 2, then 8, then 16. Remember to read the remainders from bottom to top. You can also check the octal and hex answers by grouping your binary answer into 3s and 4s."
+    },
+    {
+      "q": "Using 8-bit 2's complement representation, perform 58 − 73. Show the 2's complement step, the addition, and explain how you know from the carry whether the answer is positive or negative.",
+      "hint": "A carry out of the MSB means positive (discard the carry). No carry out means the answer itself is in 2's complement form — take its 2's complement to read the magnitude."
+    },
+    {
+      "q": "Draw the symbol and complete truth table for all seven logic gates. Then explain, with circuit diagrams, why NAND is called a universal gate.",
+      "hint": "Build NOT, AND and OR using only NAND gates, and justify the OR construction using De Morgan's second theorem."
+    },
+    {
+      "q": "Simplify F(A,B,C,D) = Σm(0, 1, 2, 3, 5, 7, 8, 10) using a 4-variable Karnaugh map. Draw the grid, mark the groups clearly and state the minimised SOP expression. Then verify your answer for at least two input combinations.",
+      "hint": "Watch for the wrap-around between the top and bottom rows, and check whether any group you formed is actually redundant because all its 1s are already covered."
+    },
+    {
+      "q": "A message is being sent over a noisy line. Explain the difference between error DETECTION and error CORRECTION. Construct the 7-bit even-parity Hamming code for the data bits 1001, then show how the receiver would locate an error in bit 3.",
+      "hint": "Parity bits go at positions 1, 2 and 4. Remember the syndrome is read as C4 C2 C1, and its decimal value is the position of the faulty bit."
+    }
+  ]
+};

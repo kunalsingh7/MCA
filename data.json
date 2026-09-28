@@ -5,7 +5,7 @@
    All these files are loaded with normal <script> tags so the page works
    by just double-clicking index.html — no internet, no server needed. */
 const PAGE = {
-  title: "MCA Semester 1 — Unit 1 Made Easy",
-  subtitle: "Simple English · Real-life examples · Pictures · Key points · Exam-ready answers · Memory tricks · Quiz & practice",
+  title: "MCA Semester 1 — All Subjects, All Units",
+  subtitle: "Simple English · Real-life examples · Pictures · Key points · Worked examples · Exam-ready answers · Memory tricks · Quiz & practice",
   order: ["os", "c", "maths", "fct", "comm"]
 };

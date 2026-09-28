@@ -1,0 +1,732 @@
+/* Programming & Problem Solving in C (MCA 109) — Unit 3. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.c = UNITS.c || [];
+UNITS.c[2] = {
+  "num": 3,
+  "title": "Functions, Scope and Recursion",
+  "problem": "By now your programs work — but they are one long main(). The same ten lines that calculate a percentage are copied in three places, and when the formula changes you must fix all three. One 300-line main() is impossible to read, test or repair.",
+  "solution": "Functions let you write a piece of logic once, give it a name, and call it from anywhere. Scope and storage classes control which parts of the program can see a variable and how long it survives. Recursion lets a function solve a problem by calling itself on a smaller version of the same problem.",
+  "objectives": [
+    "Explain why functions are used, in terms of reuse and divide-and-conquer",
+    "Distinguish between a function declaration, definition and call",
+    "Write a correct function prototype and say why C needs one",
+    "Compare call by value and call by reference, and explain why swap() fails with values",
+    "Determine the scope, visibility and lifetime of any variable in a program",
+    "Compare auto, register, static and extern, and explain why static keeps its value between calls",
+    "Write a recursive function with a correct base case and trace its call stack",
+    "Identify direct, indirect, tree and tail recursion, and decide when to avoid recursion"
+  ],
+  "topics": [
+    {
+      "title": "Why Functions Exist",
+      "teacher": "Imagine cooking a full dinner alone — chopping, frying, kneading, serving — all in one go, in one pan. Now imagine four people each doing one job well. A program is the same: break a big task into small named jobs, and suddenly it is easy.",
+      "explain": "A <strong>function</strong> is a self-contained block of code that performs one specific task and can be called by name whenever that task is needed. Functions bring <strong>reusability</strong> (write once, call many times) and <strong>divide and conquer</strong> (split a large problem into small, testable pieces).",
+      "keyPoints": [
+        "A function is a named block of code that does <strong>one</strong> specific job.",
+        "<strong>Reusability</strong> — write the logic once and call it any number of times.",
+        "<strong>Divide and conquer</strong> — a big problem becomes several small, manageable ones.",
+        "Easier to <strong>debug and test</strong>: an error is trapped inside one small function.",
+        "Reduces program length by removing repeated code.",
+        "Two kinds: <strong>library functions</strong> (<code>printf</code>, <code>sqrt</code>) and <strong>user-defined functions</strong> (written by you).",
+        "<code>main()</code> is itself a function — the one the computer always starts from.",
+        "One function can call another, and a function may even call itself (recursion)."
+      ],
+      "subtopics": [
+        {
+          "title": "Reusability in practice",
+          "text": "Suppose the percentage formula appears in three places in your program. If it is written out three times and the rule changes, you must edit three places and you <em>will</em> miss one. Put it inside <code>float percentage(int obtained, int total)</code> and there is now exactly one place to correct — for the whole program, forever."
+        },
+        {
+          "title": "Divide and conquer",
+          "text": "A student-result program is much easier to write as four small functions: <code>readMarks()</code>, <code>calculateTotal()</code>, <code>findGrade()</code> and <code>printResult()</code>. Each can be written and checked on its own. This is called <strong>modular programming</strong>, and it is the core idea behind structured languages like C."
+        },
+        {
+          "title": "Library versus user-defined",
+          "text": "<strong>Library functions</strong> are already written and come with the compiler — you only include the right header, such as <code>math.h</code> for <code>sqrt()</code>. <strong>User-defined functions</strong> are the ones you write for your own problem. Both are called in exactly the same way, which is why library functions feel so natural to use."
+        }
+      ],
+      "realLife": "A college office has separate counters — one for fees, one for marksheets, one for bonafide certificates. Nobody does everything at one counter. Each counter is a function: one clear job, used by everyone.",
+      "code": "#include <stdio.h>\n\n/* one job, written once, used many times */\nfloat percentage(int obtained, int total) {\n    return (obtained * 100.0f) / total;\n}\n\nint main(void) {\n    printf(\"Priya : %.2f%%\\n\", percentage(411, 500));\n    printf(\"Rahul : %.2f%%\\n\", percentage(380, 500));\n    printf(\"Aman  : %.2f%%\\n\", percentage(455, 500));\n    return 0;\n}",
+      "codeNote": "The formula is written once. Change it here and all three results change — that is reusability in one screen.",
+      "mistake": "Writing one function that reads input, calculates, AND prints. A function should do one job. Mixing three jobs makes it impossible to reuse in a program that gets its data from somewhere else.",
+      "examAnswer": "A function is a self-contained block of statements that performs a well-defined task and can be invoked from other parts of a program by its name. Functions provide reusability, since the same block of code can be executed any number of times without being rewritten, and they support the divide-and-conquer approach, in which a large problem is decomposed into smaller, independently testable modules. This modular structure reduces program length, improves readability and simplifies debugging and maintenance. C functions are of two types: library functions, which are predefined and supplied with the compiler such as printf() and sqrt(), and user-defined functions, which are written by the programmer. Every C program contains at least one function, namely main(), from which execution begins.",
+      "remember": "Functions = write once, use many times. One function, one job.",
+      "why": "Every later topic — parameter passing, scope, storage classes, recursion — only makes sense once you accept that a program is built from many small functions, not one big main().",
+      "practice": "Name four separate functions you would write for a program that prints a student result, and state the one job of each."
+    },
+    {
+      "title": "Declaration, Definition and Calling a Function",
+      "teacher": "Before a guest arrives, you tell your family 'a friend named Riya is coming at 6'. That is the declaration. Riya actually arriving is the definition. You calling her name at the door is the call. C needs all three, in that same order.",
+      "explain": "A function has three parts. The <strong>declaration</strong> (also called the <strong>prototype</strong>) tells the compiler the function's name, return type and parameter types, and ends with a semicolon. The <strong>definition</strong> is the actual body containing the statements. The <strong>call</strong> is where you use the function by writing its name with arguments.",
+      "keyPoints": [
+        "Prototype: <code>int add(int a, int b);</code> &nbsp;— note the <strong>semicolon</strong>.",
+        "Definition: <code>int add(int a, int b) { return a + b; }</code> &nbsp;— <strong>no</strong> semicolon, has a body.",
+        "Call: <code>result = add(5, 3);</code> — control jumps into the function and comes back with the value.",
+        "The prototype is written <strong>before</strong> <code>main()</code>, usually at the top of the file.",
+        "The prototype lets the compiler check your call even though the body appears later.",
+        "Parameter <strong>names</strong> in a prototype are optional: <code>int add(int, int);</code> is valid.",
+        "A function defined <strong>above</strong> <code>main()</code> needs no separate prototype.",
+        "Return type <code>void</code> means the function gives nothing back.",
+        "After the function finishes, control always returns to the line just after the call."
+      ],
+      "subtopics": [
+        {
+          "title": "Why C needs a prototype",
+          "text": "C reads your file from top to bottom. If <code>main()</code> calls <code>add()</code> before the compiler has ever seen <code>add</code>, it does not know what type it returns or what arguments it takes, and cannot check your call. The prototype is an advance notice: 'a function called add exists, it takes two ints and returns an int'. Modern C compilers treat a call with no visible declaration as an error."
+        },
+        {
+          "title": "Formal versus actual parameters",
+          "text": "The variables written in the function <em>definition</em> header are the <strong>formal parameters</strong> — they are empty placeholders. The values you write in the <em>call</em> are the <strong>actual parameters</strong> or arguments. On a call, each actual parameter's value is copied into the matching formal parameter, position by position. The number, order and types must match."
+        },
+        {
+          "title": "The return statement",
+          "text": "<code>return expression;</code> does two things at once: it sends a value back to the caller and it <strong>ends the function immediately</strong> — any statements written after it never execute. A function can contain several <code>return</code> statements (one per branch), but only ever returns <strong>one</strong> value. For a <code>void</code> function you may write a bare <code>return;</code> or nothing at all."
+        }
+      ],
+      "realLife": "Ordering tea in the canteen: you say 'one tea' (the call), the boy makes it out of your sight (the definition), and hands you the cup (the return value). You do not need to know how he made it — only what to ask for and what you get back.",
+      "table": {
+        "headers": [
+          "",
+          "Declaration (prototype)",
+          "Definition",
+          "Call"
+        ],
+        "rows": [
+          [
+            "Looks like",
+            "<code>int add(int, int);</code>",
+            "<code>int add(int a,int b){...}</code>",
+            "<code>add(5, 3);</code>"
+          ],
+          [
+            "Has a body?",
+            "No",
+            "Yes",
+            "No"
+          ],
+          [
+            "Ends with ;",
+            "Yes",
+            "No",
+            "Yes"
+          ],
+          [
+            "Purpose",
+            "Tells the compiler it exists",
+            "Contains the actual work",
+            "Runs it and gets the result"
+          ],
+          [
+            "Written where",
+            "Before main()",
+            "Anywhere in the file",
+            "Inside another function"
+          ],
+          [
+            "How many times",
+            "Once",
+            "Once",
+            "Any number of times"
+          ]
+        ]
+      },
+      "code": "#include <stdio.h>\n\nint add(int a, int b);        /* 1. DECLARATION - semicolon, no body */\n\nint main(void) {\n    int result = add(5, 3);   /* 3. CALL - 5 and 3 are actual parameters */\n    printf(\"Sum = %d\\n\", result);\n    return 0;\n}\n\nint add(int a, int b) {       /* 2. DEFINITION - a and b are formal parameters */\n    return a + b;             /* sends the value back AND ends the function */\n}",
+      "codeNote": "Because the prototype is at the top, add() can be defined below main() and the compiler is still able to check the call.",
+      "mistake": "Putting a semicolon after the definition header: <code>int add(int a, int b); { return a+b; }</code>. That turns the definition into a stray prototype followed by a loose block, and the compiler reports a confusing error somewhere else.",
+      "examAnswer": "A function declaration, also called a function prototype, specifies the name of the function, its return type and the types of its parameters, and is terminated by a semicolon; it informs the compiler about the function before it is used, so that the compiler can verify the correctness of each call. A function definition consists of the function header together with the body containing the statements that perform the task, and is not terminated by a semicolon. A function call is the statement that invokes the function by name and supplies the actual parameters; control is then transferred to the function, and after the return statement executes, control returns to the statement immediately following the call. The variables listed in the definition header are known as formal parameters and the values supplied in the call are known as actual parameters.",
+      "remember": "Declare = tell. Define = do. Call = use. Only the declaration and the call end in a semicolon.",
+      "why": "Almost every function question begins with 'write the prototype'. Getting the three parts right also removes the most common compiler errors in the practical exam.",
+      "practice": "Write the prototype, the definition and a call for a function that takes two floats and returns the larger one."
+    },
+    {
+      "title": "Arguments and Return Values",
+      "teacher": "A function is like a juice machine. You put fruit IN — those are the arguments. You get juice OUT — that is the return value. Some machines take nothing and just make noise; some take fruit and give nothing back. C allows all four combinations.",
+      "explain": "<strong>Arguments</strong> (parameters) are the values a function receives to work on. The <strong>return value</strong> is the single result it sends back, using the <code>return</code> statement. Based on these, functions are classified into four categories, and the return type in the header must match what you actually return.",
+      "keyPoints": [
+        "A function can take <strong>zero or more</strong> arguments but can return <strong>at most one</strong> value.",
+        "The four categories: no-argument-no-return, argument-no-return, no-argument-with-return, argument-with-return.",
+        "The return type is written <strong>before</strong> the function name: <code>float area(float r)</code>.",
+        "<code>void</code> as the return type means 'returns nothing' — do not write a value after <code>return</code>.",
+        "<code>void</code> in the parameter list means 'takes nothing': <code>int getNumber(void)</code>.",
+        "Actual and formal parameters must match in <strong>number, order and type</strong>.",
+        "<code>return</code> ends the function at once — code written after it is unreachable.",
+        "To send back several values, use pointers or a structure — <code>return</code> alone cannot do it."
+      ],
+      "subtopics": [
+        {
+          "title": "The four categories of functions",
+          "text": "<strong>(1) No arguments, no return</strong> — <code>void greet(void)</code>, just prints a message. <strong>(2) Arguments, no return</strong> — <code>void printLine(int n)</code>, receives data but gives nothing back. <strong>(3) No arguments, with return</strong> — <code>int readAge(void)</code>, gets its own input and returns it. <strong>(4) Arguments and return</strong> — <code>int add(int, int)</code>, the most useful and most common form."
+        },
+        {
+          "title": "Why only one return value",
+          "text": "The <code>return</code> statement hands back exactly one value, so a function cannot directly return both a quotient and a remainder. The standard solutions are to pass addresses as parameters (call by reference, the next topic) and fill them in, or to return a <code>struct</code> holding both fields. This limitation is precisely why call by reference matters so much in C."
+        },
+        {
+          "title": "Type mismatches",
+          "text": "If a function is declared <code>int</code> but you return <code>2.7</code>, C converts it to <code>2</code> — the decimal is truncated, silently. Similarly, passing an <code>int</code> where a <code>float</code> is expected converts it quietly. The compiler rarely stops you, so matching the types yourself is the only defence."
+        }
+      ],
+      "realLife": "A photocopy shop: you hand over pages (arguments) and get copies back (return value). An enquiry counter takes nothing and gives information (no argument, with return). A complaint box takes your letter and gives nothing back (argument, no return).",
+      "code": "#include <stdio.h>\n\nvoid greet(void) {                    /* no argument, no return */\n    printf(\"Welcome to MCA!\\n\");\n}\n\nvoid printStars(int n) {              /* argument, no return */\n    int i;\n    for (i = 0; i < n; i++) putchar('*');\n    putchar('\\n');\n}\n\nint getFixedAge(void) {               /* no argument, with return */\n    return 21;\n}\n\nfloat area(float r) {                 /* argument, with return */\n    return 3.14f * r * r;\n}\n\nint main(void) {\n    greet();\n    printStars(5);\n    printf(\"Age  = %d\\n\", getFixedAge());\n    printf(\"Area = %.2f\\n\", area(2.0f));   /* 12.56 */\n    return 0;\n}",
+      "codeNote": "All four categories in one program — notice that only the two with a real return type can be used inside printf.",
+      "mistake": "Declaring a function <code>void</code> and then writing <code>return total;</code> inside it. A void function must not return a value — and a non-void function that forgets to return one gives an unpredictable result.",
+      "examAnswer": "Arguments, also called parameters, are the values passed to a function so that it can operate on them, while the return value is the single result sent back to the calling function by means of the return statement. The values written in the function call are the actual parameters and those written in the function header are the formal parameters; they must agree in number, order and type. Depending on the presence of arguments and a return value, functions are classified into four categories: functions with no arguments and no return value, functions with arguments but no return value, functions with no arguments but a return value, and functions with both arguments and a return value. A function can return at most one value; when multiple results are required, pointers or structures must be used.",
+      "remember": "Arguments go IN, one return value comes OUT. void = nothing.",
+      "why": "'Explain the four types of user-defined functions with examples' is a standard long-answer question, and it is easy marks once you can write one tiny example of each.",
+      "practice": "Write one small function for each of the four categories, based on a circle: greet, print n stars, return a fixed radius, and return the area for a given radius."
+    },
+    {
+      "title": "Call by Value vs Call by Reference",
+      "teacher": "Here is the topic that confuses everybody, so let us make it simple. If you give a friend a <strong>photocopy</strong> of your notes and she scribbles on it, your original is safe. If you give her the <strong>original</strong>, her scribbles are permanent. That is the entire difference.",
+      "explain": "In <strong>call by value</strong>, a <strong>copy</strong> of the argument's value is passed to the function, so changes made inside the function do not affect the original variable. In <strong>call by reference</strong>, the <strong>address</strong> of the variable is passed, so the function works on the original variable itself and the changes are permanent. C is strictly a call-by-value language — call by reference is achieved by passing addresses using pointers.",
+      "keyPoints": [
+        "<strong>Call by value</strong>: a copy is sent. The original is <strong>never</strong> changed.",
+        "<strong>Call by reference</strong>: the address is sent. The original <strong>is</strong> changed.",
+        "C technically always passes by value — passing an address is how reference behaviour is simulated.",
+        "Call by value is the <strong>default</strong> in C.",
+        "In call by reference you pass <code>&amp;a</code> and receive it in a pointer parameter <code>int *x</code>.",
+        "Inside the function, <code>*x</code> means 'the value stored at that address'.",
+        "Arrays are the exception — an array name is already an address, so arrays behave like call by reference automatically.",
+        "Call by reference is the way to make one function return more than one result.",
+        "Call by value is safer; call by reference is more efficient for large data."
+      ],
+      "subtopics": [
+        {
+          "title": "Why the value version of swap() fails",
+          "text": "In <code>swap(a, b)</code> with ordinary int parameters, C copies <code>a</code> into <code>x</code> and <code>b</code> into <code>y</code>. The function then swaps <code>x</code> and <code>y</code> perfectly — but <code>x</code> and <code>y</code> are separate memory locations that die the moment the function ends. Back in <code>main()</code>, <code>a</code> and <code>b</code> were never touched. The function did its job correctly on the wrong boxes."
+        },
+        {
+          "title": "How the pointer version fixes it",
+          "text": "In <code>swap(&amp;a, &amp;b)</code> you send the <em>addresses</em>. The parameters are declared <code>int *x, int *y</code>, so <code>x</code> holds the address of <code>a</code>. Writing <code>*x</code> means 'go to that address and use the value there'. So <code>*x = *y</code> genuinely changes <code>a</code> in <code>main()</code>. Nothing is copied back — the function edited the originals all along."
+        },
+        {
+          "title": "Which one to use",
+          "text": "Use <strong>call by value</strong> when the function only needs to read the data — it is safer, because the original cannot be damaged by accident. Use <strong>call by reference</strong> when the function must modify the caller's variables, or when you must return more than one result, or when copying a large structure would be wasteful."
+        }
+      ],
+      "realLife": "Giving a shopkeeper a photocopy of your Aadhaar card versus handing over the original. On the photocopy he can write anything and your card stays clean. Give the original and whatever he writes on it, you take home.",
+      "table": {
+        "headers": [
+          "",
+          "Call by value",
+          "Call by reference"
+        ],
+        "rows": [
+          [
+            "What is passed",
+            "A copy of the value",
+            "The address of the variable"
+          ],
+          [
+            "Written in the call as",
+            "<code>swap(a, b);</code>",
+            "<code>swap(&amp;a, &amp;b);</code>"
+          ],
+          [
+            "Parameter declared as",
+            "<code>int x, int y</code>",
+            "<code>int *x, int *y</code>"
+          ],
+          [
+            "Original variable",
+            "Not affected",
+            "Gets modified"
+          ],
+          [
+            "Memory used",
+            "Extra copy is created",
+            "Only the address is sent"
+          ],
+          [
+            "Default in C",
+            "Yes",
+            "No — simulated with pointers"
+          ],
+          [
+            "Best for",
+            "Read-only use, safety",
+            "Modifying data, multiple results, large data"
+          ]
+        ]
+      },
+      "worked": "<strong>Why swap by value fails — step by step</strong><br>In main: a = 10, b = 20<br><br><strong>Call swap(a, b):</strong> C creates two NEW variables x and y and copies into them<br>&nbsp;&nbsp;x = 10, y = 20 &nbsp;(a and b are untouched)<br>&nbsp;&nbsp;temp = x = 10<br>&nbsp;&nbsp;x = y &rarr; x = 20<br>&nbsp;&nbsp;y = temp &rarr; y = 10<br>&nbsp;&nbsp;Inside the function: x = 20, y = 10 &nbsp;<strong>(the swap worked here!)</strong><br>&nbsp;&nbsp;Function ends &rarr; x and y are destroyed<br><strong>Back in main: a = 10, b = 20 — NOTHING changed.</strong><br><br><strong>Call swap(&amp;a, &amp;b):</strong> the addresses are copied instead<br>&nbsp;&nbsp;x holds the address of a, y holds the address of b<br>&nbsp;&nbsp;temp = *x = 10 &nbsp;(reads the value at a's address)<br>&nbsp;&nbsp;*x = *y &rarr; a becomes 20<br>&nbsp;&nbsp;*y = temp &rarr; b becomes 10<br><strong>Back in main: a = 20, b = 10 — the swap is permanent.</strong>",
+      "code": "#include <stdio.h>\n\nvoid swapByValue(int x, int y) {      /* gets COPIES */\n    int temp = x;\n    x = y;\n    y = temp;                         /* only the copies are swapped */\n}\n\nvoid swapByReference(int *x, int *y) { /* gets ADDRESSES */\n    int temp = *x;\n    *x = *y;\n    *y = temp;                        /* the originals are swapped */\n}\n\nint main(void) {\n    int a = 10, b = 20;\n\n    swapByValue(a, b);\n    printf(\"After value    : a = %d, b = %d\\n\", a, b);   /* 10, 20 - unchanged */\n\n    swapByReference(&a, &b);\n    printf(\"After reference: a = %d, b = %d\\n\", a, b);   /* 20, 10 - swapped */\n    return 0;\n}",
+      "codeNote": "Identical logic in both functions. The only difference is * and & — and that is the difference between a swap that works and one that does nothing.",
+      "mistake": "Believing the value version 'did not swap properly'. It swapped perfectly — but it swapped the copies, and the copies disappear when the function ends. The bug is not in the swapping, it is in what was passed.",
+      "examAnswer": "In call by value, copies of the actual parameters are passed to the formal parameters of the called function, so the function operates on separate memory locations and any modification made inside the function does not affect the original variables in the calling function. In call by reference, the addresses of the actual parameters are passed and received in pointer variables, so the function accesses the original memory locations directly and any modification is reflected in the calling function. C supports only call by value as its default mechanism; call by reference is implemented by passing addresses using the address-of operator & and dereferencing them with the * operator. This is why a swap function written with ordinary value parameters fails to exchange the original variables, whereas the same logic written with pointer parameters succeeds.",
+      "remember": "Value = photocopy, original safe. Reference = original itself, changes stay.",
+      "why": "The swap program is the single most asked function question in this paper. If you can write both versions and explain why one fails, you have the full answer.",
+      "practice": "Write a function using call by reference that takes two integers and returns BOTH their sum and their product to main() — since return can only send one value."
+    },
+    {
+      "title": "Scope, Visibility and Lifetime of Variables",
+      "teacher": "Your hostel room key opens only your room. The warden's master key opens every room. Variables are the same — some are known only inside one function, some are known to the whole program. Knowing which is which stops a whole class of bugs.",
+      "explain": "<strong>Scope</strong> is the region of the program where a variable can be used. <strong>Visibility</strong> is whether that variable is actually accessible at a given point. <strong>Lifetime</strong> is how long the variable stays alive in memory. A <strong>local</strong> variable is declared inside a function and lives only while that function runs; a <strong>global</strong> variable is declared outside all functions and lives for the whole program.",
+      "keyPoints": [
+        "<strong>Local</strong> variable: declared inside a function or block; usable only there.",
+        "<strong>Global</strong> variable: declared outside every function; usable by all functions below it.",
+        "Local variables are created on each call and destroyed when the function ends.",
+        "Global variables are created once, before <code>main()</code> starts, and live until the program ends.",
+        "An uninitialised <strong>local</strong> variable contains <strong>garbage</strong>; an uninitialised <strong>global</strong> is automatically <strong>0</strong>.",
+        "If a local and a global share a name, the <strong>local wins</strong> inside that function — it hides the global.",
+        "Two different functions may each have a variable called <code>i</code> — they are completely separate.",
+        "Scope is decided at compile time; lifetime is about run time.",
+        "Use globals sparingly — any function can change them, which makes bugs hard to trace."
+      ],
+      "subtopics": [
+        {
+          "title": "Block scope",
+          "text": "Scope is not only per function — it is per <strong>block</strong>, meaning any pair of braces. A variable declared inside a <code>for</code> loop's body exists only inside that body and vanishes when the loop ends. This is why declaring a variable inside an <code>if</code> block and then using it afterwards gives an 'undeclared identifier' error."
+        },
+        {
+          "title": "Shadowing a global",
+          "text": "If a global <code>count</code> exists and a function also declares a local <code>count</code>, then inside that function every mention of <code>count</code> refers to the <strong>local</strong> one. The global is said to be <em>hidden</em> or <em>shadowed</em>. It still exists and other functions still see it — which is exactly why this causes such confusing bugs."
+        },
+        {
+          "title": "Scope versus lifetime — not the same thing",
+          "text": "These two are easy to mix up. Scope answers <em>where can I write this name?</em> Lifetime answers <em>how long does the value survive?</em> A <code>static</code> local variable is the proof that they differ: its scope is only that one function, but its lifetime is the entire program. That single sentence often carries a full mark."
+        }
+      ],
+      "realLife": "Your personal notebook is a local variable — only you use it, and you take it home after class. The class notice board is a global — everybody can read it and anybody can write on it, which is exactly why wrong notices appear on it.",
+      "table": {
+        "headers": [
+          "",
+          "Local variable",
+          "Global variable"
+        ],
+        "rows": [
+          [
+            "Declared",
+            "Inside a function or block",
+            "Outside all functions"
+          ],
+          [
+            "Scope",
+            "Only that function/block",
+            "The whole program"
+          ],
+          [
+            "Lifetime",
+            "Until the function ends",
+            "Until the program ends"
+          ],
+          [
+            "Default value",
+            "Garbage (undefined)",
+            "Zero"
+          ],
+          [
+            "Stored in",
+            "Stack",
+            "Data segment"
+          ],
+          [
+            "Risk",
+            "Low — private to one function",
+            "High — any function can change it"
+          ]
+        ]
+      },
+      "code": "#include <stdio.h>\n\nint count = 0;              /* GLOBAL - every function can see it, starts at 0 */\n\nvoid increase(void) {\n    int step = 5;           /* LOCAL - born and dies with each call */\n    count = count + step;   /* changes the global */\n}\n\nvoid show(void) {\n    /* printf(\"%d\", step);  ERROR - step does not exist here */\n    printf(\"count = %d\\n\", count);\n}\n\nint main(void) {\n    int count = 100;        /* LOCAL count HIDES the global inside main only */\n    increase();\n    increase();\n    show();                 /* prints 10 - the GLOBAL count */\n    printf(\"local count in main = %d\\n\", count);   /* prints 100 */\n    return 0;\n}",
+      "codeNote": "Two variables named count exist at once. Inside main() the local one wins; inside increase() and show() the global one is used.",
+      "mistake": "Assuming an uninitialised local variable starts at 0. Only globals and statics do that. A local starts with whatever junk was already in that memory — which is why your program 'works sometimes'.",
+      "examAnswer": "The scope of a variable is the region of the program in which the variable can be accessed, the visibility is whether the variable is accessible at a particular point, and the lifetime is the period during which the variable occupies memory. A local variable is declared inside a function or block and has block scope; it is created when the block is entered and destroyed when the block is exited, and if not explicitly initialised it contains an undefined garbage value. A global variable is declared outside all functions, is accessible to every function defined after it, exists for the entire duration of program execution, and is automatically initialised to zero. When a local variable has the same name as a global variable, the local variable hides the global variable within that block.",
+      "remember": "Scope = WHERE you can use it. Lifetime = HOW LONG it lives. Local hides global.",
+      "why": "Storage classes in the next topic are simply the four ways of controlling scope and lifetime — this topic is the vocabulary you need to understand that table.",
+      "practice": "In the program above, what does show() print and what does the last printf print? Explain why the two numbers differ."
+    },
+    {
+      "title": "Storage Classes: auto, register, static and extern",
+      "teacher": "Every variable secretly carries four labels: where it is stored, what it starts as, how long it lives, and who can see it. A storage class is just the word that sets all four at once. Only four words to learn — and one of them has a trick worth real marks.",
+      "explain": "A <strong>storage class</strong> specifies the <strong>storage location, default initial value, scope and lifetime</strong> of a variable. C has four storage classes: <code>auto</code>, <code>register</code>, <code>static</code> and <code>extern</code>. It is written before the data type, as in <code>static int count;</code>.",
+      "keyPoints": [
+        "A storage class decides four things: <strong>storage, default value, scope and lifetime</strong>.",
+        "<code>auto</code> — the <strong>default</strong> for every local variable; you almost never write it.",
+        "<code>register</code> — a <em>request</em> to keep the variable in a CPU register for speed.",
+        "You <strong>cannot</strong> take the address (<code>&amp;</code>) of a register variable — it may not be in memory.",
+        "<code>static</code> — keeps its value <strong>between calls</strong>, and is initialised only <strong>once</strong>.",
+        "<code>extern</code> — declares a variable that is <strong>defined in another file</strong>; it allocates no new memory.",
+        "Default value: auto and register hold <strong>garbage</strong>; static and extern start at <strong>0</strong>.",
+        "<code>static</code> on a global variable or function restricts its visibility to that <strong>one file</strong>.",
+        "The <code>register</code> keyword is only a hint — the compiler may ignore it."
+      ],
+      "subtopics": [
+        {
+          "title": "What makes static special",
+          "text": "A normal local variable is destroyed every time the function ends, so it restarts from scratch on the next call. A <code>static</code> local is created <strong>once</strong>, initialised <strong>once</strong>, and keeps its last value between calls — while its <em>scope</em> stays local to that function. A counter that must remember how many times the function has been called is the standard example, and the standard exam question."
+        },
+        {
+          "title": "extern and multi-file programs",
+          "text": "In a large program split across several <code>.c</code> files, a global defined in one file can be used in another by declaring it there as <code>extern int total;</code>. The word <code>extern</code> means 'this variable exists somewhere else — do not create a new one, just let me use it'. It is a <em>declaration</em>, not a definition, so no memory is allocated by it."
+        },
+        {
+          "title": "auto and register today",
+          "text": "<code>auto</code> is the default for locals, so writing it changes nothing — it survives mainly as an exam question. <code>register</code> asks the compiler to keep a heavily used variable, such as a loop counter, inside a fast CPU register instead of RAM. Because registers are few, the request may be refused, and modern optimising compilers usually make this decision better than you can."
+        }
+      ],
+      "realLife": "Storage class is like the kind of bag you keep something in. auto = your daily pouch, emptied every evening. register = your shirt pocket, fastest to reach, very little space. static = your personal locker, contents stay between visits. extern = borrowing a book that lives in the college library, not making your own copy.",
+      "table": {
+        "headers": [
+          "Storage class",
+          "Keyword",
+          "Stored in",
+          "Default value",
+          "Scope",
+          "Lifetime"
+        ],
+        "rows": [
+          [
+            "Automatic",
+            "auto",
+            "Memory (stack)",
+            "Garbage",
+            "Local to the block",
+            "Until the block ends"
+          ],
+          [
+            "Register",
+            "register",
+            "CPU register (if free)",
+            "Garbage",
+            "Local to the block",
+            "Until the block ends"
+          ],
+          [
+            "Static",
+            "static",
+            "Memory (data segment)",
+            "Zero",
+            "Local to the block (or file, for a global)",
+            "Whole program"
+          ],
+          [
+            "External",
+            "extern",
+            "Memory (data segment)",
+            "Zero",
+            "Whole program / all files",
+            "Whole program"
+          ]
+        ]
+      },
+      "code": "#include <stdio.h>\n\nvoid counter(void) {\n    auto  int a = 0;      /* auto = the default; recreated on every call */\n    static int s = 0;     /* created and initialised ONCE, ever */\n\n    a++;\n    s++;\n    printf(\"auto a = %d   static s = %d\\n\", a, s);\n}\n\nint main(void) {\n    register int i;       /* a request: keep this loop counter in a register */\n    for (i = 0; i < 3; i++) {\n        counter();\n    }\n    return 0;\n}\n\n/* Output:\n   auto a = 1   static s = 1\n   auto a = 1   static s = 2\n   auto a = 1   static s = 3   */",
+      "codeNote": "The auto variable restarts at 0 on every call, so it always prints 1. The static one remembers — that is the whole point of static.",
+      "mistake": "Thinking <code>static int s = 0;</code> runs its initialisation on every call. It does not. A static local is initialised exactly <strong>once</strong>, the first time; after that the line is simply skipped.",
+      "examAnswer": "A storage class in C specifies the storage location, default initial value, scope and lifetime of a variable. The auto storage class is the default for local variables; such variables are stored in memory, contain a garbage value if uninitialised, and exist only until the block in which they are declared terminates. The register storage class requests that the variable be stored in a CPU register for faster access; its address cannot be obtained using the & operator, and the request may be ignored by the compiler. The static storage class causes a variable to retain its value between successive function calls, because it is allocated for the entire duration of the program and initialised only once, although its scope remains limited to the block in which it is declared; static variables are initialised to zero by default. The extern storage class is used to declare a variable that is defined in another file or elsewhere in the program, allowing it to be shared without allocating additional memory.",
+      "remember": "auto = default, dies. register = fast, no &amp;. static = remembers. extern = defined elsewhere.",
+      "why": "'Explain storage classes in C with a table' is one of the most predictable long-answer questions in this paper — and the static counter output is a favourite short question.",
+      "practice": "Write a function that prints how many times it has been called, and call it four times. Then say what changes if you remove the word static."
+    },
+    {
+      "title": "Recursion: Basics and the Base Case",
+      "teacher": "Stand between two mirrors facing each other and you see yourself repeating, smaller and smaller, forever. Recursion is exactly that — a function looking into itself. The only difference is that a good program knows when to stop.",
+      "explain": "<strong>Recursion</strong> is the technique in which a function calls itself to solve a smaller instance of the same problem. Every recursive function must have two parts: a <strong>base case</strong> that stops the recursion and returns a value directly, and a <strong>recursive case</strong> that calls the function again with a smaller input, moving towards the base case.",
+      "keyPoints": [
+        "<strong>Recursion</strong> = a function calling itself on a smaller version of the same problem.",
+        "Every recursive function needs a <strong>base case</strong> — the condition where it stops calling itself.",
+        "The <strong>recursive case</strong> must move <strong>towards</strong> the base case, or it never ends.",
+        "Missing or unreachable base case &rarr; infinite recursion &rarr; <strong>stack overflow</strong> crash.",
+        "Each call gets its <strong>own copy</strong> of the local variables, kept in a <strong>stack frame</strong>.",
+        "Calls pile up on the stack first (winding), and results come back in <strong>reverse order</strong> (unwinding).",
+        "<code>factorial(1) = 1</code> is the base case of factorial; <code>n * factorial(n-1)</code> is the recursive case.",
+        "Recursion uses more memory than a loop because every pending call occupies stack space."
+      ],
+      "subtopics": [
+        {
+          "title": "Why the base case is everything",
+          "text": "Without a base case the function calls itself forever. Each call reserves memory on the <strong>call stack</strong>, and when the stack is exhausted the program crashes with a <em>stack overflow</em>. The base case is not optional decoration — it is the only thing standing between your program and a crash."
+        },
+        {
+          "title": "Winding and unwinding",
+          "text": "Recursion happens in two phases. In the <strong>winding</strong> phase the calls go deeper and deeper, each one waiting, none of them finished. When the base case is finally reached it returns an actual value, and the <strong>unwinding</strong> phase begins: each waiting call takes that result, completes its own multiplication and returns upward. Understanding these two phases is what makes a trace easy to write."
+        },
+        {
+          "title": "Writing a recursive function",
+          "text": "Ask two questions. First: <em>what is the smallest case I can answer instantly?</em> That is your base case. Second: <em>how do I express the big problem in terms of a slightly smaller one?</em> That is your recursive case. For factorial the answers are 'factorial of 1 is 1' and 'n! = n &times; (n-1)!' — and the code is then almost written for you."
+        }
+      ],
+      "realLife": "Standing in a long queue and asking 'how many people are ahead of me?' You ask the person in front, who asks the person in front of him, and so on. The first person in the queue answers 'zero' — that is the base case. The answer then travels back, each person adding one.",
+      "worked": "<strong>Trace factorial(4) — the call stack, step by step</strong><br><code>int fact(int n) { if (n &lt;= 1) return 1; return n * fact(n-1); }</code><br><br><strong>WINDING phase (calls pile up, nothing is finished yet):</strong><br>fact(4) &rarr; n is not 1, so it needs 4 &times; fact(3) &nbsp;&nbsp;<em>waits</em><br>&nbsp;&nbsp;fact(3) &rarr; needs 3 &times; fact(2) &nbsp;&nbsp;<em>waits</em><br>&nbsp;&nbsp;&nbsp;&nbsp;fact(2) &rarr; needs 2 &times; fact(1) &nbsp;&nbsp;<em>waits</em><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fact(1) &rarr; <strong>BASE CASE</strong>, returns 1 immediately<br><br><strong>UNWINDING phase (results travel back up):</strong><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fact(1) returns <strong>1</strong><br>&nbsp;&nbsp;&nbsp;&nbsp;fact(2) = 2 &times; 1 = <strong>2</strong><br>&nbsp;&nbsp;fact(3) = 3 &times; 2 = <strong>6</strong><br>fact(4) = 4 &times; 6 = <strong>24</strong><br><br><strong>Answer: factorial(4) = 24</strong><br>Note that 4 stack frames existed at the deepest point — one for each pending call. That is the memory cost a loop would not have paid.",
+      "code": "#include <stdio.h>\n\nint fact(int n) {\n    if (n <= 1) {\n        return 1;              /* BASE CASE - stops the recursion */\n    }\n    return n * fact(n - 1);    /* RECURSIVE CASE - smaller input */\n}\n\nint fib(int n) {\n    if (n == 0) return 0;      /* two base cases here */\n    if (n == 1) return 1;\n    return fib(n - 1) + fib(n - 2);\n}\n\nint main(void) {\n    printf(\"fact(4) = %d\\n\", fact(4));   /* 24 */\n    printf(\"fib(6)  = %d\\n\", fib(6));    /* 8  : 0 1 1 2 3 5 8 */\n    return 0;\n}",
+      "codeNote": "fact needs one base case; fib needs two, because its recursive case reaches back by both one step and two steps.",
+      "mistake": "Writing <code>return n * fact(n);</code> instead of <code>fact(n - 1)</code>. The input never gets smaller, the base case is never reached, and the program crashes with a stack overflow instead of printing an answer.",
+      "examAnswer": "Recursion is a programming technique in which a function calls itself, directly or indirectly, in order to solve a smaller instance of the same problem. Every recursive function must contain a base case, which specifies the condition under which the function returns a value without making any further recursive call, and a recursive case, which calls the function with an argument that moves closer to the base case. If the base case is absent or unreachable, the function calls itself indefinitely and the program terminates abnormally due to stack overflow. During execution, each recursive call creates a separate stack frame containing its own copy of the parameters and local variables; the calls accumulate on the stack during the winding phase and the results are computed and returned in reverse order during the unwinding phase.",
+      "remember": "Every recursion needs a base case (when to stop) and a smaller call (how to get there).",
+      "why": "Factorial, Fibonacci, sum of n numbers, GCD and Tower of Hanoi are all standard recursion questions, and every one of them is answered with the same base-case-plus-smaller-call structure.",
+      "practice": "Write a recursive function to find the sum of the first n natural numbers, and trace it fully for n = 4."
+    },
+    {
+      "title": "Types of Recursion: Direct, Indirect, Tree and Tail",
+      "teacher": "Not all recursion looks the same. Sometimes a function calls itself directly, sometimes two functions call each other in a circle, and sometimes one call splits into two and grows like a tree. Four names, four shapes — and they are very easy marks.",
+      "explain": "Recursion is classified by <strong>how</strong> the recursive call is made. In <strong>direct recursion</strong> a function calls itself. In <strong>indirect recursion</strong> function A calls B and B calls A back. In <strong>tree recursion</strong> a function makes <strong>more than one</strong> recursive call in a single invocation. In <strong>tail recursion</strong> the recursive call is the <strong>very last operation</strong> performed.",
+      "keyPoints": [
+        "<strong>Direct</strong> — the function calls itself: <code>fact()</code> calls <code>fact()</code>.",
+        "<strong>Indirect</strong> — a circle of calls: <code>isEven()</code> calls <code>isOdd()</code>, which calls <code>isEven()</code>.",
+        "<strong>Tree</strong> — more than one recursive call per invocation, e.g. <code>fib(n-1) + fib(n-2)</code>.",
+        "<strong>Tail</strong> — the recursive call is the <strong>last</strong> thing done; nothing is pending after it.",
+        "Ordinary <code>factorial</code> is <strong>not</strong> tail recursive — the multiplication happens <em>after</em> the call returns.",
+        "Tail recursion can be optimised by some compilers into a plain loop, saving stack memory.",
+        "Tree recursion is the most expensive: <code>fib(n)</code> repeats the same sub-calls many times.",
+        "A tail-recursive version usually needs an extra 'accumulator' parameter that carries the running answer."
+      ],
+      "subtopics": [
+        {
+          "title": "Direct and indirect",
+          "text": "Direct recursion is the familiar kind — the function's own name appears inside its body. Indirect recursion is a cycle through two or more functions: A calls B, and B calls A. It is harder to spot and harder to trace, which is why examiners like asking for a definition and a one-line example of it."
+        },
+        {
+          "title": "Tree recursion and why fib is slow",
+          "text": "In <code>fib(n) = fib(n-1) + fib(n-2)</code>, one call produces two calls, each of which produces two more. The calls branch out like a tree. The trouble is that the same value is recomputed again and again — <code>fib(5)</code> alone computes <code>fib(2)</code> three separate times. The work grows roughly exponentially, which is why recursive Fibonacci becomes unusably slow around n = 40."
+        },
+        {
+          "title": "Tail recursion in detail",
+          "text": "A call is <em>tail</em> recursive only if nothing at all remains to be done after it returns. <code>return fact(n-1);</code> is tail recursive; <code>return n * fact(n-1);</code> is <strong>not</strong>, because the multiplication is still pending and the stack frame must be kept alive for it. Rewriting with an accumulator — <code>factTail(n-1, acc*n)</code> — makes it tail recursive, and a compiler can then reuse one stack frame instead of n of them."
+        }
+      ],
+      "realLife": "Direct recursion is asking yourself the same question again. Indirect recursion is you asking your friend, and your friend asking you back — the classic 'you decide' 'no, you decide' loop. Tree recursion is one rumour told to two people, who each tell two more.",
+      "table": {
+        "headers": [
+          "Type",
+          "What happens",
+          "Example",
+          "Cost"
+        ],
+        "rows": [
+          [
+            "Direct",
+            "Function calls itself",
+            "<code>fact()</code> calls <code>fact()</code>",
+            "n stack frames"
+          ],
+          [
+            "Indirect",
+            "A calls B, B calls A",
+            "<code>isEven()</code> &harr; <code>isOdd()</code>",
+            "n stack frames"
+          ],
+          [
+            "Tree",
+            "More than one call per invocation",
+            "<code>fib(n-1) + fib(n-2)</code>",
+            "Grows very fast (exponential)"
+          ],
+          [
+            "Tail",
+            "Recursive call is the last operation",
+            "<code>return factTail(n-1, acc*n);</code>",
+            "Can be optimised into a loop"
+          ]
+        ]
+      },
+      "code": "#include <stdio.h>\n\n/* DIRECT - calls itself */\nint sumN(int n) {\n    if (n == 0) return 0;\n    return n + sumN(n - 1);\n}\n\n/* INDIRECT - these two call each other */\nint isOdd(int n);\nint isEven(int n) {\n    if (n == 0) return 1;\n    return isOdd(n - 1);\n}\nint isOdd(int n) {\n    if (n == 0) return 0;\n    return isEven(n - 1);\n}\n\n/* TREE - two recursive calls in one invocation */\nint fib(int n) {\n    if (n < 2) return n;\n    return fib(n - 1) + fib(n - 2);\n}\n\n/* TAIL - nothing is pending after the recursive call */\nint factTail(int n, int acc) {\n    if (n <= 1) return acc;\n    return factTail(n - 1, acc * n);   /* the call IS the last operation */\n}\n\nint main(void) {\n    printf(\"%d %d %d %d\\n\", sumN(4), isEven(6), fib(6), factTail(4, 1));\n    /* prints: 10 1 8 24 */\n    return 0;\n}",
+      "codeNote": "Compare factTail with the ordinary fact: moving the multiplication INTO the argument is exactly what turns non-tail recursion into tail recursion.",
+      "mistake": "Calling ordinary factorial 'tail recursive'. In <code>return n * fact(n-1);</code> the multiplication still has to happen after the call comes back, so the frame cannot be discarded — it is <strong>not</strong> tail recursion.",
+      "examAnswer": "Recursion is classified into several types according to the manner in which the recursive call is made. In direct recursion a function calls itself within its own body, as in the factorial function. In indirect recursion a function calls a second function which in turn calls the first function, forming a cycle of calls. In tree recursion a single invocation of the function makes more than one recursive call, as in the Fibonacci function which calls fib(n-1) and fib(n-2); such recursion generates a tree of calls and its time requirement grows exponentially. In tail recursion the recursive call is the last operation performed by the function, with no computation pending after it returns; such functions can be transformed by the compiler into an iterative loop, thereby avoiding the growth of the call stack.",
+      "remember": "Direct = itself. Indirect = each other. Tree = two calls. Tail = call comes last.",
+      "why": "'Explain the types of recursion with examples' is a straightforward long-answer question, and the tail-versus-non-tail distinction in factorial is the detail that separates a full answer from an average one.",
+      "practice": "Say which type each is, with a reason: (a) fact(n) = n * fact(n-1)  (b) fib(n) = fib(n-1) + fib(n-2)  (c) A() calls B(), B() calls A()  (d) return helper(n-1, acc+n);"
+    },
+    {
+      "title": "Recursion vs Iteration: When to Avoid Recursion",
+      "teacher": "Recursion looks elegant — three lines instead of eight. But elegance is not free. Let us be honest about what recursion costs, so that in the exam you can say not just <em>how</em> it works, but <em>when you should refuse to use it</em>.",
+      "explain": "<strong>Iteration</strong> repeats work with a loop, using one set of variables. <strong>Recursion</strong> repeats work by calling the function again, and each call consumes a new <strong>stack frame</strong> for its parameters and local variables. Recursion is usually shorter and closer to the mathematical definition, while iteration is faster and uses far less memory.",
+      "keyPoints": [
+        "Iteration uses a loop; recursion uses repeated function calls.",
+        "Recursion needs <strong>extra memory</strong> — one stack frame per pending call.",
+        "Recursion is <strong>slower</strong>, because every call has function-call overhead.",
+        "Recursive code is usually <strong>shorter and clearer</strong> for naturally recursive problems.",
+        "Iteration stops with a loop condition; recursion stops with a <strong>base case</strong>.",
+        "Infinite iteration just hangs; infinite recursion <strong>crashes</strong> with a stack overflow.",
+        "Avoid recursion for simple counting, sums and factorials of large n — a loop is plainly better.",
+        "Avoid plain tree recursion like <code>fib()</code> for large n — it recomputes the same values endlessly.",
+        "Prefer recursion for trees, Tower of Hanoi, and divide-and-conquer sorting such as merge sort and quick sort."
+      ],
+      "subtopics": [
+        {
+          "title": "The memory cost, concretely",
+          "text": "An iterative factorial of 1000 uses two variables. A recursive factorial of 1000 creates <strong>1000 stack frames</strong>, all alive at the same time, each holding its own <code>n</code> and its return address. The stack is a limited region of memory, typically only a few megabytes — deep recursion is how programs run out of it."
+        },
+        {
+          "title": "When you should avoid recursion",
+          "text": "Avoid it when the problem is naturally a simple repetition — printing 1 to 100, summing an array, or counting. Avoid it when the depth may be large, because the stack will overflow. And avoid naive tree recursion such as Fibonacci for large inputs, where the same sub-problems are solved over and over. In all these cases a loop is shorter in memory, faster in time, and no harder to read."
+        },
+        {
+          "title": "When recursion genuinely wins",
+          "text": "Some problems are recursive by their very definition, and forcing a loop onto them requires you to manage your own stack by hand. Tower of Hanoi, traversing a tree or folder structure, merge sort and quick sort all fall into this group. Here the recursive solution is short, obviously correct, and the honest answer in the exam is 'recursion, because the problem itself is recursive'."
+        }
+      ],
+      "realLife": "Climbing stairs by yourself, one at a time, is iteration — you only ever need your own two legs. Recursion is passing a message down a chain of people: it works beautifully, but every person in the chain must stand and wait until the answer comes back.",
+      "table": {
+        "headers": [
+          "",
+          "Recursion",
+          "Iteration"
+        ],
+        "rows": [
+          [
+            "How it repeats",
+            "Function calls itself",
+            "A loop (for / while / do-while)"
+          ],
+          [
+            "Stops because of",
+            "Base case",
+            "Loop condition becomes false"
+          ],
+          [
+            "Memory used",
+            "High — one stack frame per call",
+            "Low — one set of variables"
+          ],
+          [
+            "Speed",
+            "Slower (function-call overhead)",
+            "Faster"
+          ],
+          [
+            "Code length",
+            "Usually shorter",
+            "Usually longer"
+          ],
+          [
+            "If it never stops",
+            "Stack overflow — the program crashes",
+            "Infinite loop — the program hangs"
+          ],
+          [
+            "Best for",
+            "Tower of Hanoi, trees, merge/quick sort",
+            "Counting, sums, array traversal"
+          ]
+        ]
+      },
+      "code": "#include <stdio.h>\n\n/* ITERATIVE - one variable, no extra stack frames */\nint factIterative(int n) {\n    int i, result = 1;\n    for (i = 2; i <= n; i++) {\n        result = result * i;\n    }\n    return result;\n}\n\n/* RECURSIVE - shorter to read, but n stack frames deep */\nint factRecursive(int n) {\n    if (n <= 1) return 1;\n    return n * factRecursive(n - 1);\n}\n\nint main(void) {\n    printf(\"iterative: %d\\n\", factIterative(5));   /* 120 */\n    printf(\"recursive: %d\\n\", factRecursive(5));   /* 120 */\n    return 0;\n}",
+      "codeNote": "Same answer, 120, from both. The recursive one is three lines shorter but keeps five stack frames alive at its deepest point.",
+      "mistake": "Saying 'recursion is faster because the code is shorter'. Short code is not fast code. Recursion is almost always <strong>slower and heavier</strong> than the equivalent loop — its advantage is clarity, not speed.",
+      "examAnswer": "Both recursion and iteration are used to execute a set of statements repeatedly, but they differ in mechanism and cost. Iteration repeats a block of statements using a loop construct and terminates when the loop condition becomes false, requiring only a single set of variables. Recursion repeats work by having a function call itself and terminates when the base case is reached; each pending call creates a separate stack frame holding its own parameters, local variables and return address, so recursion consumes considerably more memory and incurs function-call overhead, making it slower than the equivalent iterative solution. A non-terminating loop merely causes the program to hang, whereas non-terminating recursion exhausts the stack and causes abnormal termination. Recursion should therefore be avoided for simple repetitive tasks and for large recursion depths, but is preferred for inherently recursive problems such as the Tower of Hanoi, tree traversal and divide-and-conquer sorting algorithms.",
+      "remember": "Recursion = shorter code, more memory. Iteration = longer code, faster and safer.",
+      "why": "The comparison table is a guaranteed question, and the 'when to avoid recursion' part is where most students stop writing — finish it and you finish the answer.",
+      "practice": "Write factorial both ways and state, for n = 5, how many stack frames the recursive version creates and how many variables the iterative version uses."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Why does a swap() function written with ordinary int parameters fail to swap the variables in main()?",
+      "options": [
+        "The swapping logic inside it is wrong",
+        "It swaps copies of the values, and the copies are destroyed when the function ends",
+        "C does not allow a function to have two parameters",
+        "The function must be declared void"
+      ],
+      "answer": 1,
+      "why": "Call by value passes copies. The swap works perfectly on those copies, but they die with the function, so the originals in main() are untouched."
+    },
+    {
+      "q": "What is the default storage class of a local variable in C?",
+      "options": [
+        "static",
+        "extern",
+        "auto",
+        "register"
+      ],
+      "answer": 2,
+      "why": "Every local variable is auto unless you say otherwise, which is why the keyword auto is almost never written out."
+    },
+    {
+      "q": "A function contains <code>static int s = 0; s++; printf(\"%d \", s);</code> and is called three times. What is printed?",
+      "options": [
+        "1 1 1",
+        "0 0 0",
+        "1 2 3",
+        "3 3 3"
+      ],
+      "answer": 2,
+      "why": "A static local is initialised only once and keeps its value between calls, so s goes 1, then 2, then 3. An auto variable would have printed 1 1 1."
+    },
+    {
+      "q": "Which part of a recursive function stops it from calling itself forever?",
+      "options": [
+        "The return type",
+        "The base case",
+        "The prototype",
+        "The recursive case"
+      ],
+      "answer": 1,
+      "why": "The base case returns a value directly without any further call. Without a reachable base case the program crashes with a stack overflow."
+    },
+    {
+      "q": "<code>fib(n) = fib(n-1) + fib(n-2)</code> is an example of which type of recursion?",
+      "options": [
+        "Tail recursion",
+        "Indirect recursion",
+        "Tree recursion",
+        "No recursion at all"
+      ],
+      "answer": 2,
+      "why": "One invocation makes two recursive calls, so the calls branch out like a tree. This is why naive recursive Fibonacci becomes extremely slow for large n."
+    },
+    {
+      "q": "An uninitialised LOCAL variable in C contains…",
+      "options": [
+        "zero",
+        "a garbage (undefined) value",
+        "the value 1",
+        "NULL"
+      ],
+      "answer": 1,
+      "why": "Only static and global (extern) variables are automatically set to zero. An auto local holds whatever junk was already at that memory location."
+    },
+    {
+      "q": "Which statement about <code>return n * fact(n-1);</code> is correct?",
+      "options": [
+        "It is tail recursion",
+        "It is not tail recursion, because the multiplication is pending after the call returns",
+        "It is indirect recursion",
+        "It has no base case"
+      ],
+      "answer": 1,
+      "why": "Tail recursion requires the recursive call to be the very last operation. Here the result must still be multiplied by n, so the stack frame cannot be discarded."
+    },
+    {
+      "q": "What does the <code>extern</code> storage class do?",
+      "options": [
+        "Creates a new variable in fast CPU memory",
+        "Makes a variable keep its value between function calls",
+        "Declares a variable that is defined elsewhere, without allocating new memory",
+        "Restricts a variable to one function"
+      ],
+      "answer": 2,
+      "why": "extern is a declaration, not a definition. It tells the compiler the variable already exists somewhere else in the program, so no new memory is reserved."
+    },
+    {
+      "q": "Compared with the equivalent loop, recursion generally…",
+      "options": [
+        "uses less memory and runs faster",
+        "uses more memory and runs slower",
+        "uses the same memory and the same time",
+        "cannot be used for the same problems"
+      ],
+      "answer": 1,
+      "why": "Each pending recursive call needs its own stack frame and every call has overhead. Recursion's advantage is clearer code, never speed."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "What is a function? Explain the need for functions in C and describe the four categories of user-defined functions with a small example of each."
+    },
+    {
+      "q": "Distinguish between call by value and call by reference. Write a C program to swap two numbers using each method, and explain clearly why the call-by-value version does not change the original variables.",
+      "hint": "Trace what happens to the copies x and y when the function ends — that is the whole reason."
+    },
+    {
+      "q": "Define scope, visibility and lifetime of a variable. Explain the four storage classes in C (auto, register, static, extern) with a comparison table showing storage location, default value, scope and lifetime."
+    },
+    {
+      "q": "What is recursion? Write a recursive function to calculate the factorial of a number and trace the complete call stack for factorial(5), showing both the winding and unwinding phases.",
+      "hint": "Winding: the calls pile up. Unwinding: 1, then 2, then 6, then 24, then 120."
+    },
+    {
+      "q": "Explain direct, indirect, tree and tail recursion with one example each. Compare recursion with iteration in a table and state three situations in which recursion should be avoided."
+    }
+  ]
+};

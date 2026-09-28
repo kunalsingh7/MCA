@@ -1,0 +1,630 @@
+/* Technical Communication (MCA 112) — Unit 2. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.comm = UNITS.comm || [];
+UNITS.comm[1] = {
+  "num": 2,
+  "title": "Analytical Reading Skills",
+  "problem": "You read a whole page, reach the end, and realise you remember nothing. In an exam you read an unseen passage twice and still cannot pick the right option. Reading happened — understanding did not.",
+  "solution": "Analytical reading teaches you to read with a purpose and a plan: the right technique for the right text, questions in your mind while your eyes move, and a method for finding the exact line in the passage that proves your answer.",
+  "objectives": [
+    "Explain what reading comprehension really means, beyond just knowing the words",
+    "Identify the common reading difficulties and apply a fix for each one",
+    "Compare active and passive reading and describe the habits of an active reader",
+    "Choose between skimming, scanning, intensive and extensive reading for a given situation",
+    "Apply the five steps of the SQ3R method to a textbook chapter",
+    "Locate the main idea and the supporting details in a paragraph",
+    "Distinguish a stated fact from an inference drawn from the passage",
+    "Answer multiple-choice questions on an unseen passage using textual evidence"
+  ],
+  "topics": [
+    {
+      "title": "What Reading Comprehension Really Means",
+      "teacher": "Here is a small test. You can read the sentence 'The committee deferred the proposal pending clarification'. Every word is readable. But can you say what actually happened? Reading and comprehension are two different skills — and only the second one gets you marks.",
+      "explain": "<strong>Reading</strong> is recognising the words on the page. <strong>Comprehension</strong> is understanding the meaning behind them — what the writer is saying, why he is saying it, and what follows from it. Comprehension means you can restate the idea <strong>in your own words</strong>, answer questions about it, and use it later.",
+      "keyPoints": [
+        "Reading = decoding words. Comprehension = understanding meaning.",
+        "The real test of comprehension: can you explain it in your own words?",
+        "<strong>Literal</strong> comprehension — what the text directly says.",
+        "<strong>Interpretive</strong> comprehension — what the text implies or suggests.",
+        "<strong>Critical</strong> comprehension — judging whether it is true, fair or useful.",
+        "<strong>Creative</strong> comprehension — applying the idea to a new situation.",
+        "Comprehension depends on vocabulary, background knowledge and attention.",
+        "Speed without understanding is worthless; understanding is the goal."
+      ],
+      "subtopics": [
+        {
+          "title": "The four levels of comprehension",
+          "text": "<strong>Literal:</strong> 'What does the passage say?' — facts directly written. <strong>Interpretive:</strong> 'What does the writer mean?' — ideas implied but not stated. <strong>Critical:</strong> 'Is this correct and fair?' — you evaluate the writer's argument. <strong>Creative:</strong> 'Where else can I use this?' — you apply the idea somewhere new. University questions usually test the first two; a good answer shows the third."
+        },
+        {
+          "title": "Why vocabulary decides so much",
+          "text": "If four unknown words appear in a paragraph, your brain stops at each one and loses the thread of the sentence. This is why a weak vocabulary feels like a weak brain, when it is really just a missing word list. Keep a small notebook, write every new word with one example sentence, and revise it weekly. Vocabulary is the single fastest way to improve comprehension."
+        },
+        {
+          "title": "Purpose changes how you read",
+          "text": "Before you read anything, ask 'why am I reading this?' Reading a newspaper for general awareness, a textbook for an exam, and a train timetable for one departure time are three completely different jobs. Setting the purpose first tells you which technique to use and how slowly to go."
+        }
+      ],
+      "realLife": "You read a WhatsApp forward about a scholarship. You can read every word — but when your friend asks 'so who can apply and by what date?', you cannot answer. You read it; you did not comprehend it.",
+      "mistake": "Comprehension is not memorising the sentences. If you can repeat the lines but cannot explain the idea in your own words, you have memorised — not understood.",
+      "examAnswer": "Reading comprehension is the ability to understand, interpret and use the meaning of a written text, as distinct from merely recognising the words it contains. It operates at four levels: literal comprehension, which concerns what the text directly states; interpretive comprehension, which concerns what the text implies; critical comprehension, which involves evaluating the accuracy and fairness of the writer's argument; and creative comprehension, which involves applying the idea to new situations. Comprehension depends largely on the reader's vocabulary, background knowledge, concentration and clarity of purpose. A reader has truly comprehended a text only when he can restate its ideas in his own words.",
+      "remember": "Reading = seeing words. Comprehension = owning the meaning.",
+      "why": "Every exam paper, job description, contract and error message you will ever face is a comprehension test. This skill never stops being used.",
+      "practice": "Read any one paragraph from a newspaper, close it, and write its meaning in two sentences of your own words."
+    },
+    {
+      "title": "Common Reading Difficulties",
+      "teacher": "If you have ever caught your eyes going back over the same line again and again, you are not slow or dull — you have a named, fixable habit. Let's give each of these problems its proper name so you can attack it.",
+      "explain": "Most reading problems are <strong>habits</strong>, not a lack of intelligence. The main ones are poor vocabulary, sub-vocalisation, regression, poor concentration, difficult sentence structure and reading without a purpose. Each one has a specific cure.",
+      "keyPoints": [
+        "<strong>Poor vocabulary</strong> — unknown words break the flow of meaning.",
+        "<strong>Sub-vocalisation</strong> — silently 'saying' every word in your head; it limits you to speaking speed.",
+        "<strong>Regression</strong> — eyes jumping back to re-read lines already read.",
+        "<strong>Poor concentration</strong> — phone, noise, tiredness, wandering mind.",
+        "<strong>Difficult sentence structure</strong> — long sentences with many clauses.",
+        "<strong>No clear purpose</strong> — reading without knowing what you are looking for.",
+        "<strong>Narrow eye span</strong> — reading one word at a time instead of word groups.",
+        "Almost all of these are habits, and habits can be retrained.",
+        "Fix: word notebook, finger/pen pacing, phone away, break long sentences."
+      ],
+      "subtopics": [
+        {
+          "title": "Sub-vocalisation — the silent voice",
+          "text": "Most people hear a small voice pronouncing each word as they read. Because you cannot speak faster than about 150 words a minute, that voice puts a ceiling on your reading speed. You cannot remove it completely, and for difficult technical text you should not try — but for easy text you can reduce it by moving a pen or finger slightly faster than comfortable, which pushes your eyes to take in groups of words."
+        },
+        {
+          "title": "Regression — the backward jump",
+          "text": "<strong>Regression</strong> means your eyes go back to re-read something you have already read. A little of it is normal and necessary. The problem is <strong>unconscious</strong> regression caused by a wandering mind — you re-read the same line four times and still absorb nothing. The standard cure is pacing: run a pen or finger under the line so your eyes have something to follow forward."
+        },
+        {
+          "title": "Difficult sentence structure",
+          "text": "Legal, academic and technical writing often packs three ideas into one forty-word sentence. When a sentence defeats you, break it manually: find the main verb, find who is doing it, and read the remaining clauses as separate small facts. Rewriting one hard sentence as three short ones on a rough page is a legitimate exam technique, not a waste of time."
+        },
+        {
+          "title": "Concentration and environment",
+          "text": "Concentration is mostly an environment problem, not a willpower problem. Phone in another room, a fixed place for study, water nearby, and short focused blocks of about 25 to 30 minutes with a short break between them. Reading when very tired or immediately after a heavy meal gives the lowest return per hour you will ever get."
+        }
+      ],
+      "realLife": "You sit down to read a chapter with your phone face-up beside you. Every notification restarts the paragraph. After 40 minutes you have read two pages three times each. That is regression plus poor concentration — not a lack of ability.",
+      "table": {
+        "headers": [
+          "Difficulty",
+          "What It Looks Like",
+          "The Fix"
+        ],
+        "rows": [
+          [
+            "Poor vocabulary",
+            "Stopping at unknown words",
+            "Word notebook, guess from context, then check"
+          ],
+          [
+            "Sub-vocalisation",
+            "Inner voice reading aloud",
+            "Pace with a pen, read word groups"
+          ],
+          [
+            "Regression",
+            "Eyes jumping back repeatedly",
+            "Use a finger or pen as a guide"
+          ],
+          [
+            "Poor concentration",
+            "Mind wanders, phone pulls you",
+            "Phone away, 25-minute focused blocks"
+          ],
+          [
+            "Hard sentence structure",
+            "Very long, multi-clause sentences",
+            "Find the main verb, split into short parts"
+          ],
+          [
+            "No purpose",
+            "Reading with no question in mind",
+            "Ask 'what am I looking for?' first"
+          ]
+        ]
+      },
+      "mistake": "Do not treat slow reading as proof that you are weak at English. Nearly every difficulty here is a mechanical habit — regression, sub-vocalisation, distraction — and each one has a simple, trainable fix.",
+      "examAnswer": "The common difficulties in reading include a limited vocabulary, which interrupts the flow of meaning when unfamiliar words are encountered; sub-vocalisation, the habit of silently pronouncing each word, which restricts reading speed to speaking speed; regression, the tendency of the eyes to move back and re-read material unnecessarily; poor concentration caused by distractions, fatigue or lack of interest; complex sentence structure containing several clauses; and reading without a definite purpose. These difficulties are largely habitual and can be overcome by systematic vocabulary building, using a pen or finger as a pacer, removing distractions, breaking long sentences into shorter units, and defining a clear purpose before reading.",
+      "remember": "V-S-R-C: Vocabulary, Sub-vocalisation, Regression, Concentration — the big four.",
+      "why": "You cannot cure a problem you cannot name. Naming your own difficulty turns a vague feeling of 'I am bad at English' into a specific habit you can fix this week.",
+      "practice": "Read one page and honestly note which two difficulties above affected you most. Write one fix you will try tomorrow for each."
+    },
+    {
+      "title": "Active vs Passive Reading",
+      "teacher": "Two students read the same chapter for the same one hour. One remembers it in the exam, the other remembers nothing. The difference is not intelligence — it is whether the brain was switched on or just the eyes.",
+      "explain": "<strong>Passive reading</strong> is letting your eyes move over the text while your mind stays silent. <strong>Active reading</strong> is having a conversation with the text — asking questions, predicting, underlining, making notes and summarising in your own words. Active reading is slower per page but far faster per mark.",
+      "keyPoints": [
+        "Passive = eyes only. Active = eyes plus questions.",
+        "Active readers set a <strong>purpose</strong> before starting.",
+        "Active readers ask questions from the headings.",
+        "Active readers mark, underline and write margin notes.",
+        "Active readers pause to summarise in their own words.",
+        "Active readers connect new ideas to what they already know.",
+        "Passive reading gives poor recall and a false feeling of 'I've done it'.",
+        "Active reading takes more effort but needs far less revision later."
+      ],
+      "subtopics": [
+        {
+          "title": "The habits that make reading active",
+          "text": "Before: look at the title, headings and diagrams, and turn each heading into a question. During: underline only the key phrase, not whole paragraphs; write one short note in the margin per section; stop at the end of each section and say the idea aloud in your own words. After: close the book and write four or five lines from memory. If you cannot, you did not read actively."
+        },
+        {
+          "title": "Why passive reading feels productive",
+          "text": "This is the trap. Passive reading is comfortable and covers pages quickly, so it feels like progress. But familiarity is not knowledge — recognising a page when you see it again is very different from being able to produce the content in an exam hall where the page is not in front of you."
+        },
+        {
+          "title": "Marking a text properly",
+          "text": "Underlining half the chapter is the same as underlining nothing. Mark only definitions, lists, cause-effect statements and anything the writer signals as important ('the main reason', 'three factors', 'therefore'). A good rule is no more than one or two marked lines per paragraph."
+        }
+      ],
+      "realLife": "Watching a cricket match while scrolling your phone versus watching it while keeping score yourself. Same match, same time spent — but only one of you can describe the innings afterwards. That is passive versus active.",
+      "table": {
+        "headers": [
+          "",
+          "Active Reading",
+          "Passive Reading"
+        ],
+        "rows": [
+          [
+            "Mind",
+            "Questioning, predicting, thinking",
+            "Silent, just following words"
+          ],
+          [
+            "Purpose",
+            "Decided before starting",
+            "None, or 'to finish the chapter'"
+          ],
+          [
+            "Pen in hand",
+            "Yes — marks, notes, summaries",
+            "No"
+          ],
+          [
+            "Speed",
+            "Slower per page",
+            "Faster per page"
+          ],
+          [
+            "Recall later",
+            "Strong and long-lasting",
+            "Weak, fades quickly"
+          ],
+          [
+            "Revision needed",
+            "Less — notes already exist",
+            "More — must read it all again"
+          ],
+          [
+            "Best for",
+            "Textbooks, exams, technical documents",
+            "Light reading, novels, entertainment"
+          ]
+        ]
+      },
+      "mistake": "Passive reading is not always wrong. For a novel or a magazine it is perfectly fine. The error is using passive reading for a textbook and then wondering why nothing stayed in your memory.",
+      "examAnswer": "Active reading is a purposeful and interactive approach in which the reader engages with the text by setting a purpose, forming questions from the headings, predicting content, underlining key ideas, making notes and summarising the material in his own words. Passive reading, in contrast, is a mechanical process in which the reader merely moves his eyes over the words without questioning or responding to the content. Active reading is slower but results in far better understanding and retention, and is therefore suitable for textbooks and technical material, whereas passive reading may be adequate for light or recreational reading.",
+      "remember": "Passive reads the page. Active questions the page.",
+      "why": "This single change — reading with a pen and a question in mind — usually improves recall more than any amount of extra reading hours.",
+      "practice": "Take one page of any textbook. Write three questions from its headings BEFORE reading, then read to answer them."
+    },
+    {
+      "title": "The Four Reading Techniques",
+      "teacher": "You would not search a phone directory the way you read a love letter. Different texts need different speeds. There are four standard techniques, and choosing the right one is half the skill.",
+      "explain": "The four techniques are <strong>skimming</strong> (fast, for the general idea), <strong>scanning</strong> (fast, for one specific detail), <strong>intensive reading</strong> (slow and careful, for full understanding) and <strong>extensive reading</strong> (relaxed and wide, for fluency and pleasure). Skilled readers switch between them constantly.",
+      "keyPoints": [
+        "<strong>Skimming</strong> — read fast to get the <em>general idea</em> or gist.",
+        "Skim by reading the title, headings, first and last sentences of paragraphs.",
+        "<strong>Scanning</strong> — move fast to find one <em>specific</em> fact, name, date or number.",
+        "While scanning you ignore everything that is not what you are hunting for.",
+        "<strong>Intensive</strong> — slow, detailed reading of a short text for complete understanding.",
+        "Intensive reading is what you use for a textbook, a contract or an exam passage.",
+        "<strong>Extensive</strong> — reading a lot of easier material widely, for fluency and pleasure.",
+        "Extensive reading is the best long-term way to build vocabulary naturally.",
+        "Skim and scan are FAST; intensive is SLOW; extensive is WIDE."
+      ],
+      "subtopics": [
+        {
+          "title": "Skimming vs scanning — the classic confusion",
+          "text": "<strong>Skimming</strong> answers 'what is this text about, overall?' You move over the whole text quickly and accept that you will miss details. <strong>Scanning</strong> answers 'where is this one fact?' You already know exactly what you want — a date, a name, a price — and your eyes reject everything else until they hit it. Skim = whole text, general. Scan = specific point, targeted."
+        },
+        {
+          "title": "Intensive reading",
+          "text": "Intensive reading is slow, repeated, dictionary-in-hand reading of a short passage until you understand every sentence. It is used for textbook chapters, legal documents, research papers and unseen comprehension passages. Its aim is depth and accuracy, not coverage. One paragraph read intensively is worth ten paragraphs skimmed when the exam asks for detail."
+        },
+        {
+          "title": "Extensive reading",
+          "text": "Extensive reading means reading a large quantity of fairly easy material — novels, magazines, newspapers, blogs — for general understanding and enjoyment, without stopping at every word. It builds vocabulary, grammar sense and reading speed almost without effort, simply through exposure. For a student whose English is still developing, twenty minutes of extensive reading a day does more than any grammar exercise."
+        },
+        {
+          "title": "Using them together in one task",
+          "text": "In a real comprehension question all four ideas combine. You <strong>skim</strong> the passage once for the overall subject, <strong>scan</strong> for the keywords from each question, then read that part <strong>intensively</strong> to confirm the exact answer. The <strong>extensive</strong> reading you did over months is what makes the vocabulary in that passage feel familiar."
+        }
+      ],
+      "realLife": "Looking at a restaurant menu to see 'what kind of food is this place' is skimming. Hunting down the page for the price of paneer butter masala is scanning. Reading your Operating Systems chapter line by line is intensive. Reading novels over the holidays is extensive.",
+      "table": {
+        "headers": [
+          "Technique",
+          "Speed",
+          "Purpose",
+          "When to Use It"
+        ],
+        "rows": [
+          [
+            "Skimming",
+            "Very fast",
+            "General idea / gist",
+            "Deciding if an article is useful"
+          ],
+          [
+            "Scanning",
+            "Very fast",
+            "One specific detail",
+            "Finding a date, name or figure"
+          ],
+          [
+            "Intensive",
+            "Slow, careful",
+            "Complete understanding",
+            "Textbook, contract, exam passage"
+          ],
+          [
+            "Extensive",
+            "Relaxed, wide",
+            "Fluency and pleasure",
+            "Novels, newspapers, daily habit"
+          ]
+        ]
+      },
+      "mistake": "Students mix up skimming and scanning constantly. Remember: SCAN has a 'C' for <strong>C</strong>ertain detail you are hunting. SKIM is for the <strong>S</strong>ummary or general sense of the whole text.",
+      "examAnswer": "There are four principal reading techniques. Skimming is rapid reading undertaken to obtain the general idea or gist of a text, usually by reading the title, headings and the opening and closing sentences of paragraphs. Scanning is rapid reading undertaken to locate one specific piece of information, such as a name, date or figure, while ignoring all other content. Intensive reading is slow and detailed reading of a short text in order to achieve complete and accurate understanding, as required for textbooks and legal or technical documents. Extensive reading is the reading of a large quantity of relatively easy material for general understanding and pleasure, and is the most effective means of developing vocabulary and fluency over time.",
+      "remember": "Skim = gist. Scan = one fact. Intensive = deep. Extensive = wide.",
+      "why": "Using the wrong technique wastes hours — reading a 30-page document intensively when you only needed one date is the commonest time-waster in student and office life alike.",
+      "practice": "Take today's newspaper. Skim page 1 in 60 seconds and write its main story. Then scan it for any one number and note how differently your eyes moved."
+    },
+    {
+      "title": "The SQ3R Method",
+      "teacher": "Here is a 70-year-old study method that still beats most modern apps. Five steps, one easy name. If you use it on even one chapter this semester, you will feel the difference in your revision.",
+      "explain": "<strong>SQ3R</strong> stands for <strong>Survey, Question, Read, Recite, Review</strong>. It turns reading a chapter from a single passive pass into a five-step active process, so that the chapter is partly revised before you even close the book.",
+      "keyPoints": [
+        "<strong>S — Survey:</strong> skim headings, diagrams, bold words and the summary first (2-3 minutes).",
+        "<strong>Q — Question:</strong> turn every heading into a question you want answered.",
+        "<strong>R — Read:</strong> read a section at a time, searching for the answers to your questions.",
+        "<strong>R — Recite:</strong> close the book and say or write the answer in your OWN words.",
+        "<strong>R — Review:</strong> go back over the whole chapter and your notes, same day and again later.",
+        "Reciting is the step everyone skips — and the one that actually builds memory.",
+        "Read and Recite are repeated section by section, not once for the whole chapter.",
+        "SQ3R was developed by Francis P. Robinson.",
+        "It converts passive reading into active reading, step by step."
+      ],
+      "subtopics": [
+        {
+          "title": "Survey and Question — the two minutes that change everything",
+          "text": "Before reading a word of the body text, flip through the chapter: title, all headings, bold terms, diagrams, and the summary at the end. Now turn each heading into a question. A heading 'Barriers to Communication' becomes 'What are the barriers to communication, and how do I remove each one?' Your brain now reads to <em>find an answer</em> instead of drifting."
+        },
+        {
+          "title": "Read and Recite go together, section by section",
+          "text": "Do not read the whole chapter and then try to recite it — that is too much at once. Read one section, close the book, and say or write its answer in your own words. Then open it and check. If you cannot say it, you did not understand it, and re-reading right then is far cheaper than discovering the gap the night before the exam."
+        },
+        {
+          "title": "Review — the step that beats forgetting",
+          "text": "Review the whole chapter and your notes on the <strong>same day</strong>, then again after about a week. Memory fades sharply in the first few days, so a short review at the right time is worth several hours of re-reading later. This is why students who use SQ3R need much less panic revision before exams."
+        }
+      ],
+      "realLife": "Think of how you watch a film trailer before the film. The trailer is your Survey — you already know roughly who the characters are, so the actual film is easier to follow. SQ3R gives every chapter its own trailer.",
+      "worked": "<strong>SQ3R on a real chapter — 'Barriers to Communication'</strong><br><strong>S (Survey, 2 min):</strong> Flip through. Headings seen: Physical, Semantic, Psychological, Organisational, Cultural. There is a table of remedies at the end.<br><strong>Q (Question):</strong> 'What are the six barriers?' · 'What is a semantic barrier?' · 'How do I remove each one?'<br><strong>R (Read):</strong> Read only the 'Semantic' section, looking for the answer to question 2.<br><strong>R (Recite):</strong> Close the book. Say aloud: 'Semantic = meaning problems — jargon, ambiguous words, unknown language. Fix = simple words and examples.' Check the book. Correct.<br><strong>R (Review):</strong> Same evening, read only your own notes for all five barriers. After one week, do it again.<br><strong>Result:</strong> the chapter has now been processed five times in the time most students spend reading it once.",
+      "mistake": "The most common error is skipping 'Recite' because it feels slow and uncomfortable. That discomfort IS the learning — closing the book and struggling to recall is exactly what makes the memory stick.",
+      "examAnswer": "SQ3R is a systematic method of active reading developed by Francis P. Robinson, consisting of five steps. Survey involves a rapid preview of the title, headings, illustrations and summary to obtain an overview of the material. Question involves converting each heading into a question so that reading acquires a definite purpose. Read involves reading one section at a time while actively searching for the answers to those questions. Recite involves closing the book and restating the answers in one's own words, which strengthens retention. Review involves going over the entire material and one's notes, first on the same day and again after an interval, in order to consolidate learning and resist forgetting.",
+      "remember": "Survey, Question, Read, Recite, Review — three R's after S and Q.",
+      "why": "It is the most frequently asked practical method in this unit, and it is genuinely the cheapest way to cut your revision time for every other subject.",
+      "practice": "Apply all five SQ3R steps to any one chapter of your Operating Systems book, and write down the questions you formed at step Q."
+    },
+    {
+      "title": "Finding the Main Idea and Supporting Details",
+      "teacher": "Every paragraph has one boss sentence and a few helpers. Once you can spot the boss instantly, comprehension questions stop feeling like guesswork.",
+      "explain": "The <strong>main idea</strong> is the single central point the paragraph is making. The <strong>supporting details</strong> are the examples, reasons, facts and figures that prove or explain that point. The main idea is often stated in the <strong>topic sentence</strong>, usually the first sentence — sometimes the last.",
+      "keyPoints": [
+        "Main idea = the one point the whole paragraph is about.",
+        "Topic sentence = the sentence that states the main idea directly.",
+        "It is usually the FIRST sentence; sometimes the last; occasionally implied.",
+        "Supporting details = examples, reasons, statistics, explanations.",
+        "Test for the main idea: does every other sentence relate back to it?",
+        "A detail that appears only once is a detail, not the main idea.",
+        "The main idea of a whole passage is broader than any single paragraph.",
+        "Signal words for main ideas: 'the main reason', 'therefore', 'in short', 'thus'.",
+        "Signal words for details: 'for example', 'such as', 'in 2019', 'firstly'."
+      ],
+      "subtopics": [
+        {
+          "title": "How to find the main idea in ten seconds",
+          "text": "Ask yourself: 'Who or what is this paragraph about, and what is being said about it?' Your answer, in one short sentence, is the main idea. Then check: does every other sentence support that sentence? If one sentence is broader than your answer, that sentence is probably the real main idea."
+        },
+        {
+          "title": "When the main idea is not written anywhere",
+          "text": "Sometimes no single sentence states the point — the paragraph gives three examples and expects you to see the pattern. This is an <strong>implied</strong> main idea. Find what all the details have in common and write that as a sentence of your own. Option-based questions love this, because a careless reader picks one of the examples instead of the pattern."
+        },
+        {
+          "title": "The classic trap: the most interesting detail",
+          "text": "Exam options often include a striking statistic or a dramatic example from the passage. It is true, it is in the text, and it is still the wrong answer, because it is a <em>detail</em>, not the main idea. A main idea must cover the whole paragraph — if an option covers only one sentence, reject it."
+        }
+      ],
+      "realLife": "Your friend narrates a 10-minute story about her train journey. Afterwards you say 'so basically, the train was 4 hours late and you missed the wedding.' That one line is the main idea; the missing snacks and the crying baby were supporting details.",
+      "worked": "<strong>Find the main idea</strong><br>Passage: 'Mobile phones have changed student life. They give instant access to notes, lectures and doubt-solving videos. But they also break concentration with constant notifications. Many students now study with the phone in another room.'<br><br><strong>Step 1 — Who/what is it about?</strong> Mobile phones and students.<br><strong>Step 2 — What is said about them?</strong> They help AND they distract.<br><strong>Step 3 — Main idea:</strong> 'Mobile phones affect student life in both helpful and harmful ways.'<br><strong>Step 4 — Check:</strong> Sentence 2 = the help. Sentence 3 = the harm. Sentence 4 = the response to the harm. All three support it. ✅<br><strong>Wrong answer trap:</strong> 'Students keep phones in another room' — true, but it is only the last sentence. A detail, not the main idea.",
+      "mistake": "Do not assume the main idea is always the first sentence. Writers often open with an example and put the real point at the end, after words like 'therefore', 'thus' or 'in short'.",
+      "examAnswer": "The main idea of a paragraph is the central point that the writer wishes to convey, and it is frequently expressed in a topic sentence, which most often appears at the beginning of the paragraph and occasionally at the end. Supporting details are the examples, reasons, facts, statistics and explanations that develop, illustrate or prove the main idea. To identify the main idea, the reader should determine the subject of the paragraph and what is being said about that subject, and then verify that every remaining sentence supports this statement. Where no sentence states the point directly, the main idea is implied and must be inferred from the common element in the details.",
+      "remember": "Main idea = the boss sentence. Details = the helpers that prove it.",
+      "why": "'What is the main idea of the passage?' is the most commonly asked comprehension question in every exam paper, from university papers to competitive tests.",
+      "practice": "Take any three paragraphs from a newspaper editorial and write the main idea of each in one sentence."
+    },
+    {
+      "title": "Inference vs Stated Fact",
+      "teacher": "Detective time. If I tell you 'Riya came home with a wet umbrella', I never said it rained — but you already know it did. That jump you just made is called an inference, and exams test it constantly.",
+      "explain": "A <strong>stated fact</strong> is written directly in the passage — you can point to the exact line. An <strong>inference</strong> is a conclusion you draw from clues in the passage that the writer did not state directly. A valid inference must be <strong>supported by the text</strong>, not merely by your own general knowledge or opinion.",
+      "keyPoints": [
+        "<strong>Stated fact</strong> — present in the text word for word; you can underline it.",
+        "<strong>Inference</strong> — logically follows from the text but is not written.",
+        "A good inference is supported by evidence IN the passage.",
+        "Your outside knowledge or personal opinion is NOT valid evidence.",
+        "Question words for inference: 'suggests', 'implies', 'we can conclude', 'probably'.",
+        "Question words for fact: 'according to the passage', 'the author states'.",
+        "If you cannot point to a clue, your inference is a guess — reject it.",
+        "Over-inference is the commonest error: going far beyond what the clues allow."
+      ],
+      "subtopics": [
+        {
+          "title": "How to check whether an inference is valid",
+          "text": "Ask two questions. First: 'Which line in the passage makes me think this?' If you cannot name a line, it is a guess. Second: 'Could the passage still be true if my conclusion is false?' If yes, the inference is too strong. A valid inference sits just one small step beyond the text — never five steps."
+        },
+        {
+          "title": "Over-inference — going too far",
+          "text": "From 'Riya came home with a wet umbrella' you may infer 'it was raining'. You may NOT infer 'Riya hates the monsoon' or 'Riya was late for college'. Those are stories you invented. In multiple-choice questions, the wrong options are usually true-sounding over-inferences, so prefer the option that stays closest to the evidence."
+        },
+        {
+          "title": "The writer's tone and attitude",
+          "text": "Some questions ask what the writer <em>feels</em> — critical, appreciative, neutral, concerned. This is also inference, drawn from word choice. Words like 'unfortunately', 'alarming' and 'failed' signal criticism; 'remarkable', 'welcome' and 'valuable' signal approval. If the passage only reports facts with no such words, the correct answer is usually 'neutral' or 'objective'."
+        }
+      ],
+      "realLife": "A friend texts 'assignment submitted, finally!!' The stated fact: she submitted it. The valid inference: it took her longer than expected and she is relieved. The over-inference: she will now top the class — nothing in the message says that.",
+      "table": {
+        "headers": [
+          "",
+          "Stated Fact",
+          "Inference"
+        ],
+        "rows": [
+          [
+            "Where it lives",
+            "Directly in the text",
+            "Between the lines"
+          ],
+          [
+            "Can you underline it?",
+            "Yes",
+            "No — but you can underline the clue"
+          ],
+          [
+            "Question wording",
+            "'According to the passage…'",
+            "'The passage suggests / implies…'"
+          ],
+          [
+            "Risk",
+            "Almost none",
+            "Going too far beyond the clue"
+          ],
+          [
+            "Example",
+            "'The umbrella was wet'",
+            "'It had been raining'"
+          ]
+        ]
+      },
+      "mistake": "Never use your own general knowledge to answer a comprehension question. Even if you KNOW something is true in real life, if the passage does not support it, it is the wrong answer.",
+      "examAnswer": "A stated fact is information expressed directly in the text, which the reader can locate and quote word for word. An inference is a conclusion that the reader draws from evidence contained in the text but which the writer has not stated explicitly. A valid inference must be supported by specific clues in the passage and must go only a short logical step beyond what is written; conclusions based on the reader's personal opinion or outside knowledge are not valid inferences. Questions testing stated facts typically use the phrase 'according to the passage', whereas questions testing inference use words such as 'suggests', 'implies' or 'we may conclude'.",
+      "remember": "Fact = you can point at it. Inference = you can point at the CLUE for it.",
+      "why": "Inference questions carry the most marks in comprehension sections and are where most students lose them, by answering from imagination instead of evidence.",
+      "practice": "Write one sentence about a person, then list one fact it states and one valid inference a reader could draw from it."
+    },
+    {
+      "title": "Benefits of Effective Reading",
+      "teacher": "A fair question: why put this much effort into reading when you could just watch a video? Here is the honest answer — and it is bigger than marks.",
+      "explain": "Effective reading improves far more than comprehension. It builds vocabulary and grammar naturally, strengthens concentration, sharpens critical thinking, improves your own writing and speaking, and saves large amounts of time because you understand things the first time.",
+      "keyPoints": [
+        "<strong>Vocabulary and grammar</strong> grow naturally through exposure, without memorising lists.",
+        "<strong>Writing improves</strong> — you absorb sentence patterns from good writers.",
+        "<strong>Concentration</strong> strengthens, because reading trains sustained attention.",
+        "<strong>Critical thinking</strong> develops — you learn to question and evaluate arguments.",
+        "<strong>Knowledge</strong> widens across subjects, which makes new reading easier.",
+        "<strong>Time saved</strong> — understanding once removes the need to re-read.",
+        "<strong>Exam performance</strong> improves in every subject, not only English.",
+        "<strong>Confidence</strong> in interviews, group discussions and presentations.",
+        "Reduces stress — knowing you understood the material removes exam panic."
+      ],
+      "subtopics": [
+        {
+          "title": "Reading is the cheapest way to fix weak English",
+          "text": "Grammar rules learned from a book fade quickly, but sentence patterns absorbed through regular reading stay. If you read twenty minutes of simple English every day — a newspaper column, a short story, a blog — your writing improves without you consciously studying grammar at all. This is the single best advice for a student whose English is still developing."
+        },
+        {
+          "title": "The compounding effect",
+          "text": "Every book you read makes the next one easier, because you already know more of its words and ideas. This is why reading improvement feels slow for the first month and then suddenly accelerates. The students who 'find English easy' are almost always the ones who started this loop earlier — not ones born with a different brain."
+        },
+        {
+          "title": "Benefits in your professional life",
+          "text": "As a software professional you will read error logs, documentation, requirement documents and client emails every single day. Misreading a requirement costs weeks of wasted work. Effective reading is not a school subject you leave behind — it is a daily working tool with direct financial value."
+        }
+      ],
+      "realLife": "A student who reads one English newspaper column daily finds, after six months, that unseen passages in exams feel familiar and easy — while a classmate who only read the syllabus still struggles with every new passage.",
+      "mistake": "Do not think reading benefits only English marks. Comprehension is what lets you understand a Mathematics word problem or a tricky Operating Systems question — it silently affects every subject.",
+      "examAnswer": "Effective reading offers numerous benefits. It enlarges vocabulary and improves command of grammar through natural exposure to well-written language, and consequently improves the reader's own writing and speaking. It develops concentration and sustained attention, and fosters critical thinking by requiring the reader to evaluate and question what is written. It broadens general knowledge, which in turn makes subsequent reading easier and faster. It saves time, since material understood correctly on the first reading need not be read repeatedly. Finally, it improves academic performance in all subjects, builds confidence in interviews and discussions, and is an essential professional skill in any technical career.",
+      "remember": "Read well and you improve every subject — not just English.",
+      "why": "This is a standard short-note question, and it is also the honest reason to take this unit seriously instead of just memorising it.",
+      "practice": "Write five benefits of effective reading, and next to each one give a personal example from your own studies."
+    },
+    {
+      "title": "Answering MCQs on an Unseen Passage",
+      "teacher": "This is the part that appears directly in your paper, so let's make it mechanical. There is a fixed order of steps that works almost every time — no cleverness required, just discipline.",
+      "explain": "An unseen passage MCQ is not a memory test — the answer is always <strong>inside the passage</strong>. Your job is to locate the evidence, not to recall or reason from general knowledge. Read the questions first, skim the passage, then scan back for each answer and underline the proof.",
+      "keyPoints": [
+        "<strong>Step 1:</strong> Read the QUESTIONS first — now you know what to hunt for.",
+        "<strong>Step 2:</strong> Skim the passage once for the general idea (do not stop at hard words).",
+        "<strong>Step 3:</strong> Take one question at a time; scan for its keywords in the passage.",
+        "<strong>Step 4:</strong> Underline the exact line that proves your answer.",
+        "<strong>Step 5:</strong> Eliminate options that are clearly wrong before choosing.",
+        "Beware absolute words — 'always', 'never', 'all', 'only', 'none' are usually wrong.",
+        "Moderate words — 'usually', 'often', 'may', 'some' — are more often right.",
+        "Reject options that are TRUE in real life but not supported by the passage.",
+        "Reject options that are too broad or too narrow for the question asked.",
+        "If stuck, eliminate two and choose the option closest to the passage's wording."
+      ],
+      "subtopics": [
+        {
+          "title": "Why absolute words are usually wrong",
+          "text": "A passage rarely claims that something happens <em>always</em> or <em>never</em>. Writers hedge — they say 'often', 'generally', 'in most cases'. So an option containing 'always', 'never', 'all' or 'only' is making a stronger claim than the passage did, and that is usually enough to eliminate it. Careful: this is a strong hint, not an absolute rule — if the passage itself says 'never', the option may be right."
+        },
+        {
+          "title": "The 'true but irrelevant' trap",
+          "text": "Some options are factually correct in the real world, and students pick them out of general knowledge. But comprehension is a closed-book world: the only truth that counts is the passage. Train yourself to ask 'which line says this?' before selecting. If no line says it, it is wrong however true it sounds."
+        },
+        {
+          "title": "Elimination beats selection",
+          "text": "Do not look for the right answer first. Look for reasons to kill the wrong ones — an option that contradicts the passage, an option that covers only one detail when a main idea is asked, an option with an over-strong word, an option about something the passage never mentioned. Two quick eliminations usually leave an obvious winner."
+        },
+        {
+          "title": "Vocabulary questions in context",
+          "text": "'The word X in line 4 most nearly means…' Do not rely on the dictionary meaning you half-remember. Read the sentence, cover the word, and put your own simple word in the gap. Then pick the option closest to your word. Context decides meaning, not memory."
+        }
+      ],
+      "realLife": "In a competitive exam you have eight minutes for a passage. Students who read the passage first, then the questions, then hunt again, run out of time. Reading questions first is not a shortcut — it is what makes the time enough.",
+      "worked": "<strong>Sample passage (read it carefully):</strong><br>Meera studies in the college library every evening. She chooses a seat near the window because the light there is better. Last month the library changed its closing time from eight o'clock to six o'clock. Since then, Meera has had to finish her work at home, where her younger brother plays loudly. Her marks in the last class test were lower than usual.<br><br><strong>Q1. According to the passage, why does Meera sit near the window?</strong><br>(a) It is quieter there · (b) The light is better · (c) Her friends sit there · (d) It is near the exit<br><strong>Answer: (b)</strong><br><em>Reasoning:</em> This is a STATED FACT question ('according to the passage'). Sentence 2 says it directly: 'because the light there is better'. Options (a), (c) and (d) are never mentioned anywhere — reject them immediately. Do not choose (a) just because libraries are usually quiet; that is outside knowledge, not evidence.<br><br><strong>Q2. The passage suggests that Meera's marks fell because —</strong><br>(a) she stopped studying · (b) she was ill · (c) her new study place is noisy · (d) the test was harder<br><strong>Answer: (c)</strong><br><em>Reasoning:</em> This is an INFERENCE question ('suggests'). The passage never says why her marks fell. But the clues are chained: library closes earlier → she studies at home → brother plays loudly → marks lower. The clue line is 'where her younger brother plays loudly'. Option (a) is contradicted — she still finishes her work. Options (b) and (d) have no clue at all in the passage; they are invented.<br><br><strong>Q3. Which statement is TRUE according to the passage?</strong><br>(a) The library always closed at six o'clock · (b) Meera never studies at home · (c) The library now closes at six o'clock · (d) Meera studies only in the morning<br><strong>Answer: (c)</strong><br><em>Reasoning:</em> Watch the absolute words. (a) says 'always' — false, it closed at eight before last month. (b) says 'never' — false, she studies at home now. (d) says 'only in the morning' — the passage says 'every evening'. (c) matches sentence 3 exactly. Three of the four wrong options were killed by one absolute word each.",
+      "mistake": "The biggest mistake is answering from your own knowledge or opinion instead of the passage. If you cannot underline a line that proves your option, you have not answered the question — you have guessed.",
+      "examAnswer": "To answer multiple-choice questions based on an unseen passage effectively, the candidate should first read the questions so that the purpose of reading is clear, and then skim the passage to obtain its general sense. Each question should then be taken individually, scanning the passage for the relevant keywords and underlining the exact line that supports the answer. Wrong options should be eliminated before an answer is selected, particularly those containing absolute terms such as 'always', 'never', 'all' or 'only', those that are factually true but unsupported by the passage, and those that are too broad or too narrow. The answer must always be based on evidence contained in the passage and never on the reader's personal knowledge or opinion.",
+      "remember": "Questions first → skim → scan → underline the proof → eliminate → choose.",
+      "why": "This exact skill is tested in your semester paper and in almost every competitive and placement aptitude test you will ever sit.",
+      "practice": "Take any short news report. Write three MCQs on it yourself — one fact question, one inference question, one with a tempting 'always' option — then solve them."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "You are hunting through a timetable for the departure time of one particular train. Which technique are you using?",
+      "options": [
+        "Skimming",
+        "Scanning",
+        "Intensive reading",
+        "Extensive reading"
+      ],
+      "answer": 1,
+      "why": "Scanning means moving quickly through a text to locate one specific piece of information, ignoring everything else. Skimming would be reading it quickly to get a general idea."
+    },
+    {
+      "q": "The habit of silently pronouncing every word in your head while reading is called…",
+      "options": [
+        "Regression",
+        "Skimming",
+        "Sub-vocalisation",
+        "Inference"
+      ],
+      "answer": 2,
+      "why": "Sub-vocalisation is the inner voice reading each word. It limits reading speed to roughly speaking speed, around 150 words per minute."
+    },
+    {
+      "q": "In SQ3R, which step means closing the book and stating the answer in your own words?",
+      "options": [
+        "Survey",
+        "Question",
+        "Recite",
+        "Review"
+      ],
+      "answer": 2,
+      "why": "Recite is the recall step — book closed, answer produced from memory. It is the step students skip most often and the one that builds memory best."
+    },
+    {
+      "q": "The passage says: 'Ravi entered the class shivering, with mud on his shoes.' Which of these is an INFERENCE, not a stated fact?",
+      "options": [
+        "Ravi entered the class",
+        "Ravi was shivering",
+        "There was mud on his shoes",
+        "It had been raining outside"
+      ],
+      "answer": 3,
+      "why": "The first three are written word for word in the sentence. Rain is not mentioned at all — it is a conclusion drawn from the clues 'shivering' and 'mud'."
+    },
+    {
+      "q": "In a comprehension MCQ, an option containing the word 'always' is…",
+      "options": [
+        "Usually correct, because it is definite",
+        "Usually incorrect, because passages rarely make absolute claims",
+        "Always correct",
+        "Irrelevant to the answer"
+      ],
+      "answer": 1,
+      "why": "Writers normally hedge with words like 'often' or 'generally'. An absolute word makes a stronger claim than the passage did, so it is usually a trap — though you must still check the text."
+    },
+    {
+      "q": "Which of these is a habit of an ACTIVE reader?",
+      "options": [
+        "Reading every chapter at the same constant speed",
+        "Turning headings into questions before reading",
+        "Underlining almost every line",
+        "Avoiding any notes so the book stays clean"
+      ],
+      "answer": 1,
+      "why": "Active reading means engaging with the text before and during reading. Forming questions from the headings gives the reading a definite purpose."
+    },
+    {
+      "q": "The sentence that directly states the main idea of a paragraph is called the…",
+      "options": [
+        "Supporting sentence",
+        "Concluding sentence",
+        "Topic sentence",
+        "Transition sentence"
+      ],
+      "answer": 2,
+      "why": "The topic sentence states the central point. It is most often the first sentence of the paragraph, and sometimes the last."
+    },
+    {
+      "q": "Reading a large number of easy novels and newspapers for pleasure and fluency is called…",
+      "options": [
+        "Intensive reading",
+        "Extensive reading",
+        "Scanning",
+        "Regression"
+      ],
+      "answer": 1,
+      "why": "Extensive reading is wide reading of relatively easy material for general understanding and enjoyment. Intensive reading is slow, detailed study of a short text."
+    },
+    {
+      "q": "What is the FIRST step when answering MCQs on an unseen passage?",
+      "options": [
+        "Read the passage intensively twice",
+        "Read the questions first",
+        "Mark the options you like",
+        "Look up every difficult word"
+      ],
+      "answer": 1,
+      "why": "Reading the questions first tells you exactly what to look for, so your skim and scan of the passage have a clear purpose and you save time."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Explain the difference between active and passive reading. Describe four habits you will personally adopt to become a more active reader.",
+      "hint": "Use the comparison table, then make the four habits specific to your own study routine."
+    },
+    {
+      "q": "Describe the four reading techniques — skimming, scanning, intensive and extensive reading — and give one situation from your own college life where each would be the right choice."
+    },
+    {
+      "q": "Explain the SQ3R method in detail and apply all five steps to any one chapter of another subject you are studying this semester.",
+      "hint": "Write the actual questions you formed at step Q — that is what shows you applied it."
+    },
+    {
+      "q": "What are the common difficulties faced in reading? Identify the two that affect you most and describe a practical remedy for each."
+    },
+    {
+      "q": "Write a short passage of five sentences yourself. Then frame three multiple-choice questions on it — one testing a stated fact, one testing inference, and one containing a tempting absolute word — and explain the correct answer for each.",
+      "hint": "Follow the worked example in the last topic. Point to the exact line that proves each answer."
+    }
+  ]
+};

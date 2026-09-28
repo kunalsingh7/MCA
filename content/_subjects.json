@@ -1,0 +1,38 @@
+/* Subject list and page settings. Loaded with a normal <script> tag. */
+var SUBJECT_META = {
+  "os": {
+    "id": "os",
+    "code": "MCA 108",
+    "icon": "🖥️",
+    "name": "Operating System",
+    "accent": "#3b82f6"
+  },
+  "c": {
+    "id": "c",
+    "code": "MCA 109",
+    "icon": "💻",
+    "name": "Programming & Problem Solving in C",
+    "accent": "#10b981"
+  },
+  "maths": {
+    "id": "maths",
+    "code": "MCA 110",
+    "icon": "🔢",
+    "name": "Mathematical Foundation",
+    "accent": "#f59e0b"
+  },
+  "fct": {
+    "id": "fct",
+    "code": "MCA 111",
+    "icon": "🧠",
+    "name": "Fundamentals of Computer Technologies",
+    "accent": "#ef4444"
+  },
+  "comm": {
+    "id": "comm",
+    "code": "MCA 112",
+    "icon": "🗣️",
+    "name": "Technical Communication",
+    "accent": "#8b5cf6"
+  }
+};

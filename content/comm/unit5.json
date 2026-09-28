@@ -1,0 +1,654 @@
+/* Technical Communication (MCA 112) — Unit 5. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.comm = UNITS.comm || [];
+UNITS.comm[4] = {
+  "num": 5,
+  "title": "Speaking and Listening Skills",
+  "problem": "You know the answer, but the moment you have to say it out loud — in a group discussion, an interview, or in front of a class — your voice shakes, your mind goes blank, and everything you knew disappears.",
+  "solution": "Speaking well is a skill, not a personality type. This unit breaks it into parts you can practise: how to speak clearly, how to really listen, how to handle a discussion or debate, and how to plan and deliver a presentation without panic.",
+  "objectives": [
+    "List the qualities of effective speaking and apply them to your own voice",
+    "Distinguish hearing from listening and name the types of listening",
+    "Identify barriers to listening and state a practical remedy for each",
+    "Practise the rules of good conversation, including turn-taking and open questions",
+    "Participate in a group discussion and explain what evaluators look for",
+    "Explain the structure of a debate and how it differs from a discussion",
+    "Plan, structure, rehearse and deliver a presentation and handle audience questions",
+    "Apply practical techniques to control nervousness and stage fear",
+    "Design slides using the 6x6 rule and other visual-aid principles"
+  ],
+  "topics": [
+    {
+      "title": "Effective Speaking Skills",
+      "teacher": "Here is something encouraging: most people who 'speak well' are not naturally gifted. They are simply doing five or six small things right — and every one of those things can be learned in a few weeks of practice.",
+      "explain": "<strong>Effective speaking</strong> means delivering your message so that the listener understands it easily, stays interested, and believes you. It depends on <em>what</em> you say (content), <em>how</em> you say it (voice) and <em>how you look</em> saying it (body).",
+      "keyPoints": [
+        "<strong>Clarity</strong> — simple words, complete sentences, one idea at a time.",
+        "<strong>Pronunciation</strong> — say each word fully; do not swallow the ends of words.",
+        "<strong>Pace</strong> — about 120–150 words per minute; nervousness makes you speed up.",
+        "<strong>Volume</strong> — loud enough for the back row, never shouting.",
+        "<strong>Pauses</strong> — a silence after a key point is more powerful than 'umm'.",
+        "<strong>Tone and pitch</strong> — vary it; a flat monotone puts people to sleep.",
+        "<strong>Eye contact</strong> — look at different parts of the room, 3–5 seconds each.",
+        "<strong>Body language</strong> — stand straight, open palms, natural gestures, no fidgeting.",
+        "<strong>Confidence</strong> — comes from preparation, not from personality.",
+        "<strong>Audience awareness</strong> — match your words to who is listening."
+      ],
+      "subtopics": [
+        {
+          "title": "Voice: the four dials you can turn",
+          "text": "Think of your voice as having four dials — <strong>volume, pace, pitch and pause</strong>. Nervous speakers get stuck on one setting: fast, quiet and flat. Turning even one dial consciously (slowing down, or pausing after an important sentence) makes an immediate difference that the audience feels but cannot name."
+        },
+        {
+          "title": "Filler words and how to kill them",
+          "text": "'Umm', 'aa', 'you know', 'basically', 'actually' — these appear when your mouth is moving faster than your thought. The cure is not to speak faster; it is to <strong>replace the filler with silence</strong>. A two-second pause sounds thoughtful. 'Ummmm' sounds unprepared. Record yourself for two minutes and count your fillers — that one exercise fixes half the problem."
+        },
+        {
+          "title": "Body language while speaking",
+          "text": "Stand with your weight on both feet, shoulders back and hands free. Use open palms and gesture from the elbow. Avoid crossed arms, pockets, playing with a pen or your dupatta, and rocking back and forth. Smile at the start — it relaxes both you and the audience, and it is the fastest way to look confident even when you are not."
+        },
+        {
+          "title": "Know your audience",
+          "text": "The same content is spoken differently to different people. Explaining a project to your classmates, to a panel of professors and to your parents needs three levels of technical detail. Before you speak, ask: what do they already know, what do they want from this, and how much time do they have?"
+        }
+      ],
+      "realLife": "In a viva, two students know the same answer. One mumbles at the table, speaks in a rush and never looks up. The other sits straight, speaks slowly, pauses, and looks at the examiner. The second student almost always gets the better mark — for the same knowledge.",
+      "mistake": "Thinking that 'speaking fast' means 'speaking fluently'. It is the opposite. Nervousness causes speed; confidence causes control. Slowing down is the single fastest improvement most students can make.",
+      "examAnswer": "Effective speaking is the ability to convey a message orally in a manner that is clear, interesting and convincing to the listener. Its essential qualities include clarity of thought and language, correct pronunciation, an appropriate pace of about one hundred and twenty to one hundred and fifty words per minute, adequate volume, purposeful use of pauses, and variation of tone and pitch to avoid monotony. It also requires non-verbal support in the form of eye contact, an upright posture, natural gestures and appropriate facial expression. In addition, an effective speaker analyses the audience beforehand and adapts the content, vocabulary and level of detail to their needs, and avoids filler expressions such as 'umm' and 'you know'.",
+      "remember": "Clear words · Correct pace · Proper volume · Powerful pauses · Confident eyes.",
+      "why": "Interviews, group discussions, viva voce, client meetings and team stand-ups — all of them are judged on how you speak, not on how much you know.",
+      "practice": "Record yourself speaking for two minutes about your favourite subject. Count the filler words, then record again and try to replace each one with a pause."
+    },
+    {
+      "title": "Hearing vs Listening, and Types of Listening",
+      "teacher": "Your ears work all day without any effort from you. But have you ever 'listened' to a lecture for forty minutes and remembered nothing? That gap between hearing and listening is this whole topic.",
+      "explain": "<strong>Hearing</strong> is a physical process — sound waves reach your ears automatically. <strong>Listening</strong> is a mental process — you pay attention, understand, interpret, evaluate and respond. Hearing is involuntary; listening is a deliberate skill.",
+      "keyPoints": [
+        "<strong>Hearing</strong> = physical, involuntary, needs no effort.",
+        "<strong>Listening</strong> = mental, voluntary, needs attention and effort.",
+        "The listening process: <strong>Receive → Understand → Remember → Evaluate → Respond</strong>.",
+        "<strong>Active listening</strong> — full attention, questions, feedback. The best kind.",
+        "<strong>Passive listening</strong> — you hear the words but give no response.",
+        "<strong>Empathetic listening</strong> — listening to understand feelings, not to reply.",
+        "<strong>Critical (evaluative) listening</strong> — judging the logic and evidence of an argument.",
+        "<strong>Appreciative listening</strong> — listening for enjoyment: music, a story, a good speaker.",
+        "<strong>Selective listening</strong> — hearing only the parts you already agree with (a bad habit).",
+        "We spend roughly 45% of communication time listening — more than speaking, reading or writing."
+      ],
+      "subtopics": [
+        {
+          "title": "The five stages of listening",
+          "text": "<strong>Receiving</strong> the sound, <strong>understanding</strong> its meaning, <strong>remembering</strong> it, <strong>evaluating</strong> whether you agree, and <strong>responding</strong> with words or a nod. A breakdown at any stage means listening failed. Most classroom failures happen at 'remembering' — which is exactly why taking notes is an act of listening, not of writing."
+        },
+        {
+          "title": "When to use which type",
+          "text": "Use <strong>critical</strong> listening for a sales pitch, a debate or a news claim, where you must weigh evidence. Use <strong>empathetic</strong> listening when a friend is upset — here, offering solutions too early is the mistake; they want to be understood first. Use <strong>appreciative</strong> listening for music and stories. Use <strong>active</strong> listening in class, in meetings and in interviews."
+        },
+        {
+          "title": "Why listening is the most neglected skill",
+          "text": "Schools teach reading, writing and speaking, but almost never listening — yet it takes up the largest share of our communication time. There is also a speed gap: people speak at about 125 words per minute, but the mind can process nearly 400. That spare capacity is exactly where the mind wanders off, and good listeners use it to summarise and predict instead."
+        }
+      ],
+      "realLife": "Your mother says 'the milk is on the stove' while you are scrolling your phone. You <em>heard</em> it — you can even repeat it. But you did not <em>listen</em>, and ten minutes later the kitchen smells of burnt milk.",
+      "table": {
+        "headers": [
+          "",
+          "Hearing",
+          "Listening"
+        ],
+        "rows": [
+          [
+            "Nature",
+            "Physical process",
+            "Mental process"
+          ],
+          [
+            "Effort",
+            "Involuntary, automatic",
+            "Voluntary, needs concentration"
+          ],
+          [
+            "Uses",
+            "Ears only",
+            "Ears + mind"
+          ],
+          [
+            "Result",
+            "Sound received",
+            "Meaning understood and remembered"
+          ],
+          [
+            "Can be improved?",
+            "No (it is physical)",
+            "Yes, it is a learnable skill"
+          ]
+        ]
+      },
+      "mistake": "Saying 'I was listening' because you can repeat the last sentence. Repeating words is hearing. Listening means you understood the meaning and can still explain it ten minutes later.",
+      "examAnswer": "Hearing is a physiological and involuntary process in which sound waves are received by the ears, whereas listening is a psychological and voluntary process in which the listener pays attention to the sound, understands its meaning, remembers it, evaluates it and responds to it. Hearing requires no effort, but listening requires conscious concentration and can be improved with practice. The main types of listening are active listening, in which the listener participates fully and gives feedback; passive listening, in which the listener receives the message without responding; empathetic listening, which aims at understanding the speaker's feelings; critical or evaluative listening, in which the listener analyses and judges the argument; and appreciative listening, which is done for enjoyment.",
+      "remember": "Hearing happens to you. Listening is something you do.",
+      "why": "In interviews, candidates lose marks for answering a question that was never asked. That is a listening failure, not a knowledge failure.",
+      "practice": "In your next lecture, write a one-sentence summary after every ten minutes without looking at your notes. That is active listening made visible."
+    },
+    {
+      "title": "Barriers to Listening and Active Listening",
+      "teacher": "Your mind can process about 400 words a minute, but people speak at only about 125. So three-quarters of your brain is free — and unless you give it a job, it wanders off to lunch, your phone and last night's argument. That is the real barrier.",
+      "explain": "A <strong>listening barrier</strong> is anything that stops you from receiving, understanding or remembering what is being said. Barriers may come from the environment, from the speaker, or — most often — from inside your own head.",
+      "keyPoints": [
+        "<strong>Physical:</strong> noise, poor acoustics, bad network, sitting too far back.",
+        "<strong>Physiological:</strong> hearing difficulty, tiredness, hunger, illness.",
+        "<strong>Psychological:</strong> stress, boredom, prejudice against the speaker, daydreaming.",
+        "<strong>Semantic:</strong> unfamiliar jargon, heavy accent, an unfamiliar language.",
+        "<strong>Distraction:</strong> mobile phone, notifications, side conversations.",
+        "<strong>Premature evaluation:</strong> judging the idea before the speaker has finished.",
+        "<strong>Rehearsing your reply</strong> instead of listening to the point being made.",
+        "<strong>Information overload:</strong> too much content too fast, so nothing sticks.",
+        "Remedies: sit in front, put the phone away, take notes, ask questions, paraphrase back."
+      ],
+      "subtopics": [
+        {
+          "title": "The biggest barrier is inside you",
+          "text": "Physical noise can be fixed by moving seats. The hard barriers are internal: deciding the topic is boring, deciding you already know this, disliking the speaker's accent, or — the most common of all — <strong>planning what you will say next</strong> while the other person is still speaking. You cannot compose and comprehend at the same time."
+        },
+        {
+          "title": "Techniques of active listening",
+          "text": "Face the speaker and make eye contact. Put the phone out of sight. Do not interrupt — let them finish. <strong>Paraphrase</strong> back: 'So you are saying the deadline moved to Friday?' Ask open questions. Nod and use small verbal signals ('I see', 'go on'). Take short notes in your own words. Summarise at the end."
+        },
+        {
+          "title": "The paraphrase test",
+          "text": "The single most powerful active-listening habit is to restate the speaker's point in your own words before you reply. It proves you listened, it lets the speaker correct you immediately, and it forces your own mind to process the meaning rather than just the sound. Use it in class, in meetings and in interviews."
+        },
+        {
+          "title": "Listening in an interview",
+          "text": "Interviewers often hide the real question inside a longer sentence. Listen to the whole question, pause for two seconds, and if you are not sure, ask politely: 'Do you mean X or Y?'. That is not weakness — it shows attention. Answering the wrong question confidently is far worse than asking for clarification."
+        }
+      ],
+      "realLife": "During a project review your guide points out a flaw. You spend the whole time mentally preparing your defence instead of listening — so you miss the one suggestion that would have fixed your project. That is 'rehearsing your reply', the commonest listening barrier among students.",
+      "table": {
+        "headers": [
+          "Barrier",
+          "Example",
+          "How to Overcome It"
+        ],
+        "rows": [
+          [
+            "Physical",
+            "Noisy classroom, back bench",
+            "Sit in front, reduce noise"
+          ],
+          [
+            "Physiological",
+            "Tiredness, hunger, hearing issue",
+            "Rest, eat, sit closer, ask for repetition"
+          ],
+          [
+            "Psychological",
+            "Boredom, prejudice, daydreaming",
+            "Set a purpose, take notes, stay curious"
+          ],
+          [
+            "Semantic",
+            "Jargon or an unfamiliar accent",
+            "Ask for the meaning, read in advance"
+          ],
+          [
+            "Distraction",
+            "Phone notifications",
+            "Phone on silent and out of sight"
+          ],
+          [
+            "Premature evaluation",
+            "Judging before they finish",
+            "Let them finish, then respond"
+          ]
+        ]
+      },
+      "mistake": "Interrupting to show that you understood. Interrupting proves the opposite — that you stopped listening as soon as you thought of something to say. Wait, then paraphrase.",
+      "examAnswer": "Barriers to listening are obstacles that prevent a listener from correctly receiving, understanding or retaining a message. Physical barriers include noise, distance and poor acoustics; physiological barriers include fatigue, illness and impairment of hearing; psychological barriers include boredom, prejudice, anxiety and daydreaming; and semantic barriers arise from unfamiliar jargon, accents or language. Further barriers include external distractions such as mobile phones, premature evaluation of the speaker's idea, mentally rehearsing one's own reply, and information overload. These barriers can be overcome by choosing a suitable physical setting, eliminating distractions, maintaining eye contact, refraining from interrupting, taking brief notes, asking clarifying questions and paraphrasing the speaker's message to confirm understanding.",
+      "remember": "Don't rehearse your reply. Paraphrase instead — 'So you are saying…?'",
+      "why": "Most workplace mistakes are not caused by not knowing; they are caused by not listening to the instruction properly the first time.",
+      "practice": "In your next conversation, paraphrase the other person's point before you reply — three times. Notice how differently the conversation goes."
+    },
+    {
+      "title": "The Art of Conversation",
+      "teacher": "Conversation looks effortless when other people do it, so it feels unfair when it is hard for you. But a good conversation follows rules — and once you see the rules, you can follow them even on a nervous day.",
+      "explain": "A <strong>conversation</strong> is an informal, two-way exchange of ideas between people. Good conversation is built on <strong>balance</strong>: both people speak, both people listen, and neither dominates.",
+      "keyPoints": [
+        "<strong>Turn-taking</strong> — speak, then let the other person speak. Never monopolise.",
+        "Ask <strong>open questions</strong> (what, how, why) rather than yes/no questions.",
+        "Do not interrupt; let people finish their sentence.",
+        "Show interest — nod, respond, remember what they said earlier.",
+        "Match your tone and formality to the person and the situation.",
+        "Avoid arguing, boasting, gossiping or checking your phone mid-conversation.",
+        "Use the person's name; it makes the exchange feel personal.",
+        "<strong>Small talk</strong> (weather, journey, college) is a valid way to open with a stranger.",
+        "Close politely — 'It was good talking to you' — rather than walking away."
+      ],
+      "subtopics": [
+        {
+          "title": "Open questions keep it alive",
+          "text": "'Did you like the workshop?' can be answered with one word and the conversation dies. 'What did you find most useful in the workshop?' invites a real answer. Open questions begin with <strong>what, how, why, tell me about</strong> — they are the single easiest trick for anyone who finds conversation hard, because they put the talking burden on the other person."
+        },
+        {
+          "title": "Turn-taking and interruption",
+          "text": "Conversation works like a game of catch — you throw, they throw back. Speaking for four minutes without pause is not conversation, it is a speech. Equally, finishing other people's sentences is not enthusiasm, it is interruption. Watch for the natural pause and the drop in the speaker's tone; that is your turn."
+        },
+        {
+          "title": "Discussion vs conversation",
+          "text": "A <strong>conversation</strong> is informal and has no fixed goal — it is social. A <strong>discussion</strong> is more purposeful: a group examines a topic or problem to reach understanding or a decision. A discussion needs a topic, relevant contributions and often a conclusion, while a conversation can wander happily anywhere."
+        },
+        {
+          "title": "If you are shy",
+          "text": "You do not need to be witty. You need to be <strong>interested</strong>. Prepare two or three open questions before any networking or interview situation, listen to the answer, and ask one follow-up question about what they just said. People remember a good listener as a good conversationalist — which is a genuinely useful piece of unfairness."
+        }
+      ],
+      "realLife": "At a college tech fest you meet a senior from a company you admire. 'Nice event, no?' ends in three seconds. 'What does a typical day look like in your team?' gets you ten minutes of real advice and possibly a contact.",
+      "mistake": "Treating conversation as a competition to sound impressive. The person who asks good questions and listens is remembered far more warmly than the one who talked the longest.",
+      "examAnswer": "Conversation is an informal, spontaneous and two-way exchange of ideas, information and feelings between two or more persons. The art of conversation lies in maintaining a balance between speaking and listening. Its essential principles are proper turn-taking, refraining from interrupting the other speaker, asking open-ended questions that encourage a fuller response, showing genuine interest through attentive listening and appropriate non-verbal signals, using language and a tone suited to the listener and the occasion, and closing the exchange courteously. A conversation differs from a discussion in that a conversation is informal and social, whereas a discussion is a purposeful examination of a specific topic with the aim of reaching understanding or a decision.",
+      "remember": "Ask open questions. Listen more than you speak. Never interrupt.",
+      "why": "Networking, client calls, team coordination and interviews are all conversations. The people who are comfortable here get opportunities that never reach anyone else.",
+      "practice": "Write five open-ended questions you could ask a working professional at a placement event. None of them may be answerable with 'yes' or 'no'."
+    },
+    {
+      "title": "Group Discussion",
+      "teacher": "A group discussion is not a debate and not a fight — and understanding that is half the battle. Companies use GD to see how you behave in a team, and they are watching something very specific. Let's find out what.",
+      "explain": "A <strong>group discussion (GD)</strong> is a selection activity in which a group of 8–12 candidates discusses a given topic for 10–20 minutes while evaluators observe. The goal is not to 'win' — it is to show clear thinking, good communication and teamwork.",
+      "keyPoints": [
+        "Group size is usually 8–12; duration 10–20 minutes; no chairperson unless assigned.",
+        "Topic types: <strong>factual</strong> (current affairs), <strong>controversial/abstract</strong>, and <strong>case study</strong>.",
+        "<strong>Initiate</strong> only if you genuinely know the topic — a weak start damages you.",
+        "Speak 3–4 times with substance rather than 10 times with noise.",
+        "Support your points with <strong>facts, examples or data</strong>, not just opinion.",
+        "Listen to others and build on their points ('Adding to what Rahul said…').",
+        "Never interrupt, shout, or get personal. Aggression loses marks.",
+        "Bring in a silent member — that shows leadership.",
+        "<strong>Summarise</strong> at the end if you get the chance — it is a high-scoring move.",
+        "Body language matters: sit straight, look at the group, not only at the evaluator."
+      ],
+      "subtopics": [
+        {
+          "title": "What evaluators actually look for",
+          "text": "They score you on <strong>content knowledge</strong> (do you know the topic?), <strong>communication</strong> (clear, audible, correct language), <strong>leadership and initiative</strong> (do you move the group forward?), <strong>team behaviour</strong> (do you listen and include others?), <strong>reasoning</strong> (is your logic sound?) and <strong>body language</strong>. Notice that four of these six have nothing to do with talking the most."
+        },
+        {
+          "title": "How to enter a noisy discussion",
+          "text": "If everyone is talking, do not shout. Wait for the smallest pause, raise your hand slightly or lean in, speak the first few words a little louder and then drop back to normal volume — 'I would like to add one point here…'. If you are cut off, do not argue for the floor; wait and come back with 'Coming back to the point I was making…'."
+        },
+        {
+          "title": "Do's and don'ts",
+          "text": "<strong>Do:</strong> stay on topic, be brief, support with examples, agree where you agree, disagree politely ('I see it differently because…'), and keep track of the time. <strong>Don't:</strong> repeat what has already been said, dominate, stay completely silent, use slang, mock anyone, or change your position just because the group disagreed with you."
+        },
+        {
+          "title": "Preparing for GD",
+          "text": "Read a newspaper daily for a month before placements — one editorial is enough. Practise with friends on real topics. For any topic, prepare a mental frame: causes, effects, arguments for, arguments against, and a balanced conclusion. Having a frame means you always have something structured to say, even on a topic you have never seen."
+        }
+      ],
+      "realLife": "In a campus GD on 'Is AI a threat to jobs?', the student who spoke loudest for five minutes was rejected. The one who spoke three times, gave one real example, brought in a silent member and summarised at the end was selected. Same room, opposite results.",
+      "table": {
+        "headers": [
+          "",
+          "Group Discussion",
+          "Debate"
+        ],
+        "rows": [
+          [
+            "Sides",
+            "No fixed sides",
+            "Two fixed sides: for and against"
+          ],
+          [
+            "Goal",
+            "Explore the topic, reach consensus",
+            "Win the argument for your side"
+          ],
+          [
+            "Your position",
+            "May change with good arguments",
+            "Fixed, often assigned to you"
+          ],
+          [
+            "Structure",
+            "Free-flowing, no turns fixed",
+            "Formal turns, timed, with a moderator"
+          ],
+          [
+            "Tone",
+            "Cooperative",
+            "Competitive but courteous"
+          ]
+        ]
+      },
+      "mistake": "Believing that whoever speaks the most wins. Evaluators are measuring quality, listening and team behaviour. Three good contributions beat fifteen loud ones every single time.",
+      "examAnswer": "A group discussion is a technique of assessment in which a group of candidates, usually eight to twelve in number, discusses a given topic for a fixed period while evaluators observe their performance. The purpose is to assess a candidate's knowledge of the subject, clarity and correctness of expression, reasoning ability, leadership and initiative, team behaviour and non-verbal communication. An effective participant initiates only when well prepared, makes a few substantial contributions supported by facts and examples, listens attentively and builds upon the points of others, disagrees politely without interrupting, encourages silent members to participate, and summarises the discussion at the end. Aggression, domination, repetition and complete silence are all penalised.",
+      "remember": "GD scores listening + logic + teamwork, not volume. Contribute, include, summarise.",
+      "why": "Almost every campus placement process has a GD round, and it is the round with the highest rejection rate — usually for behaviour, not knowledge.",
+      "practice": "Prepare a two-minute structured opening for the topic 'Should coding be taught in every school?' — give causes, two arguments for, two against, and a balanced closing line."
+    },
+    {
+      "title": "Debate",
+      "teacher": "A debate is the one place where you may be asked to argue for something you personally disagree with — and doing it well is a real intellectual skill. It also teaches you the thing you need most in an argument: how to answer the other side.",
+      "explain": "A <strong>debate</strong> is a formal, structured argument in which two sides — <strong>for (affirmative)</strong> and <strong>against (negative)</strong> — speak in turn on a fixed motion, within timed limits, before a moderator and judges. The aim is to persuade the audience with evidence and reasoning.",
+      "keyPoints": [
+        "The topic is called the <strong>motion</strong> — 'This house believes that…'.",
+        "Two teams: <strong>for/affirmative</strong> (supports the motion) and <strong>against/negative</strong>.",
+        "A <strong>moderator</strong> controls turns and time; <strong>judges</strong> score the teams.",
+        "Fixed speaking order and fixed time per speaker (usually 3–5 minutes).",
+        "Structure of a speech: greeting → state your stand → 2–3 arguments with evidence → rebuttal → conclusion.",
+        "<strong>Rebuttal</strong> — answering the opponent's argument — is what wins debates.",
+        "Sides are often <strong>assigned</strong>, not chosen, so you may argue against your own view.",
+        "Judged on content, evidence, logic, delivery, rebuttal and time discipline.",
+        "Attack the argument, never the person."
+      ],
+      "subtopics": [
+        {
+          "title": "How a debate is structured",
+          "text": "The moderator states the motion. The first speaker <strong>for</strong> the motion opens and defines the terms. The first speaker <strong>against</strong> replies. Speakers then alternate, each adding new arguments and rebutting the last speaker. Finally each side gives a short <strong>summing-up</strong> that restates its best points. Judges then score and declare the result."
+        },
+        {
+          "title": "Rebuttal: the skill that separates good debaters",
+          "text": "Anyone can prepare arguments at home. Rebuttal has to be done live. The pattern is: <strong>state what they said, say why it is weak, give your evidence, restate your point</strong>. For example: 'My opponent says AI will destroy jobs. But the same was said about computers in the 1980s, and the IT sector became India's largest employer. New technology shifts jobs rather than removing them.'"
+        },
+        {
+          "title": "Debate vs group discussion",
+          "text": "In a <strong>debate</strong> the sides are fixed and the goal is to win; in a <strong>GD</strong> there are no sides and the goal is to explore the topic together and reach a shared view. A debate is competitive and formally timed; a GD is cooperative and free-flowing. Behaving like a debater in a GD — attacking others, refusing to shift your position — is one of the most common reasons candidates are rejected."
+        },
+        {
+          "title": "Preparing both sides",
+          "text": "Always prepare the <strong>opposite</strong> side too. Knowing your opponent's three strongest arguments lets you answer them before they are even raised, which looks extremely confident. It also protects you if the sides are swapped at the last moment — which happens more often than you would expect."
+        }
+      ],
+      "realLife": "In a school debate on 'Online classes are better than classroom teaching', the team assigned 'against' personally loved online classes — but by preparing the other side properly they found the strongest arguments, and won.",
+      "mistake": "Turning a debate into a personal attack, or simply repeating your prepared points louder. Judges score rebuttal — if you never respond to what the other side actually said, you cannot win, however good your own speech was.",
+      "examAnswer": "A debate is a formal discussion on a specific motion in which two opposing teams, one supporting the motion and the other opposing it, present their arguments in a fixed order and within fixed time limits before a moderator, judges and an audience. Each speaker states a position, presents arguments supported by facts and evidence, rebuts the arguments advanced by the opposing side, and concludes with a summary of the case. Debates are judged on content, logical reasoning, use of evidence, quality of rebuttal, delivery and adherence to time. A debate differs from a group discussion in that a debate has two fixed opposing sides and a competitive aim of winning the argument, whereas a group discussion has no fixed sides and aims at the cooperative exploration of a topic in order to arrive at a common understanding.",
+      "remember": "Debate = two fixed sides + timed turns + rebuttal. GD = no sides + teamwork + consensus.",
+      "why": "Debate trains you to defend a position with evidence and to answer objections on your feet — exactly what you do in a technical review or a client meeting.",
+      "practice": "Take the motion 'This house believes that work from home is better than working from office'. Write two arguments FOR and two AGAINST, plus one rebuttal to each."
+    },
+    {
+      "title": "Preparing and Delivering Effective Presentations",
+      "teacher": "Every MCA student has to present a seminar, and most treat it as 'make 20 slides the night before'. But a presentation is planned in a very particular order — and the slides are almost the last step, not the first.",
+      "explain": "A <strong>presentation</strong> is a structured spoken delivery to an audience, usually with visual support, made to inform, persuade or train. Good presentations follow a process: <strong>plan → analyse the audience → structure → prepare visuals → rehearse → deliver → handle questions</strong>.",
+      "keyPoints": [
+        "<strong>Step 1 — Define the purpose:</strong> to inform, to persuade or to train?",
+        "<strong>Step 2 — Analyse the audience:</strong> what do they know, want, and have time for?",
+        "<strong>Step 3 — Collect and select content:</strong> keep only what serves the purpose.",
+        "<strong>Step 4 — Structure it:</strong> Introduction → Body → Conclusion.",
+        "<strong>Step 5 — Prepare visuals</strong> — after the content, never before.",
+        "<strong>Step 6 — Rehearse aloud</strong>, with a timer, at least three times.",
+        "<strong>Step 7 — Deliver:</strong> eye contact, pace, pauses, movement, no reading.",
+        "<strong>Step 8 — Handle questions</strong> calmly at the end.",
+        "Classic rule: <em>tell them what you will say, say it, then tell them what you said.</em>",
+        "Arrive early and check the projector, cable, sound and your file."
+      ],
+      "subtopics": [
+        {
+          "title": "The three-part structure",
+          "text": "<strong>Introduction (10–15%):</strong> greet, introduce yourself, state the topic, say why it matters and preview your agenda. <strong>Body (70–80%):</strong> three to five main points, each with evidence or an example, in a logical order. <strong>Conclusion (10–15%):</strong> summarise the main points, state your key message or recommendation, thank the audience and invite questions."
+        },
+        {
+          "title": "Rehearsal is not optional",
+          "text": "Rehearse <strong>aloud and standing</strong>, not silently in your head — the two feel completely different. Time yourself; almost everyone overruns. Record one rehearsal and watch it, however uncomfortable that is. Rehearse the <strong>opening two minutes</strong> until you can do them automatically, because those are the minutes your nerves are highest."
+        },
+        {
+          "title": "Handling questions",
+          "text": "Listen to the whole question without interrupting. Pause, then repeat or paraphrase it so the whole room hears it. Answer briefly and honestly. If you do not know, say so: '<strong>I don't have that figure — I will find out and get back to you</strong>' is respected; bluffing is not. If a questioner is hostile, stay calm and answer the content, not the tone."
+        },
+        {
+          "title": "Timing and the clock",
+          "text": "Never plan to use the whole slot. For a 10-minute slot, prepare 8 minutes of content, because live delivery and questions always expand. Keep roughly one slide per minute as a rough guide. Finishing early is professional; being cut off mid-sentence by the moderator is not."
+        }
+      ],
+      "realLife": "For your semester seminar, the student who read 25 dense slides for 15 minutes bored everyone. The one who used 6 clean slides, spoke from memory and finished in 8 minutes with time for questions was remembered — and scored higher.",
+      "worked": "<strong>Structure for a 5-minute seminar: 'Cloud Computing — An Introduction'</strong><br><br><strong>Slide 1 — Title (15 seconds)</strong><br>Topic, your name, course, semester, date. Do not read it out — just greet and say the topic.<br><br><strong>Slide 2 — Agenda (20 seconds)</strong><br>Four bullets: What it is · Service models · Benefits · Real examples.<br>Say: 'I'll cover four things in the next five minutes.'<br><br><strong>Slide 3 — What is Cloud Computing? (60 seconds)</strong><br>One-line definition + one simple image (your data on someone else's server).<br>Give the everyday hook: 'Google Drive is cloud computing you already use.'<br><br><strong>Slide 4 — The three service models (75 seconds)</strong><br>A small three-row table: IaaS · PaaS · SaaS, with one example each (AWS EC2 · Google App Engine · Gmail).<br>Spend most of your time here — this is the core content.<br><br><strong>Slide 5 — Benefits and limitations (60 seconds)</strong><br>Left column: cost saving, scalability, access anywhere, no maintenance.<br>Right column: needs internet, data-security concerns, vendor lock-in.<br>Balance shows you understand the topic, not just the advertising.<br><br><strong>Slide 6 — A real example (45 seconds)</strong><br>One familiar case: 'Netflix runs on AWS' or 'DigiLocker stores documents in the cloud.'<br>One concrete example is worth three paragraphs of theory.<br><br><strong>Slide 7 — Conclusion + Thank you (25 seconds)</strong><br>Three-line summary, your one key message, 'Thank you — I'm happy to take questions.'<br><br><strong>Total: about 5 minutes (300 seconds), 7 slides, roughly one slide per 45 seconds.</strong><br>Rehearse the opening 30 seconds and the closing 30 seconds until they are automatic.",
+      "mistake": "Making the slides first. Content comes first, structure second, slides last. Slides made before the content decides what you say, and it always shows.",
+      "examAnswer": "A presentation is a formal oral delivery of information to an audience, usually supported by visual aids, with the object of informing, persuading or training. The process of preparing an effective presentation begins with defining the purpose and analysing the audience in terms of their existing knowledge, expectations and available time. The speaker then collects and selects the content and organises it into three parts: an introduction which states the topic, its importance and the agenda; a body containing three to five main points supported by evidence and examples; and a conclusion which summarises the points, states the key message and invites questions. Visual aids are prepared after the content is finalised, and the presentation is rehearsed aloud against a clock. During delivery the speaker should maintain eye contact, speak at a measured pace, use pauses and gestures, and avoid reading from the slides. Questions should be listened to fully, paraphrased for the audience and answered briefly and honestly.",
+      "remember": "Plan · Audience · Structure · Visuals · Rehearse · Deliver · Questions.",
+      "why": "Seminar presentations, project defence, client demos and team stand-ups are all the same skill. Learn the process once and every one of them gets easier.",
+      "practice": "Plan a 5-minute presentation on 'Cyber Security for Students' — write down your purpose, your audience, your seven slide titles and your timing per slide."
+    },
+    {
+      "title": "Managing Nervousness and Stage Fear",
+      "teacher": "Your heart pounds, your mouth goes dry, your hands shake. Here is the secret nobody tells you: experienced speakers feel exactly the same thing. They have not removed the fear — they have learned what to do with it.",
+      "explain": "<strong>Stage fear</strong> (also called speech anxiety or glossophobia) is the body's normal stress response to being watched. Your body releases adrenaline, which raises your heartbeat and breathing. The goal is not to eliminate it but to <strong>channel it into energy</strong>.",
+      "keyPoints": [
+        "Nervousness is normal and physical — adrenaline, not weakness.",
+        "The audience sees <strong>far less</strong> of your nervousness than you feel.",
+        "<strong>Preparation</strong> is the strongest cure: rehearse aloud at least three times.",
+        "Master the <strong>first two minutes</strong> — most fear lives there.",
+        "Breathe slowly and deeply before you begin (in for 4, hold 4, out for 6).",
+        "Arrive early and check the room, projector and file — removes surprise fear.",
+        "Look at <strong>friendly faces</strong> in the audience first.",
+        "Hold a pen or clicker to stop your hands shaking; keep water nearby.",
+        "Pause instead of rushing — nervousness speeds you up.",
+        "Focus on the <strong>message</strong>, not on yourself being judged."
+      ],
+      "subtopics": [
+        {
+          "title": "Why it happens",
+          "text": "Being watched by a group triggers the same ancient 'fight or flight' response as physical danger. Adrenaline raises the heart rate, tightens the throat and diverts blood from the hands, which is exactly why the mouth goes dry and the hands shake. Understanding that it is <strong>chemistry, not character</strong>, already removes some of the shame that makes it worse."
+        },
+        {
+          "title": "Before you speak",
+          "text": "Rehearse aloud and standing. Sleep properly the night before. Arrive early and stand where you will speak, so the space feels familiar. Avoid excess caffeine. Do slow, deep breathing for two minutes — long exhales physically slow the heart rate. Then focus on your first sentence, which should be so well rehearsed that it needs no thought at all."
+        },
+        {
+          "title": "While you are speaking",
+          "text": "Start slower than feels natural. Find two or three friendly faces and speak to them. Plant your feet; do not sway. If your mind blanks, <strong>pause and look at your notes</strong> — three seconds of silence feels like a minute to you and like nothing to the audience. If your voice shakes, take one breath and continue; it settles within about thirty seconds."
+        },
+        {
+          "title": "Changing how you think about it",
+          "text": "Two shifts help most. First, reframe the feeling: the physical sensation of fear and of excitement is nearly identical, so tell yourself 'I am excited' rather than 'I am terrified'. Second, shift the focus outwards — you are not on trial, you are giving the audience something useful. Thinking about <strong>them</strong> leaves less room to think about yourself."
+        }
+      ],
+      "realLife": "Most students feel sick before their first seminar, and completely normal before their fifth. Nothing changed except repetition — which is exactly why volunteering for small presentations early is the cheapest investment you can make.",
+      "mistake": "Trying to memorise the whole speech word for word. Memorising sounds robotic and it collapses completely if you forget one line. Memorise the <strong>structure</strong> and the opening sentence; speak the rest naturally from key points.",
+      "examAnswer": "Stage fear, also known as speech anxiety, is the anxiety experienced by a speaker before or during a presentation before an audience. It is a natural physiological response in which the release of adrenaline increases the heart rate and breathing and causes symptoms such as dryness of the mouth, trembling hands and a shaking voice. It can be managed through thorough preparation and repeated rehearsal, particularly of the opening of the speech, deep and slow breathing before speaking, early arrival to become familiar with the venue and equipment, positive self-talk, establishing eye contact with receptive members of the audience, deliberate use of pauses instead of hurrying, and concentrating on the message and the benefit to the audience rather than on oneself. With regular practice, the level of anxiety reduces considerably.",
+      "remember": "Prepared + Breathe + Slow start + Friendly face + Focus on the message.",
+      "why": "Stage fear stops capable students from speaking up in placements and meetings. Learning to manage it changes what opportunities you are willing to take.",
+      "practice": "Volunteer to speak for two minutes in your next class. Before it, do the 4-4-6 breathing exercise and rehearse only your first sentence until it is automatic."
+    },
+    {
+      "title": "Visual Aids and Multimedia Tools",
+      "teacher": "Slides are meant to help the audience, not to be your notes. The moment you put your whole script on the screen, your audience starts reading — and stops listening to you. Let's learn to make slides that work with you instead of against you.",
+      "explain": "<strong>Visual aids</strong> are materials such as slides, charts, images, videos and models that support a spoken presentation. They should <strong>illustrate</strong> your point, not contain it. The audience should look at the slide for a moment and then return their attention to you.",
+      "keyPoints": [
+        "<strong>6x6 rule:</strong> at most 6 bullet points per slide and about 6 words per bullet.",
+        "<strong>One idea per slide</strong> — if there are two, make two slides.",
+        "Font size at least <strong>28–32 pt</strong> for body text, larger for headings.",
+        "Use a plain sans-serif font (Arial, Calibri, Verdana). Avoid decorative fonts.",
+        "<strong>High contrast</strong> — dark text on light background, or light on dark.",
+        "Use no more than 2–3 colours, and keep them consistent.",
+        "Prefer a <strong>chart or image</strong> over a paragraph of text.",
+        "Number your slides; roughly one slide per minute.",
+        "Avoid heavy animations, sound effects and clip-art.",
+        "Always carry a backup: PDF copy, pen drive and email to yourself."
+      ],
+      "subtopics": [
+        {
+          "title": "Types of visual aids",
+          "text": "<strong>Projected:</strong> PowerPoint/Google Slides, videos, screen demos. <strong>Non-projected:</strong> whiteboard, flip chart, printed handouts, physical models and samples. <strong>Data visuals:</strong> bar charts for comparison, line graphs for trends over time, pie charts for parts of a whole, flowcharts and tables for processes and detail. Choosing the right chart type is half of making data readable."
+        },
+        {
+          "title": "Common multimedia tools",
+          "text": "<strong>Slides:</strong> Microsoft PowerPoint, Google Slides, Canva, Prezi. <strong>Video:</strong> YouTube clips, screen recordings (OBS). <strong>Diagrams:</strong> draw.io, Lucidchart. <strong>Online delivery:</strong> Zoom, Google Meet, Microsoft Teams, with screen sharing. Whatever you use, export a <strong>PDF backup</strong> — fonts and animations break on other people's machines with dismal reliability."
+        },
+        {
+          "title": "The classic mistake: reading off the slides",
+          "text": "If the slide contains your full sentences, the audience reads them in three seconds — far faster than you can speak them — and then waits, bored, while you catch up. Worse, you end up presenting with your <strong>back to the audience</strong>. Slides should carry short keywords; the sentences belong in your mouth, not on the screen. Use the speaker-notes view if you need prompts."
+        },
+        {
+          "title": "Using visual aids well during delivery",
+          "text": "Show a slide only when you are talking about it; use a blank/black screen (press B in PowerPoint) when you want full attention on you. Face the <strong>audience</strong>, not the screen. Point with a pointer rather than walking in front of the projector. Give people a few seconds of silence to read a chart before you explain it, and hand out printed handouts at the <em>end</em>, or people will read instead of listening."
+        }
+      ],
+      "realLife": "In a project viva, one team put their entire report on 30 slides and read it aloud with their backs to the examiners. Another team used 8 slides with one diagram each and explained them while facing the panel. Guess which team was asked friendlier questions.",
+      "table": {
+        "headers": [
+          "Element",
+          "Do",
+          "Don't"
+        ],
+        "rows": [
+          [
+            "Text",
+            "6 bullets × 6 words",
+            "Full paragraphs and sentences"
+          ],
+          [
+            "Font",
+            "Arial/Calibri, 28 pt and above",
+            "Decorative fonts, 14 pt text"
+          ],
+          [
+            "Colour",
+            "High contrast, 2–3 colours",
+            "Yellow on white, rainbow slides"
+          ],
+          [
+            "Data",
+            "One clear chart with a title",
+            "A dense table of 40 numbers"
+          ],
+          [
+            "Animation",
+            "Simple appear, or none",
+            "Spinning text and sound effects"
+          ],
+          [
+            "Delivery",
+            "Face the audience, talk from keywords",
+            "Read the slides with your back turned"
+          ]
+        ]
+      },
+      "mistake": "Treating slides as your notes. Slides are for the AUDIENCE. If you need prompts, use the speaker-notes view or a small cue card — never put your script on the screen.",
+      "examAnswer": "Visual aids are supporting materials such as slides, charts, graphs, images, videos, models and handouts that are used to make an oral presentation clearer, more interesting and easier to remember. Effective slide design follows the principle of one idea per slide and the 6x6 rule, which limits a slide to about six bullet points of about six words each. The text should be in a plain sans-serif font of at least twenty-eight points, with strong contrast between text and background, a limited and consistent colour scheme, and charts or images in preference to long passages of text. Common multimedia tools include Microsoft PowerPoint, Google Slides, Canva and Prezi for slides, video and screen recordings for demonstration, and platforms such as Zoom, Google Meet and Microsoft Teams for online delivery. The most common error is reading directly from the slides, which causes the speaker to turn away from the audience and reduces the presentation to a recitation; slides should therefore carry only keywords while the explanation is given orally.",
+      "remember": "6 bullets × 6 words · one idea per slide · big font · high contrast · never read the slide.",
+      "why": "Your slides are judged in every seminar, project defence and client demo. Clean slides make an average speaker look professional; cluttered ones make a good speaker look unprepared.",
+      "practice": "Take any 5 slides you have made before and redesign them to follow the 6x6 rule. Count how many words you were able to delete."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Which statement correctly describes the difference between hearing and listening?",
+      "options": [
+        "Hearing needs concentration; listening is automatic",
+        "Hearing is physical and involuntary; listening is mental and voluntary",
+        "They mean exactly the same thing",
+        "Listening uses only the ears; hearing uses the mind"
+      ],
+      "answer": 1,
+      "why": "Hearing is a physical process that happens automatically. Listening is a mental process needing attention, understanding and a response — and it can be improved with practice."
+    },
+    {
+      "q": "Your friend is upset about failing a test and wants to talk. The right kind of listening is…",
+      "options": [
+        "Critical listening",
+        "Appreciative listening",
+        "Empathetic listening",
+        "Selective listening"
+      ],
+      "answer": 2,
+      "why": "Empathetic listening aims at understanding the speaker's feelings. Jumping to criticism or solutions here is exactly the wrong move."
+    },
+    {
+      "q": "Which of these is the MOST common internal barrier to listening?",
+      "options": [
+        "Noise in the room",
+        "Mentally rehearsing your reply while the other person speaks",
+        "A weak internet connection",
+        "Poor lighting"
+      ],
+      "answer": 1,
+      "why": "You cannot compose and comprehend at the same time. Planning your answer while someone speaks is the classic internal listening barrier."
+    },
+    {
+      "q": "In a group discussion, evaluators reward a candidate MOST for…",
+      "options": [
+        "Speaking the loudest and the longest",
+        "A few substantial points plus listening and including others",
+        "Agreeing with every speaker",
+        "Staying silent to avoid mistakes"
+      ],
+      "answer": 1,
+      "why": "GD assesses content, communication, reasoning, leadership and team behaviour. Quality plus teamwork beats volume, and silence scores nothing."
+    },
+    {
+      "q": "The main difference between a debate and a group discussion is that in a debate…",
+      "options": [
+        "There are two fixed opposing sides and the aim is to win",
+        "There is no time limit",
+        "Only one person speaks",
+        "No evidence is required"
+      ],
+      "answer": 0,
+      "why": "A debate has fixed 'for' and 'against' sides with timed turns and a competitive aim. A GD has no sides and aims at a shared conclusion."
+    },
+    {
+      "q": "The 6x6 rule for slide design means…",
+      "options": [
+        "6 slides in 6 minutes",
+        "6 colours and 6 fonts",
+        "At most 6 bullet points, about 6 words each",
+        "6 images per slide"
+      ],
+      "answer": 2,
+      "why": "The 6x6 rule limits a slide to roughly six bullets of six words, keeping slides readable and forcing the detail into your speech instead."
+    },
+    {
+      "q": "Which is the correct order of the presentation process?",
+      "options": [
+        "Make slides → decide content → rehearse → deliver",
+        "Define purpose → analyse audience → structure content → prepare visuals → rehearse → deliver",
+        "Rehearse → analyse audience → make slides → decide purpose",
+        "Deliver → structure → rehearse → make slides"
+      ],
+      "answer": 1,
+      "why": "Purpose and audience come first, then content and structure, and only then visuals. Slides made before the content decide what you say — and it shows."
+    },
+    {
+      "q": "During a presentation, an examiner asks a question you genuinely cannot answer. The best response is…",
+      "options": [
+        "Guess confidently and hope it is right",
+        "Say you did not hear the question",
+        "Say you don't have that information and offer to find out",
+        "Change the subject to something you know"
+      ],
+      "answer": 2,
+      "why": "Honesty is respected; bluffing is usually detected and costs you credibility on everything else you said."
+    },
+    {
+      "q": "Stage fear is best described as…",
+      "options": [
+        "A sign that you are not suited to public speaking",
+        "A normal adrenaline response that can be managed with preparation and breathing",
+        "Something only beginners ever feel",
+        "A problem that disappears if you memorise the speech word for word"
+      ],
+      "answer": 1,
+      "why": "It is a physical stress response, not a character flaw. Experienced speakers feel it too — they manage it with preparation, breathing and a rehearsed opening."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Differentiate between hearing and listening. Explain any four types of listening with one situation where each is appropriate.",
+      "hint": "Use a comparison table for hearing vs listening, then take active, passive, empathetic, critical and appreciative one by one."
+    },
+    {
+      "q": "What are the main barriers to effective listening? Suggest a practical remedy for each, and list five techniques of active listening.",
+      "hint": "Physical, physiological, psychological, semantic, distraction and premature evaluation. Remedies: sit in front, phone away, take notes, don't interrupt, paraphrase."
+    },
+    {
+      "q": "You have been selected for a campus group discussion on 'Is artificial intelligence a threat to jobs?'. Explain how you would prepare and behave, and state what the evaluators will be assessing.",
+      "hint": "Six assessment areas: content, communication, reasoning, leadership, team behaviour, body language. Remember: initiate only if prepared, and summarise at the end."
+    },
+    {
+      "q": "Describe the complete process of preparing and delivering an effective presentation, and give a slide-by-slide plan for a 5-minute seminar on a topic of your choice.",
+      "hint": "Purpose → audience → content → structure (intro/body/conclusion) → visuals → rehearsal → delivery → questions. Aim for about one slide per 45 seconds."
+    },
+    {
+      "q": "What is stage fear and why does it occur? Describe six practical techniques you would use to manage it before and during a presentation.",
+      "hint": "Explain adrenaline and 'fight or flight' first, then: rehearse aloud, master the first two minutes, deep breathing, arrive early, friendly faces, pause instead of rushing."
+    }
+  ]
+};

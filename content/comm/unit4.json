@@ -1,0 +1,687 @@
+/* Technical Communication (MCA 112) — Unit 4. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.comm = UNITS.comm || [];
+UNITS.comm[3] = {
+  "num": 4,
+  "title": "Business Correspondence",
+  "problem": "A company will judge you before it ever meets you — by your letter, your resume and your email. One badly written application, one careless email, and the door closes without anybody telling you why.",
+  "solution": "This unit gives you the ready-made shapes: the parts of a business letter, the paragraphs of an application, the sections of a resume, and the rules of professional email. Learn the shape once and you can fill it in for the rest of your career.",
+  "objectives": [
+    "Explain what business correspondence is and why it must be formal",
+    "Name and arrange all the parts of a business letter in the correct order",
+    "Distinguish full block, modified block and semi-block layouts",
+    "Write an enquiry, quotation, order, complaint and adjustment letter with the right content in each",
+    "Write a letter of application and say what each paragraph must do",
+    "Build a fresher resume with all the standard sections, and state the difference between a resume and a CV",
+    "List the advantages and limitations of email",
+    "Apply email etiquette, including correct use of To, CC and BCC"
+  ],
+  "topics": [
+    {
+      "title": "What is Business Correspondence?",
+      "teacher": "Think about how differently you write to your best friend and to a bank. Same you, same language — but one is 'hey need money 😅' and the other must be 'I wish to enquire about the procedure for...'. Business correspondence is simply the second voice, learned properly.",
+      "explain": "<strong>Business correspondence</strong> means the exchange of written messages — letters, emails, memos, notices — between an organisation and the people it deals with, for a business purpose. It is <strong>formal</strong>, factual and kept as a permanent record.",
+      "keyPoints": [
+        "It is <strong>written</strong> communication for a business purpose.",
+        "It may be <strong>internal</strong> (inside the company) or <strong>external</strong> (with customers, suppliers, banks, government).",
+        "It creates a <strong>permanent legal record</strong> — that is why it must be formal and careful.",
+        "It reaches people who are far away, cheaply.",
+        "It builds and maintains <strong>goodwill</strong> with customers and suppliers.",
+        "It saves time and avoids repeating the same explanation to many people.",
+        "Main qualities: clear, complete, correct, courteous, concise (the 7 C's again).",
+        "Never use slang, SMS short forms, emojis or a chatty tone."
+      ],
+      "subtopics": [
+        {
+          "title": "Why it must be formal",
+          "text": "A business letter can be produced years later as <strong>evidence</strong> — of an order placed, a price quoted, a complaint made. Since the reader is often a stranger, and since anyone in the organisation may read it, there is no room for private jokes or casual shortcuts. Formality here does not mean using big difficult words; it means being polite, impersonal and precise."
+        },
+        {
+          "title": "Internal and external correspondence",
+          "text": "<strong>Internal</strong> correspondence travels inside the organisation — memos, circulars, notices, office orders, internal emails. <strong>External</strong> correspondence goes outside — to customers, suppliers, banks, government offices and job applicants. External letters are usually more formal because they represent the whole company, not just you."
+        },
+        {
+          "title": "Functions of business correspondence",
+          "text": "It <strong>informs</strong> (a price change), <strong>requests</strong> (an enquiry), <strong>persuades</strong> (a sales letter), <strong>records</strong> (a confirmed order) and <strong>maintains goodwill</strong> (an apology or adjustment letter). Most exam questions on 'importance of business correspondence' are answered simply by listing these five functions with one example each."
+        }
+      ],
+      "realLife": "When you apply for a bank education loan, everything you send — the application, the covering letter, the emails chasing an update — is business correspondence. The bank never meets you before deciding; it only meets your paperwork.",
+      "table": {
+        "headers": [
+          "",
+          "Personal Letter",
+          "Business Letter"
+        ],
+        "rows": [
+          [
+            "Tone",
+            "Friendly, emotional",
+            "Formal, polite, impersonal"
+          ],
+          [
+            "Format",
+            "No fixed format",
+            "Fixed parts and layout"
+          ],
+          [
+            "Length",
+            "As long as you like",
+            "Short and to the point"
+          ],
+          [
+            "Purpose",
+            "Personal news, feelings",
+            "A specific business action"
+          ],
+          [
+            "Kept as record",
+            "Usually not",
+            "Always filed, may be legal proof"
+          ]
+        ]
+      },
+      "mistake": "Students think 'formal' means using heavy, old-fashioned words like 'kindly do the needful at your earliest convenience'. Formal actually means polite and precise. 'Please send the quotation by 10 October' is more professional than any amount of decoration.",
+      "examAnswer": "Business correspondence refers to the exchange of written information, such as letters, emails, memos and notices, between an organisation and its customers, suppliers, employees or other parties for a business purpose. It may be internal, within the organisation, or external, with outside parties. Business correspondence is formal, factual and concise, and it serves to inform, request, persuade, record and maintain goodwill. Because such documents form a permanent and sometimes legal record of the transaction, they must be accurate, clear, complete and courteous.",
+      "remember": "Business writing = a permanent record. Write it as if it will be read aloud in court.",
+      "why": "Every job you will ever hold involves writing to people who do not know you. This is the first unit in the syllabus that you will use in the very same week you finish studying it.",
+      "practice": "Write down three pieces of business correspondence a college itself sends out, and say whether each is internal or external."
+    },
+    {
+      "title": "Parts of a Business Letter",
+      "teacher": "A business letter is like a form with invisible boxes. Every reader expects each box in the same place — so if you shuffle them, the letter instantly looks amateur. Let's learn the boxes, top to bottom.",
+      "explain": "A standard business letter has a fixed set of <strong>parts</strong> arranged in a fixed order from the top of the page to the bottom. Some parts are essential and some are optional, but the <em>order</em> never changes.",
+      "keyPoints": [
+        "<strong>1. Heading / Letterhead</strong> — sender's name, address, phone, email (printed at the top).",
+        "<strong>2. Date</strong> — written in full: 28 September 2026 (never 28/09/26).",
+        "<strong>3. Inside address</strong> — the receiver's name, designation and full address.",
+        "<strong>4. Attention line</strong> (optional) — when a company letter must reach one person.",
+        "<strong>5. Salutation</strong> — 'Dear Sir/Madam,' or 'Dear Mr. Sharma,'.",
+        "<strong>6. Subject line</strong> — one line saying what the letter is about.",
+        "<strong>7. Body</strong> — the message itself, in three short paragraphs.",
+        "<strong>8. Complimentary close</strong> — 'Yours faithfully,' or 'Yours sincerely,'.",
+        "<strong>9. Signature block</strong> — handwritten signature, then typed name and designation.",
+        "<strong>10. Enclosures (Encl.)</strong> — list of documents attached.",
+        "<strong>11. CC / Reference initials / P.S.</strong> — optional extras at the very bottom."
+      ],
+      "subtopics": [
+        {
+          "title": "Salutation and close must MATCH",
+          "text": "This is the single most-tested small rule. If you do <strong>not</strong> know the person's name and write 'Dear Sir/Madam,', you must close with '<strong>Yours faithfully,</strong>'. If you <strong>do</strong> know the name and write 'Dear Mr. Verma,', you must close with '<strong>Yours sincerely,</strong>'. Mixing them is the classic error."
+        },
+        {
+          "title": "The three-paragraph body",
+          "text": "Paragraph one states <strong>why</strong> you are writing. Paragraph two gives the <strong>details</strong> — facts, figures, dates, order numbers. Paragraph three states the <strong>action</strong> you want and closes politely. Keeping to this shape is what makes a business letter feel professional even when the content is simple."
+        },
+        {
+          "title": "Reference number and enclosures",
+          "text": "A <strong>reference number</strong> (Ref: DS/HR/2026/114) helps both offices file and trace the letter. <strong>Encl.</strong> at the bottom lists what is attached — 'Encl.: 1. Resume, 2. Mark sheets'. If you mention an attachment in the body, it must also appear in the Encl. line, or the reader will not know to look for it."
+        },
+        {
+          "title": "Date format matters",
+          "text": "Always write the month in words. '05/06/2026' means 5 June in India and 6 May in the USA — a real and expensive source of confusion. '5 June 2026' or 'June 5, 2026' can only be read one way."
+        }
+      ],
+      "realLife": "The fee-receipt letter or bonafide certificate your college gives you has all of these parts — letterhead at the top, reference number, date, your name as inside address, subject line, two-line body, 'Yours faithfully', and the Registrar's signature with designation.",
+      "worked": "<strong>A complete short business letter, with every part labelled:</strong><br><br><em>[1 LETTERHEAD]</em><br>Diaspark Software Pvt. Ltd.<br>14 Vijay Nagar, Indore 452010<br>Phone: 0731-2555100 · Email: info@diaspark.example<br><br><em>[2 REFERENCE &amp; DATE]</em><br>Ref: DS/PUR/2026/087<br>28 September 2026<br><br><em>[3 INSIDE ADDRESS]</em><br>The Sales Manager<br>Shreeji Computer Systems<br>22 MG Road, Bhopal 462001<br><br><em>[4 SALUTATION]</em><br>Dear Sir/Madam,<br><br><em>[5 SUBJECT LINE]</em><br>Subject: Enquiry regarding prices of laptops for office use<br><br><em>[6 BODY — para 1: purpose]</em><br>We are a software development company based in Indore and wish to purchase laptops for our new development team.<br><br><em>[6 BODY — para 2: details]</em><br>Kindly send us your lowest quotation for 25 laptops with an Intel i5 processor, 16 GB RAM and 512 GB SSD. Please also state the warranty period, delivery time, mode of payment and any discount available on bulk orders.<br><br><em>[6 BODY — para 3: action + polite close]</em><br>We would be grateful to receive your quotation by 10 October 2026, as we intend to place the order this month. Thank you for your time.<br><br><em>[7 COMPLIMENTARY CLOSE]</em><br>Yours faithfully,<br><br><em>[8 SIGNATURE BLOCK]</em><br><em>(signature)</em><br>Anjali Mehta<br>Purchase Officer, Diaspark Software Pvt. Ltd.<br><br><em>[9 ENCLOSURE]</em><br>Encl.: Technical specification sheet",
+      "mistake": "Writing 'Dear Sir/Madam' at the top and 'Yours sincerely' at the bottom. Faithfully goes with Sir/Madam (no name); sincerely goes with a name. Remember: if you do not know the name, you can only be faithful.",
+      "examAnswer": "A business letter consists of several standard parts arranged in a fixed order. These are the heading or letterhead containing the sender's address, the reference number and date, the inside address giving the receiver's name and address, an optional attention line, the salutation, the subject line, the body of the letter, the complimentary close, the signature block containing the signature, typed name and designation, and finally the enclosure notation and any copy notation. The salutation and complimentary close must correspond: 'Dear Sir/Madam' is followed by 'Yours faithfully', while a named salutation such as 'Dear Mr. Sharma' is followed by 'Yours sincerely'.",
+      "remember": "Heading → Date → Inside address → Salutation → Subject → Body → Close → Signature → Enclosure.",
+      "why": "Examiners mark letter questions largely on format. Even a weak body scores if every part is present, correctly placed and correctly worded.",
+      "practice": "Write a business letter to your college Registrar requesting a duplicate mark sheet. Label each part in the margin."
+    },
+    {
+      "title": "Layouts of a Business Letter",
+      "teacher": "Same parts, three different ways of arranging them on the page. It sounds like a small thing — until an examiner asks 'differentiate between full block and semi-block', which is a guaranteed short-answer question.",
+      "explain": "The <strong>layout</strong> (or style) of a letter means how the parts are <em>positioned</em> — left-aligned or indented, and whether paragraphs start at the margin or a few spaces in. The three standard layouts are <strong>full block</strong>, <strong>modified block</strong> and <strong>semi-block</strong>.",
+      "keyPoints": [
+        "<strong>Full block:</strong> every single line starts at the LEFT margin. No indentation anywhere.",
+        "Full block uses <strong>open punctuation</strong> (no comma after salutation/close) and is the most modern and most common style.",
+        "<strong>Modified block:</strong> date, complimentary close and signature move to the RIGHT half; everything else stays left.",
+        "Modified block paragraphs are NOT indented.",
+        "<strong>Semi-block:</strong> same as modified block, BUT the first line of each paragraph is indented (about 5 spaces).",
+        "Semi-block is the oldest, most traditional style.",
+        "All three use a blank line between paragraphs.",
+        "The <em>parts</em> and their order are identical in all three — only the alignment changes."
+      ],
+      "subtopics": [
+        {
+          "title": "Full block — the safe default",
+          "text": "Everything flush left, no indents, one blank line between blocks. It is the fastest to type, the easiest to keep neat, and the style used by almost all companies and by email today. If a question does not specify a style, write in full block."
+        },
+        {
+          "title": "Modified block",
+          "text": "The body stays at the left margin, but the <strong>date at the top</strong> and the <strong>complimentary close and signature at the bottom</strong> are moved to roughly the centre or right of the page. This gives the letter a balanced, traditional appearance and is still widely used on printed letterheads."
+        },
+        {
+          "title": "Semi-block",
+          "text": "Identical to modified block, with one extra feature: the <strong>first line of every paragraph is indented</strong>. Because the indent already marks a new paragraph, semi-block is the one style where the blank line between paragraphs is sometimes dropped. Think of semi-block as 'modified block + indented paragraphs'."
+        },
+        {
+          "title": "Open vs mixed punctuation",
+          "text": "<strong>Open punctuation</strong> puts no comma after the salutation or the complimentary close ('Dear Sir' ... 'Yours faithfully'). <strong>Mixed punctuation</strong> puts a comma after both ('Dear Sir,' ... 'Yours faithfully,'). Full block normally goes with open punctuation; modified and semi-block normally go with mixed. Either is acceptable as long as you stay consistent within one letter."
+        }
+      ],
+      "realLife": "Open any company offer letter or bank statement letter you have at home — almost every one of them is full block, because it is the easiest to produce in Word and looks cleanest.",
+      "table": {
+        "headers": [
+          "Feature",
+          "Full Block",
+          "Modified Block",
+          "Semi-Block"
+        ],
+        "rows": [
+          [
+            "Date position",
+            "Left margin",
+            "Right / centre",
+            "Right / centre"
+          ],
+          [
+            "Inside address",
+            "Left margin",
+            "Left margin",
+            "Left margin"
+          ],
+          [
+            "Paragraph start",
+            "Left margin (no indent)",
+            "Left margin (no indent)",
+            "Indented ~5 spaces"
+          ],
+          [
+            "Close & signature",
+            "Left margin",
+            "Right / centre",
+            "Right / centre"
+          ],
+          [
+            "Punctuation usually",
+            "Open",
+            "Mixed",
+            "Mixed"
+          ],
+          [
+            "Feel",
+            "Modern, most common",
+            "Balanced, traditional",
+            "Oldest, most formal"
+          ]
+        ]
+      },
+      "mistake": "Confusing modified block and semi-block. They look almost the same — the ONLY difference is that semi-block indents the first line of each paragraph. Say that one sentence in the exam and you have the whole answer.",
+      "examAnswer": "The layout of a business letter refers to the arrangement of its parts on the page. In the full block layout, every line, including the date, salutation, paragraphs, complimentary close and signature, begins at the left margin, and open punctuation is normally used; it is the most modern and widely used style. In the modified block layout, the date, complimentary close and signature are placed towards the right or centre of the page while the remaining parts begin at the left margin, and paragraphs are not indented. The semi-block layout is the same as the modified block layout except that the first line of each paragraph is indented. The parts of the letter and their sequence remain the same in all three layouts.",
+      "remember": "Full block = everything left. Modified = date & signature move right. Semi = modified + indented paragraphs.",
+      "why": "This is an easy, guaranteed mark. A three-row comparison table answers the whole question in two minutes.",
+      "practice": "Take the sample letter from the previous topic and rewrite it once in modified block and once in semi-block layout."
+    },
+    {
+      "title": "Enquiry and Quotation Letters",
+      "teacher": "Before any company buys anything, two letters fly back and forth: 'what will this cost?' and 'here is what it costs'. These two are the most common business letters in the world — and the easiest marks in this unit.",
+      "explain": "A <strong>letter of enquiry</strong> asks a seller for information about goods — prices, specifications, terms. A <strong>quotation letter</strong> is the seller's reply, stating the price and the terms of sale. A quotation, once accepted, becomes part of the contract, so its figures must be exact.",
+      "keyPoints": [
+        "<strong>Enquiry letter</strong> = buyer asks. <strong>Quotation letter</strong> = seller answers.",
+        "An enquiry must state: exactly what goods, how many, required specifications and when needed.",
+        "It should also ask for price, discount, delivery time, payment terms and warranty.",
+        "A quotation must state: item description, unit price, total price, taxes (GST), discount.",
+        "It must also give delivery period, payment terms, warranty and <strong>validity of the quotation</strong>.",
+        "Quotations may be <strong>solicited</strong> (asked for) or <strong>unsolicited</strong> (sent without being asked).",
+        "Always end a quotation with a goodwill line inviting the order.",
+        "Never give an approximate price in a quotation — it is a commitment."
+      ],
+      "subtopics": [
+        {
+          "title": "What an enquiry letter must contain",
+          "text": "Be specific or you will get a useless reply. Name the exact item and quantity, give the technical specification, say when you need delivery, and list the information you want back: price per unit, bulk discount, taxes, delivery schedule, payment terms and warranty. A vague enquiry ('please send rates of computers') wastes everyone's time."
+        },
+        {
+          "title": "What a quotation letter must contain",
+          "text": "Thank the buyer for the enquiry, then give a clear item-wise table: description, quantity, rate, amount. State taxes separately, mention any discount, and give the <strong>delivery period, payment terms, warranty and validity</strong> (for example, 'this quotation is valid for 30 days'). Validity protects the seller if prices rise."
+        },
+        {
+          "title": "Tone in these letters",
+          "text": "An enquiry is polite but businesslike; you are not begging for a favour. A quotation is a <strong>sales opportunity</strong> — so it should be warm and confident, highlighting quality, service and after-sales support, and closing with a line such as 'We look forward to the pleasure of serving you.'"
+        }
+      ],
+      "realLife": "When your college decides to buy 60 new computers for the lab, the purchase department sends an enquiry to four vendors and compares the four quotations that come back. Whoever wrote the clearest quotation usually gets a serious look first.",
+      "table": {
+        "headers": [
+          "",
+          "Enquiry Letter",
+          "Quotation Letter"
+        ],
+        "rows": [
+          [
+            "Written by",
+            "The buyer",
+            "The seller"
+          ],
+          [
+            "Purpose",
+            "To ask for price and terms",
+            "To state price and terms"
+          ],
+          [
+            "Key content",
+            "Item, quantity, specification, deadline",
+            "Rate, total, tax, discount, delivery, validity"
+          ],
+          [
+            "Legal weight",
+            "No commitment",
+            "A firm offer while it is valid"
+          ]
+        ]
+      },
+      "mistake": "Writing an enquiry without the quantity. Price per unit changes completely between 5 laptops and 500 — a seller cannot quote at all until you say how many.",
+      "examAnswer": "A letter of enquiry is written by a prospective buyer to a seller requesting information about goods or services, including their price, specifications, discount, delivery period, terms of payment and warranty. It must clearly state the exact item required, the quantity and the date by which it is needed. A quotation letter is the seller's reply to such an enquiry and states the description of the goods, the unit price and total price, applicable taxes and discounts, the delivery period, the terms of payment, the warranty offered and the period for which the quotation remains valid. A quotation is a firm offer during its validity period and therefore must be accurate and complete.",
+      "remember": "Enquiry asks. Quotation answers — with price, terms and a validity date.",
+      "why": "Purchase and vendor correspondence is one of the most common writing tasks in any company, including IT companies buying hardware and licences.",
+      "practice": "Write an enquiry letter to a stationery supplier asking for the price of 500 notebooks and 200 pens, and then write the quotation letter you would expect back."
+    },
+    {
+      "title": "Order Letters and Their Replies",
+      "teacher": "The quotation looked good, so now you actually buy. An order letter is short — but every single number in it must be exactly right, because this is the document the goods will be packed against.",
+      "explain": "An <strong>order letter</strong> (or purchase order) is written by a buyer to place a firm order for goods after accepting a quotation. It is a legally binding document, so it must be precise, complete and unambiguous.",
+      "keyPoints": [
+        "Refer to the quotation number and date you are accepting.",
+        "Give an <strong>order number</strong> and date for future reference.",
+        "List items clearly: description, catalogue/model number, quantity, agreed rate, total.",
+        "State the <strong>delivery address</strong> and the <strong>required delivery date</strong>.",
+        "State the <strong>mode of payment</strong> agreed (advance, on delivery, 30 days credit).",
+        "State the mode of packing and transport, and who bears the freight.",
+        "Ask for a written <strong>acknowledgement</strong> of the order.",
+        "Related letters: <strong>cancellation letter</strong> (order withdrawn) and <strong>execution/acknowledgement letter</strong> (seller confirms)."
+      ],
+      "subtopics": [
+        {
+          "title": "Why precision matters more here than anywhere",
+          "text": "The warehouse staff who pack your goods will never read your polite sentences — they read the <strong>table</strong>. A wrong model number or a missing quantity means the wrong goods arrive, and the dispute that follows is settled by looking at exactly what your order letter said. Write numbers twice if you must: '25 (twenty-five) units'."
+        },
+        {
+          "title": "The seller's reply: acknowledgement or regret",
+          "text": "The seller replies with an <strong>acknowledgement letter</strong> confirming the order, the price and the despatch date. If the goods are unavailable, the seller sends a <strong>letter of regret</strong>, which should apologise, explain briefly, and — importantly — offer an alternative or a future date so that the customer is not simply lost."
+        },
+        {
+          "title": "Cancelling an order",
+          "text": "A <strong>cancellation letter</strong> must quote the order number and date, state clearly that the order is cancelled, give a brief and honest reason (delay, changed requirement), apologise for the inconvenience and express hope of future business. Cancel early — once the goods are despatched, cancellation becomes a costly dispute rather than a letter."
+        }
+      ],
+      "realLife": "Think of it as the formal, paper version of clicking 'Place Order' on Amazon — and the acknowledgement letter is the confirmation mail with the order ID that arrives seconds later.",
+      "mistake": "Placing an order without quoting the quotation reference. The seller may then supply at today's higher price, and you have no written proof of the rate you agreed to.",
+      "examAnswer": "An order letter is written by a buyer to a seller to place a firm order for goods, usually after accepting a quotation. It should refer to the seller's quotation number and date, carry its own order number and date, and give a clear description of each item with its model number, quantity, agreed rate and total value. It must also state the delivery address, the required date of delivery, the mode of packing and despatch, and the agreed terms of payment, and should request a written acknowledgement. Because an order letter is a legally binding document, it must be accurate, complete and free from ambiguity. The seller replies with a letter of acknowledgement confirming the order, or a letter of regret if the goods cannot be supplied.",
+      "remember": "Order letter = quotation reference + item table + delivery date + payment terms + 'please acknowledge'.",
+      "why": "This is the letter that turns a conversation into a contract. Getting it right is basic professional competence in any purchase or vendor role.",
+      "practice": "Using the laptop quotation from the earlier topic, write the order letter placing a firm order for 25 laptops."
+    },
+    {
+      "title": "Complaint and Adjustment Letters",
+      "teacher": "Something went wrong — wrong goods, damaged goods, late delivery. Here is the surprising part: an angry complaint usually gets you less than a calm one. Let's learn to complain in a way that actually gets the problem solved.",
+      "explain": "A <strong>letter of complaint</strong> (or claim letter) informs a seller that something is wrong with the goods or service and asks for a specific remedy. An <strong>adjustment letter</strong> is the seller's reply, either granting the remedy or politely refusing it with reasons.",
+      "keyPoints": [
+        "A complaint must be <strong>prompt</strong> — write as soon as the problem is found.",
+        "State the facts: order number, invoice number, date, item, what exactly is wrong.",
+        "Say what damage or loss it caused you.",
+        "Ask for a <strong>specific remedy</strong>: replacement, repair, refund, discount or re-delivery.",
+        "Keep the tone <strong>calm and courteous</strong> — never accusing or insulting.",
+        "Give a reasonable deadline and assume good faith.",
+        "An <strong>adjustment letter</strong> is the seller's reply — granting, partly granting, or refusing the claim.",
+        "Granting: apologise, state the remedy, give the date, restore goodwill.",
+        "Refusing: thank them, explain the reason clearly, refuse politely, and still offer something if possible."
+      ],
+      "subtopics": [
+        {
+          "title": "How to structure a complaint letter",
+          "text": "Paragraph 1: state what you ordered and when, with the order and invoice numbers. Paragraph 2: state exactly what is wrong, with specifics — '8 of the 25 laptops have damaged screens'. Paragraph 3: state the remedy you want and by when, and close politely. Facts, not feelings, are what get action."
+        },
+        {
+          "title": "Why courtesy works better than anger",
+          "text": "The person reading your complaint almost never caused the problem. If you insult them, they defend the company; if you are calm and factual, they become your ally in fixing it. Professional complaint writers use phrases like 'there appears to have been an error' rather than 'you cheated us' — it leaves both sides room to act."
+        },
+        {
+          "title": "The granting adjustment letter",
+          "text": "Open by <strong>thanking the customer for writing in</strong>. Apologise sincerely and briefly. State the exact action being taken and by when. If useful, explain the cause without making excuses. Close with a line that rebuilds confidence. A well-handled complaint often makes a customer <em>more</em> loyal than one who never had a problem."
+        },
+        {
+          "title": "The refusing adjustment letter",
+          "text": "This is the harder one. Start on a neutral or positive note, explain the reasons <strong>before</strong> giving the refusal (so the reader accepts the logic first), refuse clearly but politely, and offer whatever you can — a discount, a repair at cost, advice. Never say 'you are wrong'; say 'the warranty covers manufacturing defects, and this damage appears to be from transit'."
+        }
+      ],
+      "realLife": "Your online order arrives with a cracked screen. The angry review you post gets you nothing. A calm email quoting the order ID, describing the damage and asking for a replacement within 7 days gets you a replacement.",
+      "table": {
+        "headers": [
+          "",
+          "Complaint Letter",
+          "Adjustment Letter"
+        ],
+        "rows": [
+          [
+            "Written by",
+            "The buyer / customer",
+            "The seller"
+          ],
+          [
+            "Purpose",
+            "Report a problem, ask for a remedy",
+            "Reply: grant or refuse the claim"
+          ],
+          [
+            "Must contain",
+            "Order/invoice details, exact fault, remedy wanted",
+            "Apology or explanation, decision, action, goodwill"
+          ],
+          [
+            "Tone",
+            "Calm, factual, firm",
+            "Courteous, positive, goodwill-restoring"
+          ]
+        ]
+      },
+      "mistake": "Writing a complaint in an angry, accusing tone, or without the invoice and order numbers. Emotion without evidence gets ignored; evidence without emotion gets acted on.",
+      "examAnswer": "A letter of complaint, also called a claim letter, is written by a buyer to inform the seller of a defect, shortage, damage or delay in the goods or services supplied, and to request a specific remedy. It should be written promptly and must state the order and invoice details, the exact nature of the fault, the loss caused and the remedy sought, in a calm and courteous tone. An adjustment letter is the seller's reply to a complaint. If the claim is granted, the letter thanks the customer, apologises, states the corrective action and the date by which it will be completed, and seeks to restore goodwill. If the claim is refused, the reasons are explained first, the refusal is conveyed politely, and an alternative concession is offered wherever possible.",
+      "remember": "Complaint = facts + fault + remedy wanted. Adjustment = apology or reason + decision + goodwill.",
+      "why": "How a company handles complaints decides whether it keeps its customers. This is directly relevant in IT support, client servicing and every service role.",
+      "practice": "Write a complaint letter about 8 damaged laptops out of an order of 25, then write the seller's adjustment letter granting a replacement."
+    },
+    {
+      "title": "Letter of Application (Cover Letter)",
+      "teacher": "Here is the one that will change your life first. A recruiter spends seconds deciding whether to open your resume — and your application letter is what makes that decision. Let's write one you can reuse for every job you apply to.",
+      "explain": "A <strong>letter of application</strong> (also called a cover letter) is the formal letter you send along with your resume when applying for a job. Its job is not to repeat the resume — it is to <strong>connect your strengths to that particular job</strong> and persuade the reader to open the resume.",
+      "keyPoints": [
+        "It is always sent <strong>with</strong> a resume, never instead of it.",
+        "Keep it to <strong>one page, three or four short paragraphs</strong>.",
+        "Address it to a named person wherever possible ('Dear Ms. Nair,').",
+        "Subject line must name the <strong>exact post</strong> and reference number.",
+        "<strong>Para 1:</strong> what post, where you saw it, and one line on why you fit.",
+        "<strong>Para 2:</strong> your qualification and the skills that match <em>this</em> job.",
+        "<strong>Para 3:</strong> projects/internships as evidence, and what you can give the company.",
+        "<strong>Para 4:</strong> request an interview, thank them, mention the enclosed resume.",
+        "Two types: <strong>solicited</strong> (in reply to an advertisement) and <strong>unsolicited</strong> (sent speculatively).",
+        "Tailor it to every company — never send the same letter everywhere."
+      ],
+      "subtopics": [
+        {
+          "title": "What each paragraph must do",
+          "text": "<strong>Opening:</strong> state the post, the source of the advertisement and the reference number, so the letter reaches the right file. <strong>Body 1:</strong> your qualification plus the two or three skills the advertisement actually asked for. <strong>Body 2:</strong> proof — a project, an internship, a result. <strong>Close:</strong> ask for the interview, state your availability, thank them. Nothing else belongs in a cover letter."
+        },
+        {
+          "title": "Solicited and unsolicited applications",
+          "text": "A <strong>solicited</strong> application replies to an advertised vacancy, so it can quote the advertisement and match the stated requirements point by point. An <strong>unsolicited</strong> application is sent when no vacancy has been advertised; it must work harder — opening with why <em>that company</em> interests you, and asking to be considered for any suitable future opening."
+        },
+        {
+          "title": "Write about them, not only about you",
+          "text": "Weak letters say 'I want this job to build my career'. Strong letters say 'my Java and SQL project experience matches the backend developer role you have advertised'. The employer is not hiring you to help your career — they are hiring you to solve their problem. Every sentence should answer 'what do I bring?'"
+        }
+      ],
+      "realLife": "When campus placement opens and 200 MCA students apply to the same company, every resume looks similar — same college, same degree, same semester. The cover letter is the only place where you sound like a person instead of a row in a spreadsheet.",
+      "worked": "<strong>Sample letter of application (full block layout):</strong><br><br>Priya Sharma<br>Flat 12, Shivaji Nagar, Bhopal 462016<br>Phone: 98xxxxxx21 · Email: priya.sharma@example.com<br><br>28 September 2026<br><br>The HR Manager<br>Infotech Solutions Pvt. Ltd.<br>Plot 9, IT Park, Indore 452010<br><br>Dear Sir/Madam,<br><br>Subject: Application for the post of Junior Software Developer (Ref: ISPL/REC/2026/41)<br><br>With reference to your advertisement in <em>The Times of India</em> dated 22 September 2026, I wish to apply for the post of Junior Software Developer. I am currently pursuing my MCA at UIT-RGPV, Bhopal, and my coursework in programming and databases matches the requirements stated in your advertisement.<br><br>I have completed my BCA with 78% and am in the first year of MCA. I am comfortable with C, Java and SQL, and I have worked with HTML, CSS and JavaScript for front-end work. Your advertisement asks for a candidate with a strong foundation in programming logic and databases, which has been the main focus of my study so far.<br><br>During my BCA I built a Library Management System in Java with a MySQL database, which is now used by my college department to issue and track books. I also completed a six-week internship at Nexus Softwares, Bhopal, where I tested web modules and wrote defect reports. These gave me practical experience of working to a deadline within a team, and I am eager to apply that in a professional environment.<br><br>My detailed resume is enclosed for your kind consideration. I would welcome the opportunity of an interview at your convenience and can join immediately after completing my semester examinations in December 2026. Thank you for your time.<br><br>Yours faithfully,<br><br><em>(signature)</em><br>Priya Sharma<br><br>Encl.: Resume",
+      "mistake": "Repeating the resume line by line in the cover letter. The resume lists WHAT you have done; the cover letter explains WHY it fits this particular job. If your letter could be sent to any company unchanged, it is not doing its job.",
+      "examAnswer": "A letter of application, also known as a cover letter, is a formal letter written by a candidate to an employer while applying for a post, and it is always accompanied by a resume. Its purpose is to introduce the applicant, to relate the applicant's qualifications and skills specifically to the requirements of the advertised post, and to persuade the employer to grant an interview. It should be limited to one page and normally consists of an opening paragraph stating the post applied for and its source, a middle section presenting the applicant's qualifications, skills and relevant experience as evidence of suitability, and a closing paragraph requesting an interview and referring to the enclosed resume. An application may be solicited, written in response to an advertisement, or unsolicited, written when no vacancy has been advertised.",
+      "remember": "Para 1 = which job. Para 2 = why me. Para 3 = proof. Para 4 = please call me.",
+      "why": "This is literally the document that gets you your first job. Of everything in this syllabus, this is the page you will use soonest.",
+      "practice": "Write a letter of application for a 'Software Trainee' post advertised on your college notice board, using the four-paragraph structure."
+    },
+    {
+      "title": "Writing a Resume",
+      "teacher": "A recruiter looks at a fresher's resume for about six to ten seconds before deciding yes or no. That is the whole exam. So everything important must be visible in the top third of page one.",
+      "explain": "A <strong>resume</strong> is a short, factual summary of your education, skills, projects and experience, written to get you an interview. For a fresher it should be <strong>one page</strong>, in reverse chronological order (most recent first).",
+      "keyPoints": [
+        "<strong>Contact details</strong> — name, phone, professional email, city, LinkedIn/GitHub.",
+        "<strong>Career objective</strong> — two lines, tailored to the job.",
+        "<strong>Education</strong> — MCA, BCA/B.Sc., 12th, 10th, with institution, year and percentage/CGPA.",
+        "<strong>Technical skills</strong> — languages, databases, tools, grouped by type.",
+        "<strong>Projects</strong> — the most important section for a fresher.",
+        "<strong>Internships / experience</strong> — organisation, role, duration, what you did.",
+        "<strong>Achievements and certifications</strong> — ranks, competitions, online courses.",
+        "<strong>Personal details and declaration</strong> — DOB, languages known, then signature.",
+        "Keep it to <strong>one page</strong>, use action verbs, and quantify results wherever you can."
+      ],
+      "subtopics": [
+        {
+          "title": "The three resume formats",
+          "text": "<strong>Chronological</strong> lists education and jobs newest-first — the standard choice, and the right one for a fresher. <strong>Functional</strong> organises by skill rather than date, and is used to hide gaps or a career change. <strong>Combination</strong> mixes both: a skills summary on top, dates below. As an MCA fresher, use chronological."
+        },
+        {
+          "title": "Projects are your experience",
+          "text": "You have no job history yet, so projects are the proof that you can build things. For each one write three lines: <strong>what it does, what you built it with, and what your specific contribution was</strong>. 'Library Management System — Java, MySQL, Swing. Designed the database schema and built the book-issue module.' That is far stronger than a bare project title."
+        },
+        {
+          "title": "Resume do's and don'ts",
+          "text": "<strong>Do</strong> keep to one page, use a plain readable font, start bullets with action verbs (developed, designed, tested, led), use numbers ('reduced report time by 40%'), save as PDF with a sensible filename ('Priya_Sharma_MCA_Resume.pdf'), and proofread twice. <strong>Don't</strong> lie, don't use a childish email address like cutiepriya123@, don't add a photo unless asked, don't use fancy colours or templates that break, don't write in paragraphs, and don't ever send it with a spelling mistake in your own degree name."
+        },
+        {
+          "title": "Resume vs CV vs bio-data",
+          "text": "A <strong>resume</strong> is short (1–2 pages), targeted at a specific job, and lists skills and achievements — used for industry jobs. A <strong>CV</strong> (curriculum vitae) is long and complete (3+ pages), covers your entire academic history including publications and conferences, and is used for research, teaching and higher studies. A <strong>bio-data</strong> is the old Indian format focusing on personal details — date of birth, father's name, marital status — and is now largely outdated for private-sector jobs."
+        }
+      ],
+      "realLife": "Two MCA students from the same class apply to the same company. One writes 'Project: Library System'. The other writes 'Library Management System (Java, MySQL) — built the book-issue module; now used by the department to track 2,000+ books.' Same project, and only one of them gets a call.",
+      "worked": "<strong>Fresher resume skeleton for an MCA student — copy this structure:</strong><br><br><strong>PRIYA SHARMA</strong><br>Bhopal, MP · 98xxxxxx21 · priya.sharma@example.com<br>github.com/priyasharma · linkedin.com/in/priyasharma<br><br><strong>CAREER OBJECTIVE</strong><br>To begin my career as a software developer in an organisation where I can apply my knowledge of Java, SQL and web development, and grow into a full-stack developer role.<br><br><strong>EDUCATION</strong><br>MCA — UIT-RGPV, Bhopal — 2026–2028 (1st semester, ongoing)<br>BCA — Barkatullah University, Bhopal — 2023–2026 — 78%<br>Class 12 (CBSE) — Govt. HS School, Bhopal — 2023 — 74%<br>Class 10 (CBSE) — Govt. HS School, Bhopal — 2021 — 81%<br><br><strong>TECHNICAL SKILLS</strong><br>Languages: C, Java, Python (basic)<br>Web: HTML, CSS, JavaScript<br>Database: MySQL, basic SQL queries and joins<br>Tools: VS Code, Eclipse, Git, MS Office<br>Operating Systems: Windows, basic Linux commands<br><br><strong>PROJECTS</strong><br>1. Library Management System — Java, Swing, MySQL (final-year BCA project)<br>&nbsp;&nbsp;&nbsp;Designed the database schema and built the book-issue and return modules.<br>&nbsp;&nbsp;&nbsp;Used by the department to track over 2,000 books.<br>2. College Event Website — HTML, CSS, JavaScript<br>&nbsp;&nbsp;&nbsp;Built a responsive registration page; 300+ students registered through it.<br><br><strong>INTERNSHIP</strong><br>Nexus Softwares, Bhopal — Software Testing Intern — June–July 2025 (6 weeks)<br>Tested three web modules, logged 40+ defects and verified fixes with the developer team.<br><br><strong>ACHIEVEMENTS &amp; CERTIFICATIONS</strong><br>· 2nd prize, Inter-college Coding Contest, 2025<br>· NPTEL certification in 'Programming in Java' (Elite), 2025<br>· Class representative, BCA 3rd year<br><br><strong>PERSONAL DETAILS</strong><br>Date of Birth: 14 March 2004 · Languages known: Hindi, English<br><br><strong>DECLARATION</strong><br>I hereby declare that the above information is true to the best of my knowledge.<br><br>Place: Bhopal<br>Date: 28 September 2026&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Priya Sharma)",
+      "table": {
+        "headers": [
+          "",
+          "Resume",
+          "CV (Curriculum Vitae)"
+        ],
+        "rows": [
+          [
+            "Length",
+            "1–2 pages",
+            "3 or more pages"
+          ],
+          [
+            "Content",
+            "Skills and achievements for one job",
+            "Complete academic and professional history"
+          ],
+          [
+            "Changes per job?",
+            "Yes — tailored each time",
+            "Mostly fixed, only added to"
+          ],
+          [
+            "Used for",
+            "Industry and corporate jobs",
+            "Research, teaching, higher studies, grants"
+          ],
+          [
+            "Meaning of the word",
+            "French for 'summary'",
+            "Latin for 'course of life'"
+          ]
+        ]
+      },
+      "mistake": "Writing a long, vague career objective like 'to work in a reputed organisation where I can utilise my skills and grow'. Everyone writes this and it says nothing. Name the role and the skills: 'To work as a Java backend developer, applying my experience with Java, MySQL and REST APIs.'",
+      "examAnswer": "A resume is a concise written summary of a candidate's educational qualifications, technical skills, projects, experience and achievements, prepared with the objective of obtaining an interview for a particular post. The standard sections of a fresher's resume are contact details, career objective, educational qualifications in reverse chronological order, technical skills, academic projects, internships or work experience, achievements and certifications, personal details and a declaration. A resume should ideally be limited to one page for a fresher, should use action verbs and quantified achievements, and must be free from spelling and grammatical errors. A resume differs from a curriculum vitae in that a resume is short and targeted at a specific job, whereas a CV is a longer and more detailed record of the entire academic and professional career, used mainly for academic and research positions.",
+      "remember": "Contact · Objective · Education · Skills · Projects · Internship · Achievements · Personal · Declaration.",
+      "why": "This one page decides whether you get an interview at all. Build it now, keep updating it every semester, and you will never have to write it in a panic.",
+      "practice": "Write your own one-page resume using the skeleton above, filling in your real details. Then read it aloud and cut every sentence that says nothing specific."
+    },
+    {
+      "title": "Writing Emails and Email Etiquette",
+      "teacher": "You already send messages all day. But an email to a professor or a manager follows different rules from a WhatsApp message — and breaking those rules is the fastest way to look unprofessional. Ten minutes here saves you a lot of embarrassment.",
+      "explain": "An <strong>email</strong> is an electronic message sent over a network. In business it has largely replaced the printed letter, but it keeps the same expectations of clarity and courtesy. Its speed is its strength and also its danger — a careless email travels just as fast as a careful one.",
+      "keyPoints": [
+        "<strong>Advantages:</strong> fast, nearly free, works across the world, keeps a searchable record.",
+        "Can attach files and reach many people at once with one click.",
+        "Environment-friendly and available 24×7; no need for both parties to be free.",
+        "<strong>Limitations:</strong> no tone — short replies easily read as rude.",
+        "Needs internet and a device; not everyone checks email regularly.",
+        "Spam, phishing, viruses and hacking are real security risks.",
+        "Cannot be recalled once sent; informal emails may lack legal weight.",
+        "Overload — an important mail gets buried among fifty unimportant ones.",
+        "Etiquette basics: clear subject, proper greeting, short paragraphs, professional sign-off, proofread."
+      ],
+      "subtopics": [
+        {
+          "title": "Structure of a professional email",
+          "text": "<strong>Subject line:</strong> specific and short — 'Request for leave on 5 October', not 'Hi' or 'Urgent!!'. <strong>Greeting:</strong> 'Dear Sir/Madam,' or 'Dear Ms. Nair,' — never 'Hey'. <strong>Body:</strong> two or three short paragraphs; purpose first, details second, request last. <strong>Sign-off:</strong> 'Regards,' or 'Yours sincerely,' followed by your full name, course and contact number."
+        },
+        {
+          "title": "To, CC and BCC — used correctly",
+          "text": "<strong>To</strong> is for the people who must <em>act</em> on the mail. <strong>CC</strong> (carbon copy) is for people who only need to <em>know</em>, and everyone can see them. <strong>BCC</strong> (blind carbon copy) hides the recipients from each other — use it when mailing a large list so you do not expose everybody's address. Never use BCC to secretly copy someone's boss into a dispute; if it is discovered, you lose all trust."
+        },
+        {
+          "title": "The rules that get broken most",
+          "text": "Never type in ALL CAPITALS — online it reads as SHOUTING. Do not use SMS short forms ('plz', 'u', 'thnx'), emojis or multiple exclamation marks in a professional email. Do not mark everything 'Urgent'. Always mention an attachment in the text <em>and</em> actually attach it before you press send. Use <strong>Reply</strong> for the sender and <strong>Reply All</strong> only when everybody genuinely needs the answer."
+        },
+        {
+          "title": "Proofread, and pause when angry",
+          "text": "Read every email once before sending — for the recipient's name, the attachment, the spelling and the tone. Emails cannot be unsent. The oldest and best rule in email: if you are angry, write the mail, then <strong>do not send it for an hour</strong>. Almost every regretted email in history was sent within two minutes of being written."
+        }
+      ],
+      "realLife": "An email with the subject 'Hi sir' from 'cool_boy_2004@...' asking 'plz send notes' is usually never replied to. 'Subject: Request for Unit 4 notes — MCA I Sem, Section B' from your college email address gets an answer the same day.",
+      "worked": "<strong>Sample professional email:</strong><br><br><strong>To:</strong> hr@infotechsolutions.example<br><strong>CC:</strong> placement.cell@uitrgpv.example<br><strong>Subject:</strong> Application for Junior Software Developer (Ref: ISPL/REC/2026/41) — Priya Sharma<br><br>Dear Sir/Madam,<br><br>I wish to apply for the post of Junior Software Developer advertised on 22 September 2026. I am an MCA student at UIT-RGPV, Bhopal, with project experience in Java, MySQL and web development.<br><br>My resume and covering letter are attached for your kind consideration. I would be glad to attend an interview at a time convenient to you and can be reached at 98xxxxxx21.<br><br>Thank you for your time.<br><br>Regards,<br>Priya Sharma<br>MCA (I Semester), UIT-RGPV, Bhopal<br>98xxxxxx21<br><br><strong>Attachments:</strong> Priya_Sharma_Resume.pdf, Priya_Sharma_CoverLetter.pdf<br><br><em>Notice: the subject names the post AND the sender · the greeting is formal · three short paragraphs · attachments are mentioned in the text · the sign-off carries full identity and a phone number.</em>",
+      "table": {
+        "headers": [
+          "Field",
+          "Who goes here",
+          "Can others see them?"
+        ],
+        "rows": [
+          [
+            "To",
+            "People who must act on the mail",
+            "Yes"
+          ],
+          [
+            "CC",
+            "People who only need to be informed",
+            "Yes"
+          ],
+          [
+            "BCC",
+            "Recipients whose address must stay hidden",
+            "No"
+          ]
+        ]
+      },
+      "mistake": "Leaving the subject line blank or writing 'Important'. A busy person decides whether to open your mail from the subject alone — a vague subject often means it is never opened at all.",
+      "examAnswer": "Electronic mail, or email, is a method of exchanging written messages electronically over a computer network, and it has largely replaced the printed letter in business communication. Its advantages are speed, very low cost, the ability to reach recipients anywhere in the world at any time, the facility to attach documents, the ability to send a message to many recipients simultaneously, and the automatic creation of a searchable written record. Its limitations include the absence of tone and body language, dependence on internet access, the risks of spam, phishing and virus attacks, the fact that a message cannot be recalled once sent, and information overload. Email etiquette requires a clear and specific subject line, a proper salutation, short and well-organised paragraphs, correct use of the To, CC and BCC fields, avoidance of capital letters and SMS abbreviations, a professional sign-off with the sender's identity, and careful proofreading before sending.",
+      "remember": "Subject clear · Greeting formal · Body short · Sign-off professional · Proofread · Never ALL CAPS.",
+      "why": "You will send emails every single working day of your life. Fixing your email habits now is the highest-return five minutes in this entire unit.",
+      "practice": "Write a professional email to your Head of Department requesting permission to attend a two-day technical workshop, with the subject line, greeting, three short paragraphs and a proper sign-off."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "If a business letter begins with 'Dear Sir/Madam,', it must end with…",
+      "options": [
+        "Yours sincerely,",
+        "Yours faithfully,",
+        "Thanking you,",
+        "Best wishes,"
+      ],
+      "answer": 1,
+      "why": "No name in the salutation means 'Yours faithfully'. A named salutation such as 'Dear Mr. Verma' takes 'Yours sincerely'."
+    },
+    {
+      "q": "In which layout does EVERY line, including the date and signature, begin at the left margin?",
+      "options": [
+        "Semi-block",
+        "Modified block",
+        "Full block",
+        "Indented style"
+      ],
+      "answer": 2,
+      "why": "Full block puts everything flush left with no indentation. It is the most modern and most commonly used business layout."
+    },
+    {
+      "q": "The ONLY difference between modified block and semi-block layout is that semi-block…",
+      "options": [
+        "Moves the date to the right",
+        "Indents the first line of each paragraph",
+        "Omits the subject line",
+        "Uses open punctuation"
+      ],
+      "answer": 1,
+      "why": "Both place the date, close and signature to the right. Semi-block additionally indents the first line of every paragraph."
+    },
+    {
+      "q": "Which of these MUST appear in a quotation letter but not in an enquiry letter?",
+      "options": [
+        "The quantity required",
+        "The validity period of the prices quoted",
+        "The delivery address",
+        "A polite salutation"
+      ],
+      "answer": 1,
+      "why": "A quotation is a firm offer, so it must state how long the quoted prices remain valid — for example, 'valid for 30 days'."
+    },
+    {
+      "q": "For a fresher applying for an IT job, which section carries the MOST weight?",
+      "options": [
+        "Personal details",
+        "Declaration",
+        "Projects",
+        "Hobbies"
+      ],
+      "answer": 2,
+      "why": "A fresher has no job history, so academic projects are the only real proof of what she can actually build."
+    },
+    {
+      "q": "The main difference between a resume and a CV is that a CV is…",
+      "options": [
+        "Shorter and targeted at one job",
+        "Longer and covers the full academic career",
+        "Written only by freshers",
+        "Never used in India"
+      ],
+      "answer": 1,
+      "why": "A resume is a 1–2 page summary tailored to one job. A CV is a long, complete record of academic and professional life, used for research and teaching posts."
+    },
+    {
+      "q": "You are mailing 200 alumni and must not reveal their addresses to each other. You should put them in…",
+      "options": [
+        "To",
+        "CC",
+        "BCC",
+        "Reply All"
+      ],
+      "answer": 2,
+      "why": "BCC (blind carbon copy) hides recipients from one another. To and CC are visible to everybody who receives the mail."
+    },
+    {
+      "q": "Writing an email in ALL CAPITAL LETTERS is considered…",
+      "options": [
+        "Clearer and easier to read",
+        "The mark of an urgent message",
+        "Shouting, and therefore rude",
+        "Required for subject lines"
+      ],
+      "answer": 2,
+      "why": "By long-standing online convention, capitals read as shouting. Use normal sentence case and say 'urgent' in words if you must."
+    },
+    {
+      "q": "The purpose of a letter of application (cover letter) is to…",
+      "options": [
+        "Repeat the resume in paragraph form",
+        "Connect your skills to that particular job and win an interview",
+        "Replace the resume entirely",
+        "List your personal details and hobbies"
+      ],
+      "answer": 1,
+      "why": "The resume lists what you have done. The cover letter explains why it fits THIS job, and asks for an interview."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Write a complete business letter enquiring about the price of 30 desktop computers for your college lab. Label every part of the letter, and state which layout you have used.",
+      "hint": "Use the sample in Topic 2 as your model — letterhead, date, inside address, salutation, subject, three-paragraph body, close, signature, enclosure."
+    },
+    {
+      "q": "Differentiate between full block, modified block and semi-block layouts of a business letter. Support your answer with a comparison table.",
+      "hint": "Compare on four points: date position, paragraph indentation, position of close and signature, and punctuation style."
+    },
+    {
+      "q": "Write a letter of application for the post of Software Trainee, and state clearly what each paragraph of your letter is meant to achieve.",
+      "hint": "Four paragraphs: which post and where you saw it, your qualification and matching skills, your project/internship as proof, request for an interview."
+    },
+    {
+      "q": "Prepare your own resume as an MCA first-semester student. List the standard sections in order, and write five do's and five don'ts of resume writing.",
+      "hint": "One page. Put projects above personal details — that is what the recruiter reads."
+    },
+    {
+      "q": "'Email is fast, but that is also its biggest danger.' Explain the advantages and limitations of email, and list at least eight rules of email etiquette.",
+      "hint": "For etiquette include: clear subject, proper greeting, short paragraphs, correct To/CC/BCC, no ALL CAPS, no SMS language, attach before sending, proofread, professional sign-off."
+    }
+  ]
+};

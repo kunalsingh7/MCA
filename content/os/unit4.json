@@ -1,0 +1,564 @@
+/* Operating System (MCA 108) — Unit 4. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.os = UNITS.os || [];
+UNITS.os[3] = {
+  "num": 4,
+  "title": "Process Synchronization and Deadlocks",
+  "problem": "Two programs touch the same bank balance at the same moment and Rs. 200 silently disappears. Later, two programs each hold one thing the other needs, and both freeze forever. Nothing crashed — yet the answer is wrong and the system is stuck.",
+  "solution": "This unit gives you the tools to stop both disasters: mutual exclusion and semaphores so only one process touches shared data at a time, and the four Coffman conditions plus prevention, avoidance (Banker's Algorithm) and detection so processes never freeze waiting on each other.",
+  "objectives": [
+    "Explain a race condition with a concrete shared-balance example, instruction by instruction",
+    "State the four requirements any correct critical-section solution must satisfy",
+    "Define binary and counting semaphores and write the wait (P) and signal (V) operations",
+    "Describe hardware support for mutual exclusion, including Test-and-Set and Swap",
+    "Explain the queuing (block-and-wakeup) implementation of semaphores and why busy waiting is wasteful",
+    "Solve and explain the Bounded Buffer, Readers-Writers, Dining Philosophers and Sleeping Barber problems",
+    "Compare monitors and message passing with plain semaphores",
+    "List the four Coffman conditions for deadlock and tell prevention, avoidance and detection apart",
+    "Work through Banker's Algorithm and find a safe sequence"
+  ],
+  "topics": [
+    {
+      "title": "Why Processes Must Be Synchronized",
+      "teacher": "Imagine you and your brother both check the same bank balance on your phones at the exact same second. You add Rs. 500, he takes out Rs. 200. Both of you saw Rs. 1000. What does the bank end up storing? Let's find out — the answer is genuinely scary.",
+      "explain": "Processes often need to <strong>share data</strong> — a file, a counter, a bank balance, a printer queue. When two processes read and write the same data at the same time, the final answer can depend on <strong>who finished first</strong>. This is called a <strong>race condition</strong>, and it is the problem this whole unit exists to solve.",
+      "keyPoints": [
+        "<strong>Inter-process communication (IPC)</strong> = processes exchanging data with each other.",
+        "<strong>Synchronization</strong> = controlling the ORDER in which they touch shared data.",
+        "A <strong>race condition</strong> is when the result depends on the exact timing of the switches.",
+        "The danger comes because <code>balance = balance + 500</code> is NOT one instruction — it is load, add, store.",
+        "The CPU can switch to another process in the middle of those three steps.",
+        "Two processes are <strong>independent</strong> if they share nothing, and <strong>cooperating</strong> if they share data.",
+        "Cooperating processes need synchronization; independent processes do not."
+      ],
+      "subtopics": [
+        {
+          "title": "Why one line of C is not one step",
+          "text": "You write <code>balance = balance + 500</code> and it looks like a single action. The CPU actually does three separate machine instructions: LOAD the balance into a register, ADD 500 to the register, STORE the register back to memory. The OS is free to take the CPU away between any two of these steps — and that gap is where the bug lives."
+        },
+        {
+          "title": "Two reasons processes talk to each other",
+          "text": "First, <strong>information sharing</strong> — several processes need the same file or counter. Second, <strong>computation speed-up</strong> — a big job split into parts that run together. Both are useful, but both create shared data, and shared data without rules produces wrong answers."
+        },
+        {
+          "title": "The bug that hides",
+          "text": "The worst part of a race condition is that it is <strong>not repeatable</strong>. Run the program a hundred times and it may be correct ninety-nine times. It fails only when the context switch lands in exactly the wrong place. This is why we cannot fix it by testing — we must design it away."
+        }
+      ],
+      "realLife": "Two people booking the last seat on the same IRCTC train at the same moment. Both screens show '1 seat available'. If the railway system has no synchronization, both get a confirmed ticket for one seat.",
+      "worked": "<strong>The lost update, step by step.</strong> Shared variable: <code>balance = 1000</code>.<br>P1 wants to deposit Rs. 500. P2 wants to withdraw Rs. 200. Correct final answer = 1000 + 500 - 200 = <strong>1300</strong>.<br><br>Now watch a bad interleaving:<br>1. P1 executes LOAD → R1 = 1000<br>2. <em>Context switch to P2</em><br>3. P2 executes LOAD → R2 = 1000<br>4. P2 executes SUB → R2 = 1000 - 200 = 800<br>5. P2 executes STORE → balance = 800<br>6. <em>Context switch back to P1</em><br>7. P1 executes ADD → R1 = 1000 + 500 = 1500<br>8. P1 executes STORE → balance = 1500<br><br><strong>Final balance = 1500, not 1300.</strong> The Rs. 200 withdrawal has vanished. P1 wrote using a value it read BEFORE P2's update — so P2's work was overwritten. This is called a <strong>lost update</strong>.<br><br>Now try another order: if P1 finishes all three steps before P2 starts, we get 1500 then 1300. Correct. Same program, same input, two different answers — that is a race condition."
+      ,
+      "mistake": "Students say 'a race condition happens when two processes run at the same time'. Not quite. It happens when two processes <strong>read and write the same data</strong> without control. Two processes running together on totally separate data is perfectly safe.",
+      "examAnswer": "Inter-process synchronization is required when two or more cooperating processes access shared data concurrently. Because a high-level statement such as balance = balance + 500 is translated into several machine instructions, the operating system may switch the CPU to another process in the middle of the sequence. If both processes read the shared variable before either writes it back, one update is overwritten and lost. The resulting situation, in which the final value depends on the relative timing of execution rather than on the logic of the programs, is called a race condition, and it is prevented by enforcing mutual exclusion over the shared data.",
+      "remember": "Shared data + no rules = wrong answer. Race condition = result depends on timing.",
+      "why": "Every other idea in this unit — critical sections, semaphores, monitors — exists only because of this one problem. Start your answer with this example and the examiner knows you understood it.",
+      "practice": "Two processes both execute <code>count = count + 1</code> when count is 5. Show an interleaving in which the final value is 6 instead of 7."
+    },
+    {
+      "title": "Critical Section and Mutual Exclusion",
+      "teacher": "Think of a small shop trial room with one door. Only one person inside at a time — that's the whole idea. The trial room is the 'critical section' and the lock on the door is 'mutual exclusion'. Simple idea, but getting the lock right is surprisingly tricky.",
+      "explain": "The <strong>critical section</strong> is the piece of code where a process touches shared data. <strong>Mutual exclusion</strong> means: when one process is inside its critical section, <strong>no other process may be inside its own critical section</strong> for the same data. Any correct solution must satisfy four requirements.",
+      "keyPoints": [
+        "<strong>Critical section</strong> = the code that accesses shared data.",
+        "<strong>Entry section</strong> asks permission; <strong>exit section</strong> releases it; the rest is the <strong>remainder section</strong>.",
+        "Requirement 1 — <strong>Mutual exclusion</strong>: at most one process inside at a time.",
+        "Requirement 2 — <strong>Progress</strong>: if no one is inside, a waiting process must be allowed in without unnecessary delay.",
+        "Requirement 3 — <strong>Bounded waiting</strong>: there is a limit on how many times others can go in before your turn comes.",
+        "Requirement 4 — <strong>No assumption about speed</strong>: the solution must not depend on CPU speed or the number of processors.",
+        "<strong>Critical region</strong> is a language-level version: <code>region v do S;</code> — the compiler adds the locking.",
+        "<strong>Conditional critical region</strong> adds a condition: <code>region v when B do S;</code> — enter only when B is true."
+      ],
+      "subtopics": [
+        {
+          "title": "The four-part structure of every process",
+          "text": "Every process that shares data is written in four parts. The <strong>entry section</strong> is where it asks for permission. The <strong>critical section</strong> is where it uses the shared data. The <strong>exit section</strong> is where it says 'I am done'. The <strong>remainder section</strong> is all the private work that needs no permission. If you draw this structure in the exam, you have already earned marks."
+        },
+        {
+          "title": "Progress and bounded waiting in plain words",
+          "text": "<strong>Progress</strong> means the room must not stay locked when it is empty — if nobody is inside and someone is waiting, the decision of who goes next cannot be postponed forever. <strong>Bounded waiting</strong> means nobody gets ignored forever; there is a fixed limit on how many others can jump ahead of you. Without progress you get <em>deadlock</em>; without bounded waiting you get <em>starvation</em>."
+        },
+        {
+          "title": "Critical region and conditional critical region",
+          "text": "Writing entry and exit code by hand is error-prone — forget one <code>signal</code> and the system hangs. A <strong>critical region</strong> is a higher-level construct where you simply write <code>region v do S;</code> and the compiler generates the locking around statement S. A <strong>conditional critical region</strong> is written <code>region v when B do S;</code> — the process enters only when the boolean condition B is true, otherwise it waits and B is re-tested later. This is exactly what a producer needs: 'enter when the buffer is not full'."
+        }
+      ],
+      "realLife": "One washroom in the hostel corridor with a lock. Mutual exclusion = one person inside. Progress = if it is empty and someone is waiting, the door must open. Bounded waiting = the same three friends cannot keep cutting the queue forever while you stand there.",
+      "table": {
+        "headers": ["Requirement", "What it means", "What breaks without it"],
+        "rows": [
+          ["Mutual exclusion", "Only one process in the critical section", "Race condition, wrong data"],
+          ["Progress", "An empty critical section must be enterable", "Deadlock — nobody can proceed"],
+          ["Bounded waiting", "A fixed limit on how long you wait your turn", "Starvation — one process waits forever"],
+          ["No speed assumption", "Must work on any CPU speed or CPU count", "Works on one machine, fails on another"]
+        ]
+      },
+      "mistake": "Students write only 'mutual exclusion' and stop. The question almost always asks for the <strong>requirements of a critical-section solution</strong> — write all four, with one line each. Also do not confuse deadlock (nobody progresses) with starvation (one unlucky process never gets a turn).",
+      "examAnswer": "A critical section is that part of a program in which a process accesses shared data such as common variables, files or tables. The critical-section problem is to design a protocol by which processes cooperate so that no two of them execute in their critical sections simultaneously. Any correct solution must satisfy four requirements: mutual exclusion, which permits at most one process in its critical section at a time; progress, which ensures that if no process is in its critical section then the selection of the next entrant cannot be postponed indefinitely; bounded waiting, which places a limit on the number of times other processes may enter before a waiting process is granted entry; and independence from any assumption about relative processor speeds or the number of processors. A critical region, written as region v do S, is a language construct in which the compiler supplies the entry and exit code automatically, while a conditional critical region, written region v when B do S, additionally delays entry until the boolean condition B becomes true.",
+      "remember": "Four rules: <strong>M-P-B-N</strong> — Mutual exclusion, Progress, Bounded waiting, No speed assumption.",
+      "why": "This is a guaranteed exam question, and every later solution (semaphore, monitor, Peterson's algorithm) is judged by whether it satisfies these four rules.",
+      "practice": "A proposed solution lets a process enter only when it is that process's 'turn', strictly alternating. Which of the four requirements does it break, and why?"
+    },
+    {
+      "title": "Hardware Support for Mutual Exclusion",
+      "teacher": "Here is the funny part — the whole problem was that 'read then write' can be interrupted in the middle. So what if the hardware gave us one single instruction that reads AND writes without letting anyone in between? That is exactly what CPU designers did.",
+      "explain": "Software-only solutions are complicated and easy to get wrong. So processors provide <strong>atomic instructions</strong> — instructions that cannot be interrupted halfway. The two classic ones are <strong>Test-and-Set</strong> and <strong>Swap</strong> (also called Exchange or Compare-and-Swap). A simpler but cruder trick is <strong>disabling interrupts</strong>.",
+      "keyPoints": [
+        "<strong>Atomic</strong> = executes completely as one indivisible step; no switch can happen inside it.",
+        "<strong>Disabling interrupts</strong>: the simplest method — no interrupt means no context switch.",
+        "But disabling interrupts fails on <strong>multiprocessor</strong> systems and is unsafe to give to user programs.",
+        "<strong>TestAndSet(lock)</strong>: returns the old value of lock AND sets lock to true, in one atomic step.",
+        "<strong>Swap(a, b)</strong>: exchanges the contents of two words atomically.",
+        "Both give mutual exclusion easily, but the basic versions cause <strong>busy waiting</strong> (spinlock).",
+        "A lock that keeps looping and burning CPU while waiting is called a <strong>spinlock</strong>.",
+        "Bounded waiting needs extra code on top of plain TestAndSet — it is not automatic."
+      ],
+      "subtopics": [
+        {
+          "title": "Disabling interrupts — simple but blunt",
+          "text": "On a single-CPU machine, if no interrupt can occur, no context switch can occur, so the running process is guaranteed to finish its critical section. It works, but it is a sledgehammer. On a multiprocessor it fails completely, because the other CPU is still running and its interrupts were never disabled. It also cannot be trusted to user programs — a buggy program that forgets to re-enable interrupts freezes the whole machine. So the kernel uses it only for very short internal sections."
+        },
+        {
+          "title": "Test-and-Set",
+          "text": "<code>TestAndSet(lock)</code> does two things in one uninterruptible step: it remembers the current value of <code>lock</code> and then sets <code>lock = true</code>. A process enters by looping <code>while (TestAndSet(lock)) ;</code> — as long as the old value was true, someone else holds the lock, so it keeps spinning. The first process to find it false gets in (and TestAndSet has already locked the door behind it). To exit, it simply sets <code>lock = false</code>."
+        },
+        {
+          "title": "Swap and the busy-waiting cost",
+          "text": "<code>Swap</code> exchanges two variables atomically. Each process keeps a private <code>key = true</code> and swaps it with the shared <code>lock</code> repeatedly until its key comes back false. The logic is the same as Test-and-Set. The real weakness of both is <strong>busy waiting</strong>: a waiting process sits in a tight loop consuming CPU time it cannot use. That waste is exactly why semaphores with waiting queues were invented."
+        }
+      ],
+      "realLife": "Busy waiting is like standing outside the washroom door and knocking every single second instead of sitting down and waiting to be called. You are not doing anything useful, and you are stopping others from using your chair.",
+      "table": {
+        "headers": ["Method", "Works on multiprocessor?", "Main weakness"],
+        "rows": [
+          ["Disable interrupts", "No", "Unsafe for user programs; freezes the machine if misused"],
+          ["Test-and-Set", "Yes", "Busy waiting; bounded waiting not automatic"],
+          ["Swap / Exchange", "Yes", "Busy waiting; same as Test-and-Set"]
+        ]
+      },
+      "mistake": "Do not write that Test-and-Set 'removes busy waiting'. It gives mutual exclusion but the simple version still <strong>spins</strong>. Busy waiting is removed by the queuing (block/wakeup) implementation of semaphores, which is the next topic.",
+      "examAnswer": "Because the fundamental difficulty is that a read followed by a write can be interrupted between the two operations, most processors provide atomic hardware instructions that perform both indivisibly. The TestAndSet instruction returns the current value of a lock variable and simultaneously sets it to true, while the Swap instruction atomically exchanges the contents of two words; in either case the first process to find the lock free acquires it, and all others loop until it is released. On a uniprocessor, mutual exclusion may also be obtained by disabling interrupts, but this method does not work on multiprocessor systems and is too dangerous to be made available to user programs. All of these basic schemes rely on busy waiting, which wastes processor time and is therefore normally replaced by semaphores implemented with blocking queues.",
+      "remember": "Hardware helps by making read-and-write ONE step. TestAndSet = read old value + set true, atomically.",
+      "why": "It shows the OS is not only software — correctness sometimes needs help from the CPU itself. Also, every modern mutex is built on top of one of these instructions.",
+      "practice": "Why does disabling interrupts fail to guarantee mutual exclusion on a dual-core processor? Explain in two or three lines."
+    },
+    {
+      "title": "Semaphores: Binary, Counting, wait and signal",
+      "teacher": "Picture a library with 5 copies of the same textbook and a counter at the desk showing how many are left. Take one, the counter drops. Return one, it goes up. If the counter hits zero, you wait. That counter, honestly, is a semaphore. That's the whole idea.",
+      "explain": "A <strong>semaphore</strong> is an integer variable that processes change only through two atomic operations: <strong>wait(S)</strong>, also called <strong>P(S)</strong>, and <strong>signal(S)</strong>, also called <strong>V(S)</strong>. A <strong>binary semaphore</strong> takes only 0 or 1 and gives mutual exclusion. A <strong>counting semaphore</strong> can take any value and counts available copies of a resource.",
+      "keyPoints": [
+        "Invented by Dijkstra; P comes from Dutch <em>proberen</em> (to test), V from <em>verhogen</em> (to increment).",
+        "<code>wait(S)</code> / <code>P(S)</code>: decrement S; if S becomes negative, block this process.",
+        "<code>signal(S)</code> / <code>V(S)</code>: increment S; if a process is waiting, wake one up.",
+        "Both operations must be <strong>atomic</strong> — otherwise the semaphore itself has a race condition.",
+        "<strong>Binary semaphore</strong> (mutex): values 0 and 1 only → mutual exclusion, one process at a time.",
+        "<strong>Counting semaphore</strong>: initialised to N → allows up to N processes at once.",
+        "A semaphore initialised to 0 is used for <strong>ordering</strong> (make B wait until A finishes).",
+        "With the negative-value convention, <code>|S|</code> equals the number of processes waiting in the queue."
+      ],
+      "subtopics": [
+        {
+          "title": "The two operations written out",
+          "text": "<code>wait(S) { S = S - 1; if (S &lt; 0) { add this process to S.queue; block(); } }</code><br><code>signal(S) { S = S + 1; if (S &lt;= 0) { remove a process P from S.queue; wakeup(P); } }</code><br>Note that the whole body of each operation is executed atomically — the OS guarantees that no switch happens inside wait or signal."
+        },
+        {
+          "title": "Binary versus counting",
+          "text": "A <strong>binary semaphore</strong> is initialised to 1 and behaves like a door lock: the first process does wait and gets in, the second does wait and blocks, and signal lets the next one through. A <strong>counting semaphore</strong> is initialised to the number of identical resources, say 5 printers. Five processes can pass; the sixth blocks. Binary is really just counting with N = 1."
+        },
+        {
+          "title": "Queuing implementation — killing busy waiting",
+          "text": "In the naive version, a process that cannot enter loops and burns CPU. In the <strong>queuing implementation</strong>, each semaphore carries a <strong>list of waiting processes</strong>. When wait() makes S negative, the process is moved from the running state to the <strong>blocked (waiting) state</strong> and put in that list — it uses no CPU at all. When another process calls signal(), one process is removed from the list and moved back to the <strong>ready queue</strong> by the <code>wakeup()</code> operation. Removing from the list is usually FIFO, which conveniently also guarantees bounded waiting."
+        },
+        {
+          "title": "The two classic mistakes semaphores allow",
+          "text": "Semaphores are powerful but unforgiving. If a programmer writes <code>signal(S)</code> before <code>wait(S)</code>, mutual exclusion is broken. If the programmer <em>forgets</em> <code>signal(S)</code>, every other process blocks forever — a deadlock. And two processes doing <code>wait(S); wait(Q);</code> and <code>wait(Q); wait(S);</code> deadlock each other. These traps are exactly why monitors were invented."
+        }
+      ],
+      "realLife": "A cyber cafe with 5 computers and a token counter at the desk. The counter starts at 5. Every student who enters takes a token (wait) and the counter drops. When it reaches 0, the next student sits on the bench (blocked, not standing at the door knocking). When someone leaves and returns a token (signal), the person at the front of the bench is called in.",
+      "worked": "<strong>Trace of a binary semaphore with its waiting queue.</strong> Start: <code>S = 1</code>, queue empty.<br><br>1. P1 calls wait(S) → S = 0. Not negative, so P1 <strong>enters</strong> the critical section. Queue: empty.<br>2. P2 calls wait(S) → S = -1. Negative, so P2 is <strong>blocked</strong> and added to the queue. Queue: [P2].<br>3. P3 calls wait(S) → S = -2. Blocked and queued. Queue: [P2, P3]. Note |S| = 2 = number waiting.<br>4. P1 calls signal(S) → S = -1. Since S &lt;= 0, remove P2 from the queue and wake it. Queue: [P3]. <strong>P2 now enters.</strong><br>5. P2 calls signal(S) → S = 0. Since S &lt;= 0, remove P3 and wake it. Queue: empty. <strong>P3 now enters.</strong><br>6. P3 calls signal(S) → S = 1. Now S &gt; 0, so nobody is waiting and no wakeup is done. Back to the starting state.<br><br>Notice: at every step exactly one process was inside. And P2 and P3 never spun in a loop — they were sleeping in the queue, using zero CPU.",
+      "table": {
+        "headers": ["", "Binary semaphore", "Counting semaphore"],
+        "rows": [
+          ["Possible values", "0 and 1 only", "Any non-negative count (may go negative if waiters are counted)"],
+          ["Initial value", "1", "N = number of identical resources"],
+          ["Purpose", "Mutual exclusion", "Control access to N copies of a resource"],
+          ["How many inside", "Exactly one", "Up to N"],
+          ["Also called", "Mutex lock", "General semaphore"]
+        ]
+      },
+      "mistake": "Students say 'wait means wait'. No — <code>wait(S)</code> first <strong>decrements</strong> S, and only blocks if the result is negative. If S was positive, wait does not wait at all. Also remember P = wait = down, and V = signal = up; examiners use all three names.",
+      "examAnswer": "A semaphore is an integer variable which, apart from initialisation, is accessed only through two indivisible operations, wait (also called P or down) and signal (also called V or up). The wait operation decrements the semaphore and, if the value becomes negative, blocks the calling process by placing it in the semaphore's waiting queue; the signal operation increments the semaphore and, if a process is waiting, removes one from the queue and moves it to the ready state. A binary semaphore takes only the values zero and one and is used to enforce mutual exclusion, whereas a counting semaphore is initialised to the number of available instances of a resource and therefore permits that many processes to proceed concurrently. The queuing implementation, in which a blocked process is suspended rather than left looping, eliminates busy waiting and, if the queue is served in first-in-first-out order, also guarantees bounded waiting.",
+      "remember": "wait = P = down = take one. signal = V = up = give one back. Binary = 1 lock, Counting = N copies.",
+      "why": "Semaphores are the working tool for every classical problem that follows, and 'explain semaphore with P and V operations' is asked almost every year.",
+      "practice": "A counting semaphore is initialised to 3. Six processes call wait(S) one after another. What is the final value of S, and how many processes are in the waiting queue?"
+    },
+    {
+      "title": "Bounded Buffer and Readers-Writers Problems",
+      "teacher": "Your mother makes rotis and puts them in a casserole that holds 6. You eat them. If she is fast, the casserole fills up and she must pause. If you are fast, it empties and you must wait. Congratulations — you have just understood the Bounded Buffer problem.",
+      "explain": "These are the two most-asked classical problems. <strong>Bounded Buffer</strong> (Producer-Consumer) synchronizes a producer filling a fixed-size buffer and a consumer emptying it. <strong>Readers-Writers</strong> allows many readers to read together, but gives a writer exclusive access.",
+      "keyPoints": [
+        "Bounded Buffer uses three semaphores: <code>mutex = 1</code>, <code>empty = N</code>, <code>full = 0</code>.",
+        "Producer: <code>wait(empty); wait(mutex); ...add item...; signal(mutex); signal(full);</code>",
+        "Consumer: <code>wait(full); wait(mutex); ...remove item...; signal(mutex); signal(empty);</code>",
+        "<code>empty</code> counts free slots, <code>full</code> counts filled slots — they are counting semaphores.",
+        "<strong>The order matters</strong>: doing wait(mutex) before wait(empty) causes deadlock.",
+        "Readers-Writers uses <code>mutex = 1</code> (protects the counter), <code>wrt = 1</code> (protects the data) and <code>readcount = 0</code>.",
+        "Many readers may read at once; a writer needs exclusive access to the data.",
+        "The <strong>first</strong> reader locks <code>wrt</code>; the <strong>last</strong> reader releases it.",
+        "The reader-priority version can <strong>starve the writer</strong> if readers keep arriving."
+      ],
+      "subtopics": [
+        {
+          "title": "Bounded Buffer — why three semaphores",
+          "text": "<code>mutex</code> is a binary semaphore that stops the producer and consumer from changing the buffer at the same moment. <code>empty</code>, initialised to N, counts free slots — the producer waits on it so it can never overfill. <code>full</code>, initialised to 0, counts items available — the consumer waits on it so it can never take from an empty buffer. Together they solve both the mutual-exclusion problem and the ordering problem."
+        },
+        {
+          "title": "The deadlock trap in Bounded Buffer",
+          "text": "Suppose the producer writes <code>wait(mutex); wait(empty);</code> in the wrong order. The buffer is full, so the producer holds the mutex and blocks on <code>empty</code>. Now the consumer arrives, tries <code>wait(mutex)</code> and blocks too — but only the consumer could have made a slot empty. Both are stuck forever. <strong>Rule: always take the counting semaphore first and the mutex last.</strong>"
+        },
+        {
+          "title": "Readers-Writers — the shared reading idea",
+          "text": "Reading does not change data, so several readers may safely read together. Writing does change it, so a writer must be alone — no other writer and no reader. The trick is the counter <code>readcount</code>. When a reader arrives it increments the counter; if it is the <strong>first</strong> reader (count becomes 1) it does <code>wait(wrt)</code>, locking out writers on behalf of all readers. When a reader leaves it decrements; if it is the <strong>last</strong> (count becomes 0) it does <code>signal(wrt)</code>. The counter itself is protected by <code>mutex</code>."
+        },
+        {
+          "title": "Starvation in Readers-Writers",
+          "text": "In the reader-priority solution above, as long as at least one reader is reading, <code>wrt</code> stays locked. If new readers keep arriving before the last one leaves, the count never reaches 0 and the waiting writer <strong>starves</strong>. The writer-priority variation fixes this by making new readers wait once a writer is queued — but then readers can starve instead. Mention this trade-off in the exam; it is worth a mark."
+        }
+      ],
+      "realLife": "Bounded Buffer: a printer queue that holds 10 jobs. Once it is full, the 11th person must wait. Readers-Writers: a college result website — thousands of students can read the marks page together, but while the clerk is updating a result, nobody should read half-changed data.",
+      "worked": "<strong>Bounded Buffer trace.</strong> Buffer size N = 3. Initially <code>mutex = 1, empty = 3, full = 0</code>.<br><br>1. Producer adds item 1: wait(empty) → empty = 2. wait(mutex) → mutex = 0. Insert. signal(mutex) → mutex = 1. signal(full) → full = 1.<br>2. Producer adds item 2: empty = 1, full = 2.<br>3. Producer adds item 3: empty = 0, full = 3. Buffer is now FULL.<br>4. Producer tries item 4: wait(empty) → empty = -1 → <strong>producer blocks</strong>. Good — no overflow.<br>5. Consumer takes one: wait(full) → full = 2. wait(mutex)/signal(mutex). signal(empty) → empty = 0, and because empty was negative, <strong>the producer is woken up</strong>.<br>6. Producer resumes and inserts item 4: full = 3 again.<br><br>Check the invariant at every step: <code>empty + full = N = 3</code> whenever no operation is half-finished. That single check will tell you if your exam answer is right.",
+      "table": {
+        "headers": ["Problem", "What it models", "Semaphores used"],
+        "rows": [
+          ["Bounded Buffer", "Producer fills, consumer empties a fixed buffer", "mutex = 1, empty = N, full = 0"],
+          ["Readers-Writers", "Many may read together, only one may write", "mutex = 1, wrt = 1, readcount = 0"]
+        ]
+      },
+      "mistake": "In Readers-Writers, students make EVERY reader do <code>wait(wrt)</code>. Then only one reader could read at a time — which destroys the entire point of the problem. Only the <strong>first</strong> reader locks it and only the <strong>last</strong> reader unlocks it.",
+      "examAnswer": "In the bounded buffer problem a producer process inserts items into a buffer of fixed size N while a consumer process removes them, and the solution must prevent insertion into a full buffer, removal from an empty buffer, and simultaneous access to the buffer. It is solved using a binary semaphore mutex initialised to one for mutual exclusion, together with counting semaphores empty initialised to N and full initialised to zero, which count the free and occupied slots respectively. In the readers-writers problem, any number of reader processes may access the shared data concurrently, but a writer requires exclusive access; the standard solution uses a semaphore wrt for exclusive access and a counter readcount protected by a semaphore mutex, so that the first reader to arrive performs wait(wrt) and the last reader to leave performs signal(wrt). A drawback of this reader-priority solution is that a continuous stream of readers can starve a waiting writer.",
+      "remember": "Bounded buffer: <strong>empty + full = N</strong>. Readers-Writers: <strong>first reader locks, last reader unlocks</strong>.",
+      "why": "These two are the most commonly asked 'write the solution using semaphores' questions. Learn the code lines exactly — they are short and they are full marks.",
+      "practice": "Write the producer and consumer code using semaphores, then explain what goes wrong if the producer does wait(mutex) before wait(empty)."
+    },
+    {
+      "title": "Dining Philosophers and Sleeping Barber",
+      "teacher": "Five philosophers, five plates of noodles, but only five chopsticks — one between every two plates. To eat, you need both the one on your left and the one on your right. Now imagine all five pick up their left chopstick at the same second. Nobody can eat. Ever. That single picture teaches you deadlock better than any definition.",
+      "explain": "<strong>Dining Philosophers</strong> models processes that need <strong>several resources at once</strong> and shows how easily they deadlock. <strong>Sleeping Barber</strong> models a server with a limited waiting area, and shows the danger of a missed wakeup signal.",
+      "keyPoints": [
+        "Dining Philosophers: 5 philosophers, 5 chopsticks, each needs the 2 next to them.",
+        "Each chopstick is a binary semaphore, initialised to 1.",
+        "The naive solution (pick left, then right) <strong>deadlocks</strong> if all five pick up their left chopstick together.",
+        "Fix 1: allow at most <strong>4</strong> philosophers at the table at once.",
+        "Fix 2: a philosopher picks up both chopsticks only if <strong>both</strong> are free (atomic pick-up).",
+        "Fix 3 (asymmetric): odd-numbered philosophers take left first, even-numbered take right first.",
+        "Sleeping Barber: one barber, one barber chair, N waiting chairs.",
+        "Uses <code>customers = 0</code>, <code>barbers = 0</code>, <code>mutex = 1</code> and a shared <code>waiting</code> count.",
+        "If all N chairs are full, the new customer leaves instead of blocking — no infinite queue."
+      ],
+      "subtopics": [
+        {
+          "title": "Why Dining Philosophers deadlocks",
+          "text": "Each philosopher runs: <code>wait(chopstick[i]); wait(chopstick[(i+1) % 5]); eat; signal both;</code>. Suppose all five execute the first line at the same time. Every chopstick is now held, every philosopher holds exactly one, and every philosopher is waiting for the one his neighbour holds. All four Coffman conditions are present at once — this is the textbook picture of circular wait."
+        },
+        {
+          "title": "The three standard fixes",
+          "text": "<strong>(1) Limit to four:</strong> add a counting semaphore initialised to 4 so only four philosophers may sit. With five chopsticks and four philosophers, at least one philosopher always gets both. <strong>(2) Pick up both or neither:</strong> test both chopsticks inside a critical section, so a philosopher never holds one while waiting for the other — this removes 'hold and wait'. <strong>(3) Asymmetric ordering:</strong> odd philosophers take left first, even take right first, which breaks the circular wait."
+        },
+        {
+          "title": "Sleeping Barber — the story",
+          "text": "A barber shop has one barber, one barber chair and N chairs for waiting customers. If there is no customer, the barber <strong>sleeps</strong>. When a customer arrives and the barber is asleep, the customer wakes him. If the barber is busy, the customer sits on a free waiting chair; if all N are taken, the customer <strong>leaves</strong>. The whole problem is to make sure nobody ends up in the absurd state where the barber sleeps while a customer sits waiting."
+        },
+        {
+          "title": "Sleeping Barber — the solution and the race it avoids",
+          "text": "Three semaphores are used: <code>customers</code> (counts waiting customers, starts at 0), <code>barbers</code> (counts free barbers, starts at 0) and <code>mutex</code> (protects the <code>waiting</code> counter). The barber does <code>wait(customers)</code> and sleeps when there is none. A customer does <code>signal(customers)</code> to wake him, then <code>wait(barbers)</code> for his turn. The <code>mutex</code> is essential: without it, two customers could read <code>waiting</code> at the same time, both think a chair is free, and the count becomes wrong — the same race condition from Topic 1, in a barber shop."
+        }
+      ],
+      "realLife": "Dining Philosophers is a narrow two-way lane where five cars each enter and block the next — nobody can reverse, nobody can move. Sleeping Barber is a small salon with 4 waiting chairs: if all 4 are occupied you go to another salon rather than standing in the doorway.",
+      "table": {
+        "headers": ["Problem", "Key difficulty", "Standard fix"],
+        "rows": [
+          ["Dining Philosophers", "Circular wait for two resources each", "Allow only 4 at the table, or pick up both chopsticks atomically, or use odd/even ordering"],
+          ["Sleeping Barber", "Barber may sleep while a customer waits (missed wakeup)", "Semaphores customers, barbers and mutex over the waiting count"],
+          ["Bounded Buffer", "Overflow and underflow of a fixed buffer", "Counting semaphores empty and full"],
+          ["Readers-Writers", "Many readers vs one exclusive writer", "readcount with first-locks / last-unlocks"]
+        ]
+      },
+      "mistake": "Do not write that Dining Philosophers 'has no solution'. It has several — the problem is only that the <em>naive</em> solution deadlocks. Always state one fix. Also, there are <strong>5 chopsticks, not 10</strong> — each is shared between two philosophers.",
+      "examAnswer": "The dining philosophers problem considers five philosophers seated around a table with five chopsticks, one placed between each pair, where a philosopher must acquire both adjacent chopsticks in order to eat. If each chopstick is represented by a binary semaphore and every philosopher first acquires the left chopstick and then the right, a deadlock occurs when all five acquire their left chopstick simultaneously, since each then waits indefinitely for a chopstick held by its neighbour. The problem is solved by permitting at most four philosophers to sit at the table simultaneously, by requiring that both chopsticks be acquired atomically within a critical section, or by an asymmetric solution in which odd-numbered philosophers acquire the left chopstick first and even-numbered philosophers the right. The sleeping barber problem models a barber with one chair and N waiting chairs who sleeps when no customer is present; it is solved using semaphores customers and barbers together with a mutex protecting the count of waiting customers, and a customer who finds all waiting chairs occupied departs rather than waiting.",
+      "remember": "Philosophers = deadlock demo (5 sticks, need 2). Barber = missed-wakeup demo (sleep vs signal).",
+      "why": "Dining Philosophers is the bridge between the synchronization half of this unit and the deadlock half — the same picture answers both kinds of question.",
+      "practice": "Explain why allowing only four philosophers to sit at the table removes the deadlock, even though there are still only five chopsticks."
+    },
+    {
+      "title": "Monitors and Message Passing",
+      "teacher": "Semaphores work, but they are like giving a child a sharp knife. Forget one signal() and the entire system hangs, and the bug is a thousand lines away from the mistake. So someone asked: can the compiler just do this for us? That question created monitors.",
+      "explain": "A <strong>monitor</strong> is a high-level construct that bundles shared data with the procedures that use it, and guarantees that <strong>only one process is active inside the monitor at a time</strong>. <strong>Message passing</strong> takes a different route entirely: processes share nothing and communicate only by <code>send</code> and <code>receive</code>.",
+      "keyPoints": [
+        "A monitor = shared variables + procedures + automatic mutual exclusion.",
+        "The variables inside a monitor can be touched <strong>only</strong> by the monitor's own procedures.",
+        "Mutual exclusion is provided by the compiler — the programmer writes no wait/signal for it.",
+        "<strong>Condition variables</strong> (<code>x.wait()</code> and <code>x.signal()</code>) handle ordering inside a monitor.",
+        "<code>x.wait()</code> suspends the caller and <strong>releases the monitor</strong> so others can enter.",
+        "<code>x.signal()</code> wakes exactly one waiting process; if none is waiting, it has <strong>no effect at all</strong>.",
+        "This is the big difference from a semaphore, where signal is never lost — it increments the counter.",
+        "<strong>Message passing</strong>: <code>send(destination, message)</code> and <code>receive(source, message)</code>.",
+        "Message passing needs no shared memory, so it works across a network (distributed systems)."
+      ],
+      "subtopics": [
+        {
+          "title": "Why monitors are safer than semaphores",
+          "text": "With semaphores, the mutual exclusion depends on the programmer writing <code>wait</code> and <code>signal</code> in the right places in the right order, in every single program that touches the data. One mistake anywhere breaks everything. In a monitor, the locking is built into the construct itself, so a programmer simply <em>cannot</em> forget it. The trade-off is less flexibility and the need for language support — monitors exist in Concurrent Pascal and, in a modified form, as Java's <code>synchronized</code> methods."
+        },
+        {
+          "title": "Condition variables",
+          "text": "Mutual exclusion alone is not enough — a consumer inside the monitor may still need to wait until the buffer is non-empty. For this, a monitor has <strong>condition variables</strong>. Calling <code>x.wait()</code> blocks the caller and, crucially, <strong>releases the monitor lock</strong> so another process can enter and change the situation. Calling <code>x.signal()</code> resumes exactly one process waiting on x. If nobody is waiting, <code>x.signal()</code> does nothing — the signal is lost, unlike a semaphore's signal."
+        },
+        {
+          "title": "Signal-and-wait vs signal-and-continue",
+          "text": "When P calls <code>x.signal()</code> and wakes Q, both are now logically inside the monitor — but only one may run. Two policies exist. <strong>Signal-and-wait</strong>: P waits and Q runs immediately. <strong>Signal-and-continue</strong>: Q waits until P leaves the monitor. Both are used in practice; Java uses signal-and-continue (notify does not immediately hand over the lock)."
+        },
+        {
+          "title": "Message passing — synchronization by communication",
+          "text": "In message passing, processes have <strong>no shared variables at all</strong>, so there is nothing to race over. They use <code>send</code> and <code>receive</code>. In <strong>blocking (synchronous)</strong> message passing the sender waits until the message is received, which synchronizes the two processes automatically. In <strong>non-blocking (asynchronous)</strong> passing the sender continues immediately and messages sit in a queue. Communication may be <strong>direct</strong> (name the process) or <strong>indirect</strong> (through a named mailbox or port). Because nothing is shared, this is the only workable model across a network."
+        }
+      ],
+      "realLife": "A monitor is a bank locker room with a guard at the door who lets in exactly one customer at a time — you cannot forget to lock the door, because locking is not your job. Message passing is WhatsApp: you and your friend share no notebook, you simply send and receive messages, and it works even though you are in different cities.",
+      "table": {
+        "headers": ["", "Semaphore", "Monitor", "Message passing"],
+        "rows": [
+          ["Level", "Low-level", "High-level (language construct)", "High-level"],
+          ["Mutual exclusion", "Programmer must code it", "Automatic, by the compiler", "Not needed — nothing is shared"],
+          ["Chance of error", "High — one wrong signal breaks it", "Low", "Low, but message loss must be handled"],
+          ["A lost signal?", "Never lost — it increments S", "Lost if nobody is waiting", "Depends on the buffering"],
+          ["Works across a network", "No — needs shared memory", "No", "Yes"]
+        ]
+      },
+      "mistake": "The most common error: writing that <code>x.signal()</code> in a monitor behaves like <code>signal(S)</code> on a semaphore. It does not. A semaphore signal is <strong>remembered</strong> (S increases). A monitor's condition signal is <strong>forgotten</strong> if no process is currently waiting.",
+      "examAnswer": "A monitor is a high-level synchronization construct that encapsulates shared variables together with the procedures that operate on them, and guarantees that only one process may be active within the monitor at any time. Because mutual exclusion is supplied by the compiler rather than coded by the programmer, monitors avoid the errors that arise when a wait or signal operation on a semaphore is omitted or misplaced. Additional ordering is expressed through condition variables, on which x.wait suspends the calling process and releases the monitor, while x.signal resumes one waiting process and has no effect if none is waiting. Message passing provides an alternative in which processes share no memory and communicate solely through send and receive primitives, which may be blocking or non-blocking and may use direct naming or indirect mailboxes; since no data is shared, this model extends naturally to distributed systems.",
+      "remember": "Monitor = automatic lock + condition variables. Semaphore signal is remembered; monitor signal is forgotten.",
+      "why": "Java's <code>synchronized</code> keyword is a monitor, and every message queue you will ever use at work is message passing. This topic is the bridge from theory to real programming.",
+      "practice": "Give two advantages of a monitor over a semaphore, and one situation where message passing is the only possible choice."
+    },
+    {
+      "title": "Deadlock and the Four Coffman Conditions",
+      "teacher": "Four cars reach a four-way crossing at the same moment, each blocking the next one's path. No accident, no damage — but nobody can move, and nobody will ever move unless someone reverses. That picture is deadlock, and this crossing is exactly what happens inside a computer.",
+      "explain": "A set of processes is in <strong>deadlock</strong> when every process in the set is waiting for an event that only another process in the same set can cause. Deadlock can occur only when <strong>all four Coffman conditions hold at the same time</strong> — so breaking any one of them prevents deadlock.",
+      "keyPoints": [
+        "<strong>Deadlock</strong>: every process in the set waits for a resource held by another in the same set.",
+        "Condition 1 — <strong>Mutual exclusion</strong>: at least one resource is non-sharable.",
+        "Condition 2 — <strong>Hold and wait</strong>: a process holds one resource while waiting for another.",
+        "Condition 3 — <strong>No preemption</strong>: a resource cannot be forcibly taken; it must be released voluntarily.",
+        "Condition 4 — <strong>Circular wait</strong>: P0 waits for P1, P1 for P2, ... Pn waits for P0.",
+        "All four must hold <strong>simultaneously</strong> — they are necessary conditions.",
+        "Deadlock is shown with a <strong>Resource Allocation Graph (RAG)</strong>: circles = processes, squares = resources.",
+        "A <strong>request edge</strong> goes process → resource; an <strong>assignment edge</strong> goes resource → process.",
+        "If each resource type has only ONE instance, a cycle in the RAG <strong>means</strong> deadlock.",
+        "If a resource type has several instances, a cycle is only a <strong>possibility</strong> of deadlock, not a proof."
+      ],
+      "subtopics": [
+        {
+          "title": "Deadlock versus starvation — know the difference",
+          "text": "In <strong>deadlock</strong>, a group of processes is stuck and <em>none</em> of them can ever proceed, no matter how long you wait. In <strong>starvation</strong> (also called indefinite postponement), the system is working fine and other processes are progressing, but one unlucky low-priority process keeps getting overtaken and never gets its turn. Deadlock is permanent and collective; starvation is unfair scheduling of one victim."
+        },
+        {
+          "title": "Reading a Resource Allocation Graph",
+          "text": "Draw processes as circles and resource types as rectangles, with a dot inside each rectangle for each instance. An arrow from a process to a resource is a <strong>request</strong>; an arrow from a resource instance to a process is an <strong>allocation</strong>. Then follow the arrows. If there is no cycle, there is definitely no deadlock. If there is a cycle and every resource has just one instance, the system is definitely deadlocked."
+        },
+        {
+          "title": "Why all four conditions matter",
+          "text": "The four conditions are not four separate dangers — they are four ingredients of one recipe. Remove any single ingredient and deadlock becomes impossible. That is precisely the strategy of deadlock <strong>prevention</strong>, covered in the next topic: pick one condition and design it out of the system."
+        }
+      ],
+      "realLife": "Two students in the library: Riya has the Physics book and needs the Chemistry book; Sneha has the Chemistry book and needs the Physics book. Neither will return hers until she finishes. Both wait forever. Mutual exclusion (one copy each), hold and wait (each holds one), no preemption (the librarian will not snatch it), circular wait (Riya → Sneha → Riya).",
+      "table": {
+        "headers": ["Coffman condition", "Plain meaning", "Library example"],
+        "rows": [
+          ["Mutual exclusion", "A resource can be used by only one process at a time", "Only one copy of the Physics book"],
+          ["Hold and wait", "Holding one resource while requesting another", "Riya keeps Physics while asking for Chemistry"],
+          ["No preemption", "A resource cannot be taken away by force", "Nobody snatches the book from her hands"],
+          ["Circular wait", "A closed chain of processes each waiting on the next", "Riya waits for Sneha, Sneha waits for Riya"]
+        ]
+      },
+      "mistake": "Students write that deadlock happens when 'any one' of the four conditions holds. Wrong — <strong>all four must hold together</strong>. They are necessary conditions, and that is exactly why breaking just one is enough to prevent deadlock.",
+      "examAnswer": "A set of processes is said to be in a state of deadlock when every process in the set is waiting for an event that can be caused only by another process in the same set, so that none of them can ever proceed. Deadlock can arise only if four conditions, known as the Coffman conditions, hold simultaneously. Mutual exclusion requires that at least one resource be held in a non-sharable mode; hold and wait requires that a process holding at least one resource be waiting to acquire additional resources held by others; no preemption requires that a resource be released only voluntarily by the process holding it; and circular wait requires the existence of a set of waiting processes P0 to Pn such that each is waiting for a resource held by the next and Pn is waiting for a resource held by P0. Since all four are necessary, the invalidation of any one of them is sufficient to prevent deadlock.",
+      "remember": "<strong>M-H-N-C</strong>: Mutual exclusion, Hold and wait, No preemption, Circular wait. All four together = deadlock.",
+      "why": "Almost every deadlock exam question begins with these four conditions, and the prevention methods are literally organised one per condition.",
+      "practice": "Draw a resource allocation graph with three processes and three single-instance resources that is deadlocked, and name the cycle."
+    },
+    {
+      "title": "Handling Deadlock: Prevention, Avoidance, Detection and Banker's Algorithm",
+      "teacher": "Three different attitudes to danger. The first person never goes near water, so she can never drown. The second person swims, but checks the depth before every step. The third jumps in and keeps a lifeguard ready. Prevention, avoidance and detection — same three attitudes, applied to deadlock.",
+      "explain": "There are four ways to deal with deadlock. <strong>Prevention</strong> makes deadlock structurally impossible by breaking one Coffman condition. <strong>Avoidance</strong> allows the conditions but examines every request in advance and grants it only if the system stays <strong>safe</strong> — this is Banker's Algorithm. <strong>Detection and recovery</strong> lets deadlock happen and then fixes it. <strong>Ignoring it</strong> (the ostrich approach) is what most real operating systems actually do.",
+      "keyPoints": [
+        "<strong>Prevention</strong>: break one of the four conditions by design — restrictive, but no runtime checking.",
+        "Break hold-and-wait: request ALL resources at the start, or release everything before asking for more.",
+        "Break no-preemption: if a request fails, take back everything the process already holds.",
+        "Break circular wait: number the resources and force requests in increasing order.",
+        "Mutual exclusion usually cannot be broken — some resources are simply non-sharable.",
+        "<strong>Avoidance</strong>: needs advance knowledge of each process's <strong>maximum need</strong>.",
+        "A state is <strong>safe</strong> if a sequence exists in which every process can finish, one after another.",
+        "<strong>Safe → no deadlock. Unsafe → deadlock is possible (not certain).</strong>",
+        "<strong>Banker's Algorithm</strong> = the avoidance algorithm for multiple instances of each resource type.",
+        "<code>Need = Max - Allocation</code>. This one line is the heart of the whole algorithm.",
+        "<strong>Detection</strong>: allow deadlock, run a detection algorithm periodically, then recover.",
+        "Recovery: kill processes one by one, or preempt (roll back) resources from a victim."
+      ],
+      "subtopics": [
+        {
+          "title": "Prevention — one attack per condition",
+          "text": "<strong>Mutual exclusion</strong> generally cannot be removed; a printer is a printer. <strong>Hold and wait</strong> is broken by demanding all resources in one shot before starting, which wastes resources and can starve a big process. <strong>No preemption</strong> is broken by forcibly taking resources back from a process whose request cannot be met — fine for CPU registers and memory, impossible for a half-printed page. <strong>Circular wait</strong> is broken by giving every resource a number and insisting that requests be made in increasing numeric order, so a cycle can never close. This last one is the most practical."
+        },
+        {
+          "title": "Avoidance and the idea of a safe state",
+          "text": "Avoidance is less restrictive than prevention: it permits the four conditions but never lets the system enter a state from which deadlock could follow. A state is <strong>safe</strong> if there exists at least one ordering of the processes — a <strong>safe sequence</strong> — in which each process's remaining need can be satisfied from the currently available resources plus everything the earlier processes in the sequence will return. If such a sequence exists, deadlock cannot occur. Important: an <strong>unsafe state is not a deadlock</strong>; it only means the OS can no longer guarantee that deadlock will be avoided."
+        },
+        {
+          "title": "Banker's Algorithm — the two parts",
+          "text": "The name comes from a banker who must never lend so much that he cannot satisfy all his customers' credit limits. It has two parts. The <strong>Safety Algorithm</strong> checks whether the current state is safe by repeatedly looking for a process whose Need fits in Available, pretending it finishes, and adding its Allocation back to Available. The <strong>Resource-Request Algorithm</strong> handles an actual request: it checks Request ≤ Need and Request ≤ Available, then <em>pretends</em> to grant it and runs the safety algorithm. If the pretend state is safe, the request is granted; if not, the process must wait."
+        },
+        {
+          "title": "Detection and recovery",
+          "text": "If resources have single instances, deadlock is detected by looking for a cycle in the <strong>wait-for graph</strong> (the RAG with resource nodes removed). With multiple instances, an algorithm very similar to the Banker's safety check is used — any process that cannot be marked as finishable is deadlocked. Recovery is then done either by <strong>process termination</strong> (abort all deadlocked processes, or abort them one at a time until the cycle breaks) or by <strong>resource preemption</strong>, in which a victim is chosen, rolled back to a safe checkpoint and its resources given to others. The danger with preemption is always starvation — the same process being picked as victim every time."
+        }
+      ],
+      "realLife": "Prevention is a hostel rule: 'collect your key, towel and bucket together at reception, or not at all'. Avoidance is a bank manager who checks your total sanctioned limit before releasing each instalment, so he never runs out of cash. Detection is a traffic policeman who arrives after the jam has formed and makes one car reverse.",
+      "worked": "<strong>Banker's Algorithm — full worked example.</strong><br>Five processes P0-P4, three resource types A, B, C. Total instances: <strong>A = 10, B = 5, C = 7</strong>.<br><br><strong>Step 1 — The current state.</strong><br><code>Process | Allocation (A B C) | Max (A B C)</code><br><code>P0      |      0 1 0        |   7 5 3</code><br><code>P1      |      2 0 0        |   3 2 2</code><br><code>P2      |      3 0 2        |   9 0 2</code><br><code>P3      |      2 1 1        |   2 2 2</code><br><code>P4      |      0 0 2        |   4 3 3</code><br><br><strong>Step 2 — Find Available.</strong> Total allocated = A: 0+2+3+2+0 = 7, B: 1+0+0+1+0 = 2, C: 0+0+2+1+2 = 5.<br>Available = Total - Allocated = (10-7, 5-2, 7-5) = <strong>(3, 3, 2)</strong>.<br><br><strong>Step 3 — Compute Need = Max - Allocation.</strong><br><code>P0 Need = 7-0, 5-1, 3-0 = 7 4 3</code><br><code>P1 Need = 3-2, 2-0, 2-0 = 1 2 2</code><br><code>P2 Need = 9-3, 0-0, 2-2 = 6 0 0</code><br><code>P3 Need = 2-2, 2-1, 2-1 = 0 1 1</code><br><code>P4 Need = 4-0, 3-0, 3-2 = 4 3 1</code><br><br><strong>Step 4 — Run the safety algorithm.</strong> Work = Available = (3, 3, 2). All processes unfinished.<br><br><em>Pass 1:</em><br>P0? Need (7,4,3) vs Work (3,3,2) → 7 &gt; 3. <strong>Cannot run.</strong><br>P1? Need (1,2,2) vs Work (3,3,2) → 1≤3, 2≤3, 2≤2. <strong>YES.</strong> P1 runs and finishes.<br>&nbsp;&nbsp;Work = Work + Allocation(P1) = (3+2, 3+0, 2+0) = <strong>(5, 3, 2)</strong>. Sequence so far: P1.<br><br><em>Pass 2:</em><br>P2? Need (6,0,0) vs (5,3,2) → 6 &gt; 5. <strong>No.</strong><br>P3? Need (0,1,1) vs (5,3,2) → 0≤5, 1≤3, 1≤2. <strong>YES.</strong><br>&nbsp;&nbsp;Work = (5+2, 3+1, 2+1) = <strong>(7, 4, 3)</strong>. Sequence: P1, P3.<br><br><em>Pass 3:</em><br>P4? Need (4,3,1) vs (7,4,3) → 4≤7, 3≤4, 1≤3. <strong>YES.</strong><br>&nbsp;&nbsp;Work = (7+0, 4+0, 3+2) = <strong>(7, 4, 5)</strong>. Sequence: P1, P3, P4.<br><br><em>Pass 4:</em><br>P0? Need (7,4,3) vs (7,4,5) → 7≤7, 4≤4, 3≤5. <strong>YES.</strong><br>&nbsp;&nbsp;Work = (7+0, 4+1, 5+0) = <strong>(7, 5, 5)</strong>. Sequence: P1, P3, P4, P0.<br><br><em>Pass 5:</em><br>P2? Need (6,0,0) vs (7,5,5) → 6≤7. <strong>YES.</strong><br>&nbsp;&nbsp;Work = (7+3, 5+0, 5+2) = <strong>(10, 5, 7)</strong>. Sequence: P1, P3, P4, P0, P2.<br><br><strong>Answer: the state is SAFE, with safe sequence &lt;P1, P3, P4, P0, P2&gt;.</strong><br>Check: the final Work (10, 5, 7) equals the total resources — every process finished and returned everything. That check proves the sequence is genuinely safe.<br><br><strong>Step 5 — Now a request arrives: P1 requests (1, 0, 2).</strong><br>(a) Is Request ≤ Need(P1)? (1,0,2) ≤ (1,2,2)? Yes.<br>(b) Is Request ≤ Available? (1,0,2) ≤ (3,3,2)? Yes.<br>(c) Pretend to grant it:<br>&nbsp;&nbsp;Available = (3-1, 3-0, 2-2) = <strong>(2, 3, 0)</strong><br>&nbsp;&nbsp;Allocation(P1) = (2+1, 0+0, 0+2) = <strong>(3, 0, 2)</strong><br>&nbsp;&nbsp;Need(P1) = (1-1, 2-0, 2-2) = <strong>(0, 2, 0)</strong><br>(d) Run the safety check on this new state, Work = (2,3,0):<br>&nbsp;&nbsp;P1 Need (0,2,0) ≤ (2,3,0) → YES. Work = (2+3, 3+0, 0+2) = (5, 3, 2)<br>&nbsp;&nbsp;P3 Need (0,1,1) ≤ (5,3,2) → YES. Work = (7, 4, 3)<br>&nbsp;&nbsp;P4 Need (4,3,1) ≤ (7,4,3) → YES. Work = (7, 4, 5)<br>&nbsp;&nbsp;P0 Need (7,4,3) ≤ (7,4,5) → YES. Work = (7, 5, 5)<br>&nbsp;&nbsp;P2 Need (6,0,0) ≤ (7,5,5) → YES. Work = (10, 5, 7)<br><strong>The new state is safe, so the request is GRANTED.</strong> Safe sequence &lt;P1, P3, P4, P0, P2&gt;.<br><br><em>Compare:</em> if instead P0 had requested (0, 2, 0), Available would become (3, 1, 2) and Need(P0) would become (7, 2, 3). Checking: P1 needs (1,2,2) — 2 &gt; 1, no. P2 needs (6,0,0) — 6 &gt; 3, no. P3 needs (0,1,1) — yes, fits. That is how you continue the check for any variation the examiner gives you.",
+      "table": {
+        "headers": ["", "Prevention", "Avoidance", "Detection & Recovery"],
+        "rows": [
+          ["Basic idea", "Break one Coffman condition by design", "Grant a request only if the state stays safe", "Let it happen, then find and fix it"],
+          ["Needs advance info?", "No", "Yes — the maximum need of every process", "No"],
+          ["When does it act?", "At design time", "Before every resource request", "Periodically, after the fact"],
+          ["Resource use", "Low (over-restrictive)", "Medium", "High (nothing is restricted)"],
+          ["Overhead", "Low at runtime", "High — safety check on every request", "Cost of detection + rollback"],
+          ["Example method", "Ordered resource numbering", "Banker's Algorithm", "Wait-for graph cycle detection"]
+        ]
+      },
+      "mistake": "Two errors every year. <strong>(1)</strong> Writing that an unsafe state <em>is</em> a deadlock — it is not; unsafe only means deadlock has become <em>possible</em>. <strong>(2)</strong> Forgetting to compute <code>Need = Max - Allocation</code> and comparing <code>Max</code> against <code>Available</code> instead. Always write the Need table first — it is usually worth marks by itself.",
+      "examAnswer": "Deadlocks may be handled by prevention, avoidance, or detection and recovery. Prevention operates at design time by ensuring that at least one of the four necessary conditions can never hold, for example by requiring a process to request all its resources at once, by permitting preemption of held resources, or by imposing a total ordering on resource types and requiring requests in increasing order. Avoidance is less restrictive: it permits the four conditions but requires each process to declare its maximum resource requirement in advance, and it grants a request only if the resulting state remains safe, that is, only if a sequence exists in which every process can obtain its remaining need and terminate. The Banker's Algorithm implements avoidance for multiple instances of each resource type using the matrices Allocation, Max and Need, where Need equals Max minus Allocation, together with the Available vector; its safety algorithm repeatedly selects a process whose Need does not exceed the current Work vector, adds that process's Allocation to Work, and continues until all processes are marked finished. Detection, in contrast, permits deadlock to occur and periodically applies a detection algorithm, after which recovery is achieved either by terminating deadlocked processes or by preempting resources from a selected victim.",
+      "remember": "Prevention = never allowed. Avoidance = allowed but checked first (Banker's). Detection = allowed, fixed later. And always: <strong>Need = Max - Allocation</strong>.",
+      "why": "Banker's Algorithm is the single most reliable long-answer question in this unit — it is a fixed procedure, so if you practise the steps once you can score full marks on any set of numbers.",
+      "practice": "Using the same table above, suppose P4 requests (3, 3, 0). Check the two conditions, then run the safety algorithm on the pretend state and decide whether the request can be granted."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Two processes both execute balance = balance + 500 on a shared balance of 1000, and the final value is 1500 instead of 2000. What happened?",
+      "options": [
+        "The CPU was too slow",
+        "A race condition — both read 1000 before either wrote back",
+        "The memory was full",
+        "One process was terminated by the OS"
+      ],
+      "answer": 1,
+      "why": "The statement is three machine instructions (load, add, store). If both processes load 1000 before either stores, one update is overwritten. This lost update is the classic race condition."
+    },
+    {
+      "q": "Which of these is NOT one of the four requirements of a critical-section solution?",
+      "options": [
+        "Mutual exclusion",
+        "Progress",
+        "Bounded waiting",
+        "Maximum CPU utilisation"
+      ],
+      "answer": 3,
+      "why": "The four requirements are mutual exclusion, progress, bounded waiting, and no assumption about relative processor speed. CPU utilisation is a scheduling goal, not a correctness requirement."
+    },
+    {
+      "q": "A counting semaphore S is initialised to 2. Three processes call wait(S) one after another. What is the value of S?",
+      "options": [
+        "2",
+        "0",
+        "-1",
+        "3"
+      ],
+      "answer": 2,
+      "why": "Each wait decrements S: 2 → 1 → 0 → -1. The first two processes proceed; the third finds S negative and is blocked. The magnitude |−1| = 1 tells you exactly one process is waiting."
+    },
+    {
+      "q": "In the Readers-Writers solution, which reader performs wait(wrt)?",
+      "options": [
+        "Every reader, each time it reads",
+        "Only the first reader to arrive",
+        "Only the last reader to leave",
+        "No reader ever does"
+      ],
+      "answer": 1,
+      "why": "The first reader (when readcount becomes 1) locks wrt on behalf of all readers, and the last reader (when readcount becomes 0) releases it. If every reader locked wrt, only one reader could read at a time, defeating the whole purpose."
+    },
+    {
+      "q": "Why does the naive Dining Philosophers solution deadlock?",
+      "options": [
+        "There are not enough plates",
+        "All five philosophers may pick up their left chopstick at the same time, creating a circular wait",
+        "The philosophers eat too slowly",
+        "Chopsticks are counting semaphores"
+      ],
+      "answer": 1,
+      "why": "If every philosopher grabs the left chopstick simultaneously, each holds one and waits for the one his neighbour holds — a perfect circular wait with all four Coffman conditions present."
+    },
+    {
+      "q": "How does a monitor's x.signal() differ from a semaphore's signal(S)?",
+      "options": [
+        "There is no difference at all",
+        "x.signal() has no effect if no process is waiting, while signal(S) always increments S",
+        "x.signal() blocks the caller permanently",
+        "signal(S) can only be used inside a monitor"
+      ],
+      "answer": 1,
+      "why": "A semaphore's signal is remembered because it increments the counter. A monitor's condition signal is lost if nobody is currently waiting on that condition variable. This is the difference examiners most like to test."
+    },
+    {
+      "q": "For a deadlock to occur, how many of the four Coffman conditions must hold?",
+      "options": [
+        "Any one of them",
+        "At least two of them",
+        "All four, simultaneously",
+        "Exactly three of them"
+      ],
+      "answer": 2,
+      "why": "All four are necessary conditions and must hold at the same time. That is precisely why breaking any single one of them is enough to prevent deadlock."
+    },
+    {
+      "q": "In Banker's Algorithm, the Need matrix is calculated as…",
+      "options": [
+        "Max + Allocation",
+        "Max - Allocation",
+        "Allocation - Available",
+        "Available - Max"
+      ],
+      "answer": 1,
+      "why": "Need = Max - Allocation. It is how much more each process may still demand. Comparing Max against Available instead of Need is the most common mistake in this question."
+    },
+    {
+      "q": "A system is in an unsafe state. What does this mean?",
+      "options": [
+        "The system is already deadlocked",
+        "Deadlock is possible but has not necessarily occurred",
+        "The system will definitely deadlock within one second",
+        "All processes have finished"
+      ],
+      "answer": 1,
+      "why": "Unsafe means no safe sequence could be found, so the OS can no longer guarantee that deadlock will be avoided. It is a warning, not a deadlock. Safe always implies no deadlock, but unsafe does not imply deadlock."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Two ATM machines withdraw money from the same account at the same second. Explain, step by step, how the account balance can end up wrong, and name the problem.",
+      "hint": "Remember that balance = balance - amount is really load, subtract, store."
+    },
+    {
+      "q": "What is a semaphore? Explain the wait (P) and signal (V) operations, distinguish binary from counting semaphores, and describe the queuing implementation that removes busy waiting."
+    },
+    {
+      "q": "State the four necessary conditions for deadlock. For each one, suggest how it could be broken to prevent deadlock, and mention one practical difficulty with your suggestion.",
+      "hint": "Mutual exclusion is the one that usually cannot be broken — say why."
+    },
+    {
+      "q": "A system has 5 processes and 3 resource types A(10), B(5), C(7). Given the Allocation and Max tables, compute Need and Available, and determine whether the state is safe using Banker's Algorithm. Show every step.",
+      "hint": "Write the Need table first, then keep updating the Work vector after each process finishes."
+    },
+    {
+      "q": "Compare deadlock prevention, deadlock avoidance and deadlock detection. For each, state when it acts, what information it needs in advance, and one example method."
+    }
+  ]
+};

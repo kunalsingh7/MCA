@@ -1,0 +1,495 @@
+/* Operating System (MCA 108) — Unit 2. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.os = UNITS.os || [];
+UNITS.os[1] = {
+  "num": 2,
+  "title": "Processes and CPU Scheduling",
+  "problem": "Ten programs are sitting in memory, all shouting 'give me the CPU!'. But there is only one CPU. Somebody has to decide who runs first, who waits, and for how long — and that decision changes whether your laptop feels fast or feels stuck.",
+  "solution": "The OS turns every running program into a <strong>process</strong> with its own record card (the PCB), and then uses a <strong>scheduling algorithm</strong> to pick the next process for the CPU. This unit teaches five such algorithms and how to measure which one did better.",
+  "objectives": [
+    "Explain the difference between a program and a process, in one clear line",
+    "Draw and describe the five process states and every transition between them",
+    "List what an operating system stores inside a Process Control Block",
+    "Explain context switching and say why it is pure overhead",
+    "Tell apart preemptive and non-preemptive scheduling with an example of each",
+    "Define the five scheduling criteria: CPU utilisation, throughput, turnaround, waiting and response time",
+    "Solve FCFS, SJF, SRTN, Round Robin and HRRN numericals and compute average waiting and turnaround time",
+    "Explain Multilevel Feedback Queues and compare the performance of all these algorithms"
+  ],
+  "topics": [
+    {
+      "title": "The Process Concept and Its Five States",
+      "teacher": "Here is a small question that confuses everybody. A recipe written in a book — is that cooking? No. Cooking starts when somebody actually stands at the stove with the ingredients. A program is the recipe. A process is the cooking.",
+      "explain": "A <strong>program</strong> is a passive file sitting on the disk. A <strong>process</strong> is a program that is actually running — it has been loaded into memory and given a CPU, its own data and its own current position in the code. One program can create many processes: open Chrome three times and you get three separate processes from one program file.",
+      "keyPoints": [
+        "Program = passive file on disk. Process = active, running program in memory.",
+        "A process has four parts in memory: <strong>text</strong> (the code), <strong>data</strong> (global variables), <strong>heap</strong> (memory taken while running) and <strong>stack</strong> (function calls and local variables).",
+        "The five states are: <strong>New, Ready, Running, Waiting (Blocked)</strong> and <strong>Terminated</strong>.",
+        "Only a process in the <strong>Running</strong> state is actually using the CPU.",
+        "Many processes can be Ready at the same time — they sit in the <strong>ready queue</strong>.",
+        "There is <strong>no direct arrow</strong> from Waiting back to Running. It must go Waiting → Ready → Running.",
+        "Each process has a unique number called the <strong>Process ID (PID)</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "The five states, in plain words",
+          "text": "<strong>New</strong> — the process is being created and is not yet in memory. <strong>Ready</strong> — fully loaded and waiting for its turn on the CPU; it needs nothing except the CPU itself. <strong>Running</strong> — its instructions are being executed right now. <strong>Waiting (also called Blocked)</strong> — it asked for something like a disk read or keyboard input and cannot continue until that arrives. <strong>Terminated</strong> — it has finished and the OS is cleaning up its memory."
+        },
+        {
+          "title": "The transitions — describe these, not just the boxes",
+          "text": "<strong>New → Ready</strong> (admit): the OS finishes loading it. <strong>Ready → Running</strong> (dispatch): the scheduler picks it. <strong>Running → Ready</strong> (preempt or timeout): its time slice ended or a more urgent process arrived — notice it was <em>not</em> its fault, it is still fully able to run. <strong>Running → Waiting</strong> (I/O request): it asked for a disk or keyboard and must pause. <strong>Waiting → Ready</strong> (I/O complete): the data arrived, so it can compete for the CPU again. <strong>Running → Terminated</strong> (exit): the work is over."
+        },
+        {
+          "title": "Why Waiting cannot jump straight to Running",
+          "text": "This is the single most-lost mark in this topic. When your disk read finishes, the CPU might be busy with somebody else. The process is now <em>able</em> to run, but it still has to queue up. So it moves to <strong>Ready</strong>, and only the scheduler can move it from there to <strong>Running</strong>. The scheduler is the only thing that ever puts a process into Running."
+        }
+      ],
+      "realLife": "Think of a bank with one clerk. Customers standing in the queue are <strong>Ready</strong>. The one at the counter is <strong>Running</strong>. A customer sent away to go and photocopy his Aadhaar card is <strong>Waiting</strong> — and when he comes back with the copy he does not walk straight to the counter, he joins the back of the queue again (Waiting → Ready).",
+      "table": {
+        "headers": ["State", "What it means", "What it is waiting for"],
+        "rows": [
+          ["New", "Being created, not yet admitted", "The OS to finish loading it"],
+          ["Ready", "Loaded and fully able to run", "Only the CPU"],
+          ["Running", "Executing on the CPU right now", "Nothing — it has the CPU"],
+          ["Waiting / Blocked", "Paused after asking for I/O", "Disk, printer, keyboard or a signal"],
+          ["Terminated", "Finished; resources being released", "Nothing"]
+        ]
+      },
+      "mistake": "Students write 'the process goes from Waiting straight to Running when the disk is ready'. Wrong. It goes Waiting → Ready → Running. Also, a process moved from Running to Ready is NOT blocked — it is perfectly healthy, it just lost its turn.",
+      "examAnswer": "A process is a program in execution. Unlike a program, which is a passive set of instructions stored on disk, a process is an active entity possessing its own program counter, stack, data section and allocated resources. During its lifetime a process passes through five states: New, in which it is being created; Ready, in which it is waiting to be assigned to the processor; Running, in which its instructions are being executed; Waiting, in which it is blocked until an I/O operation or event completes; and Terminated, in which execution has finished. Transitions occur through admission, dispatch, preemption or timeout, I/O request, I/O completion and exit.",
+      "remember": "New → Ready → Running → (Waiting) → Ready → ... → Terminated. Only the scheduler creates Running.",
+      "why": "Every later topic — scheduling, deadlock, memory — is described in terms of these five states. If you cannot name the transitions, none of the rest will make sense.",
+      "practice": "A process is executing and then requests data from the hard disk. Name the two state transitions it will go through before it executes again."
+    },
+    {
+      "title": "The Process Control Block and Context Switching",
+      "teacher": "Imagine you are solving a maths sum and your friend suddenly pulls the notebook away. When you get it back an hour later, how do you continue? Only if you had written down where you stopped. The OS writes that down for every process — in the PCB.",
+      "explain": "The <strong>Process Control Block (PCB)</strong> is a data structure in the OS that stores everything about one process. When the CPU is taken away from a process, its exact situation is saved into its PCB; when it gets the CPU back, everything is restored from the PCB. This save-and-restore operation is called a <strong>context switch</strong>.",
+      "keyPoints": [
+        "One PCB per process — it is the process's complete 'record card' inside the OS.",
+        "PCB contents: <strong>process ID</strong>, <strong>process state</strong>, <strong>program counter</strong>, <strong>CPU registers</strong>, <strong>scheduling information</strong> (priority, queue pointers), <strong>memory information</strong> (base/limit or page table), <strong>accounting information</strong> (CPU time used) and <strong>I/O status</strong> (open files, allocated devices).",
+        "The <strong>program counter</strong> holds the address of the very next instruction — without it, resuming is impossible.",
+        "The PCB lives in <strong>kernel memory</strong>, not in the user program's memory, so a program cannot tamper with it.",
+        "A context switch = save current process's state into its PCB + load the next process's state from its PCB.",
+        "A context switch is <strong>pure overhead</strong> — during it, zero useful user work is done.",
+        "Typical context switch cost is a few microseconds; a smaller time slice means more switches means more waste."
+      ],
+      "subtopics": [
+        {
+          "title": "What is actually inside a PCB",
+          "text": "Group the fields into five families and you will never forget them: <strong>identification</strong> (PID, parent PID), <strong>state</strong> (Ready, Running, Waiting), <strong>CPU context</strong> (program counter and all registers), <strong>scheduling and memory</strong> (priority, pointers to queues, base and limit registers or page tables), and <strong>resources and accounting</strong> (open file list, devices held, CPU time consumed, time limits)."
+        },
+        {
+          "title": "How a context switch actually happens",
+          "text": "An interrupt or a system call transfers control to the OS. The OS saves the running process's program counter and registers into its PCB and changes its state to Ready or Waiting. The scheduler then picks the next process, loads its registers and program counter back from its PCB, sets its state to Running, and jumps to it. The new process has no idea it was ever paused."
+        },
+        {
+          "title": "Why we care about the cost",
+          "text": "Nothing useful runs during a context switch — the CPU is only shuffling papers. If you set the Round Robin time quantum too small, the machine spends more time switching than working. This one fact is the reason the quantum is usually kept well above the switching cost, typically 10 to 100 milliseconds."
+        }
+      ],
+      "realLife": "You are studying Chapter 4 and your mother calls you for dinner. You put a bookmark and write 'page 62, question 9' on a slip — that slip is your PCB. Writing the slip and finding your place again takes time but teaches you nothing new: that is context switch overhead.",
+      "worked": "<strong>Why a tiny time quantum is a bad idea</strong><br>Suppose a context switch costs 0.1 ms.<br><br>Case A — quantum = 10 ms:<br>Useful work per cycle = 10 ms, overhead = 0.1 ms.<br>Overhead share = 0.1 / (10 + 0.1) = 0.0099 ≈ <strong>1% wasted</strong>.<br><br>Case B — quantum = 1 ms:<br>Overhead share = 0.1 / (1 + 0.1) = 0.0909 ≈ <strong>9% wasted</strong>.<br><br>Case C — quantum = 0.1 ms:<br>Overhead share = 0.1 / (0.1 + 0.1) = 0.5 = <strong>50% wasted</strong> — half the CPU is doing nothing but switching!<br><br>Conclusion: a smaller quantum gives faster response but more overhead. That is the trade-off.",
+      "mistake": "Do not say 'a context switch is part of the process's execution'. It is the OPPOSITE — it is time in which no user process runs at all. Also do not confuse the PCB with the process itself: the PCB is only the OS's record about the process.",
+      "examAnswer": "A Process Control Block is a data structure maintained by the operating system for every process, containing the process identifier, current process state, program counter, CPU register values, scheduling information such as priority, memory management information, accounting information and input/output status including open files and allocated devices. A context switch is the operation in which the operating system saves the context of the currently running process into its PCB and loads the saved context of another process from its PCB. Since no user-level work is performed during this operation, a context switch is regarded as pure overhead, and its cost influences the choice of time quantum in scheduling.",
+      "remember": "PCB = the process's Aadhaar card. Context switch = save one card, open another card. No work happens in between.",
+      "why": "Almost every year there is a question asking what a PCB contains. It is easy, guaranteed marks — just list the seven fields with one-line explanations.",
+      "practice": "List any six items stored in a PCB, and explain why the program counter must be one of them."
+    },
+    {
+      "title": "Systems Programmer's View and OS Services for Process Management",
+      "teacher": "A user says 'I opened WhatsApp'. A systems programmer says 'a fork system call created a child process, exec loaded the image, and its PCB was put into the ready queue'. Same action, completely different language. Let's learn the second language — that is what the exam asks for.",
+      "explain": "From the systems programmer's side, a process is not an app icon — it is a <strong>PCB plus an address space</strong> that the OS creates, schedules, suspends and destroys through <strong>system calls</strong>. The OS offers a fixed set of services for this: creation, termination, suspension, resumption, communication and synchronisation.",
+      "keyPoints": [
+        "To a systems programmer a process is a <strong>PCB + address space + the resources it holds</strong>.",
+        "Processes are arranged in a <strong>tree</strong>: a parent process creates child processes.",
+        "<code>fork()</code> creates a new child process that is a copy of the parent.",
+        "<code>exec()</code> replaces a process's memory image with a new program.",
+        "<code>wait()</code> makes a parent pause until its child finishes; <code>exit()</code> ends a process.",
+        "<code>kill()</code> sends a signal to terminate or interrupt another process.",
+        "The OS keeps several queues: the <strong>job queue</strong> (all processes), the <strong>ready queue</strong> and one <strong>device queue</strong> per device.",
+        "Other process services: inter-process communication (pipes, shared memory, message passing) and synchronisation (semaphores, locks).",
+        "A <strong>zombie</strong> is a finished child whose parent has not yet collected its exit status; an <strong>orphan</strong> is a child whose parent died first."
+      ],
+      "subtopics": [
+        {
+          "title": "Creating and ending a process",
+          "text": "In UNIX and Linux, <code>fork()</code> makes a duplicate child process — it returns 0 inside the child and the child's PID inside the parent, which is how the two tell themselves apart. The child then usually calls <code>exec()</code> to load a completely different program over itself. The parent may call <code>wait()</code> to sleep until the child finishes. The child ends with <code>exit()</code>, and the OS then frees its memory and removes its PCB."
+        },
+        {
+          "title": "The queues the OS maintains",
+          "text": "Every process in the system is in the <strong>job queue</strong>. Processes that are Ready sit in the <strong>ready queue</strong>, which is really a linked list of PCBs. Each device such as the disk or printer has its own <strong>device queue</strong> of processes blocked on it. A process spends its life moving between the ready queue, the CPU and some device queue — this picture is called <em>queueing-diagram scheduling</em>."
+        },
+        {
+          "title": "The three schedulers",
+          "text": "The <strong>long-term scheduler</strong> (job scheduler) decides which jobs are admitted into memory — it controls the <em>degree of multiprogramming</em> and runs rarely. The <strong>short-term scheduler</strong> (CPU scheduler) picks which Ready process gets the CPU next — it runs very often, every few milliseconds, so it must be extremely fast. The <strong>medium-term scheduler</strong> swaps some processes out of memory to disk and back, to reduce the load."
+        }
+      ],
+      "realLife": "Think of a college office. The long-term scheduler is the admission committee deciding how many students to admit this year. The short-term scheduler is the lab assistant deciding which of the waiting students uses the one free computer right now. The medium-term scheduler is sending some students to the library when the lab gets too crowded.",
+      "table": {
+        "headers": ["Scheduler", "Decides", "How often it runs", "Also called"],
+        "rows": [
+          ["Long-term", "Which jobs enter memory", "Rarely (seconds/minutes)", "Job scheduler"],
+          ["Short-term", "Which Ready process gets the CPU", "Very often (milliseconds)", "CPU scheduler"],
+          ["Medium-term", "Which process is swapped out to disk", "In between", "Swapper"]
+        ]
+      },
+      "mistake": "Students mix up the long-term and short-term scheduler. Remember by speed: the SHORT-term one runs in a SHORT time (milliseconds) and must therefore be very simple and fast. The long-term one can afford to think, because it runs rarely.",
+      "examAnswer": "From the systems programmer's viewpoint, a process is represented by its Process Control Block together with its address space and allocated resources, and it is manipulated entirely through system calls. The operating system provides services for process creation, termination, suspension and resumption, as well as inter-process communication and synchronisation. In UNIX-like systems these are exposed through calls such as fork, exec, wait, exit and kill. The operating system maintains a job queue, a ready queue and device queues of PCBs, and employs long-term, short-term and medium-term schedulers to control the degree of multiprogramming, the allocation of the CPU and the swapping of processes respectively.",
+      "remember": "fork = make a copy · exec = become a new program · wait = parent sleeps · exit = finish.",
+      "why": "This is the 'systems programmer's view of processes' phrase sitting directly in your syllabus — expect it as a short-note question worth 5 marks.",
+      "practice": "Name any four operating system services for process management, and state which system call provides each in UNIX."
+    },
+    {
+      "title": "Scheduling Basics: Preemption and the Five Criteria",
+      "teacher": "Before we learn any algorithm, we need a scorecard. Otherwise how will you say algorithm A is better than algorithm B? These five criteria are the scorecard — and examiners love asking for them by name.",
+      "explain": "CPU scheduling means choosing which Ready process runs next. Scheduling is <strong>non-preemptive</strong> if a process keeps the CPU until it finishes or blocks on its own, and <strong>preemptive</strong> if the OS can forcibly take the CPU away. We judge every algorithm on five measures: CPU utilisation, throughput, turnaround time, waiting time and response time.",
+      "keyPoints": [
+        "<strong>CPU utilisation</strong> — the percentage of time the CPU is busy. We want it <em>high</em> (ideally 40% to 90%).",
+        "<strong>Throughput</strong> — number of processes completed per unit time. We want it <em>high</em>.",
+        "<strong>Turnaround time (TAT)</strong> = Completion time − Arrival time. Total time from arriving to finishing. We want it <em>low</em>.",
+        "<strong>Waiting time (WT)</strong> = Turnaround time − Burst time. Time spent sitting in the ready queue. We want it <em>low</em>.",
+        "<strong>Response time</strong> = time from arrival until the process runs for the <em>first</em> time. We want it <em>low</em>.",
+        "<strong>Burst time</strong> = the CPU time a process actually needs. <strong>Arrival time</strong> = when it entered the ready queue.",
+        "Non-preemptive: FCFS, SJF, HRRN. Preemptive: SRTN, Round Robin, Multilevel Feedback Queues.",
+        "The scheduler runs at four moments: Running→Waiting, Running→Ready, Waiting→Ready and on termination. Only the 1st and 4th happen in non-preemptive scheduling."
+      ],
+      "subtopics": [
+        {
+          "title": "Preemptive vs non-preemptive",
+          "text": "In <strong>non-preemptive</strong> scheduling, once a process starts it runs until it finishes or asks for I/O. It is simple and has low overhead, but a single long process can freeze the whole system. In <strong>preemptive</strong> scheduling the OS interrupts a running process — because its time slice expired or a higher-priority process arrived — and moves it back to Ready. This gives much better response and is what every modern interactive OS uses, at the cost of more context switches and the need to protect shared data."
+        },
+        {
+          "title": "Waiting time vs response time — do not mix these",
+          "text": "<strong>Waiting time</strong> is the <em>total</em> time spent in the ready queue across the whole life of the process. <strong>Response time</strong> only counts up to the <em>first</em> moment it runs; after that it does not matter. For a text editor, response time is what you feel. For a payroll batch job, turnaround time is what matters. This is exactly why Round Robin (great response) can look bad on average waiting time and still be the right choice."
+        },
+        {
+          "title": "The two formulas you must never forget",
+          "text": "<strong>Turnaround Time = Completion Time − Arrival Time</strong> and <strong>Waiting Time = Turnaround Time − Burst Time</strong>. Every numerical in this unit is solved with just these two lines. A useful self-check: average TAT must always equal average WT plus average burst time. If it does not, you have made an arithmetic mistake somewhere."
+        }
+      ],
+      "realLife": "In a hospital, non-preemptive is 'finish treating this patient completely, then call the next'. Preemptive is 'stop — an accident case just arrived, attend to him first'. Response time is how fast a doctor first looks at you; turnaround time is when you finally walk out of the hospital.",
+      "table": {
+        "headers": ["", "Non-preemptive", "Preemptive"],
+        "rows": [
+          ["CPU taken away by force?", "No", "Yes"],
+          ["Context switches", "Fewer, less overhead", "More, higher overhead"],
+          ["Response to urgent work", "Poor", "Good"],
+          ["Risk", "A long job blocks everyone", "Shared data can get corrupted mid-update"],
+          ["Examples", "FCFS, SJF, HRRN", "SRTN, Round Robin, MLFQ"]
+        ]
+      },
+      "mistake": "Waiting time is NOT 'turnaround time minus response time', and it is NOT the time before the process starts. Always use Waiting Time = Turnaround Time − Burst Time. And when all processes arrive at time 0, arrival time is 0, so turnaround time simply equals completion time.",
+      "examAnswer": "CPU scheduling determines which of the processes in the ready queue is allocated the processor. Scheduling is said to be non-preemptive when a process retains the CPU until it terminates or voluntarily blocks for input or output, and preemptive when the operating system may forcibly reclaim the CPU from a running process. The performance of a scheduling algorithm is evaluated using five criteria: CPU utilisation, which should be maximised; throughput, the number of processes completed per unit time, which should be maximised; turnaround time, the interval from submission to completion, which should be minimised; waiting time, the total time spent in the ready queue, which should be minimised; and response time, the interval from submission until the first response, which should also be minimised.",
+      "remember": "TAT = Completion − Arrival. WT = TAT − Burst. Maximise the first two criteria, minimise the last three.",
+      "why": "These five criteria are worth marks on their own, and they are also the yardstick used in every comparison question in this unit.",
+      "practice": "A process arrives at time 3, starts running at time 7 and completes at time 15. Its burst time is 5. Find its turnaround time, waiting time and response time."
+    },
+    {
+      "title": "First Come First Serve (FCFS)",
+      "teacher": "This is the fairest algorithm in the world and also, quite often, the worst. It is simply the queue outside a ration shop — whoever came first is served first, even if he has ten bags and you only want one packet of salt.",
+      "explain": "<strong>FCFS</strong> allocates the CPU in the exact order in which processes arrive in the ready queue. It is <strong>non-preemptive</strong>: once a process starts, it runs to completion. It is implemented with a simple FIFO queue, so it is the easiest algorithm to code — and it usually gives a poor average waiting time.",
+      "keyPoints": [
+        "Non-preemptive; implemented with a plain FIFO queue.",
+        "Simplest possible algorithm — easy to understand and easy to code.",
+        "No starvation: every process eventually gets the CPU.",
+        "Suffers from the <strong>convoy effect</strong> — one long process makes all the short ones wait a very long time.",
+        "Average waiting time is usually high and depends heavily on the arrival order.",
+        "Very poor for interactive or time-sharing systems.",
+        "The first process always has waiting time 0 (when all arrive at time 0)."
+      ],
+      "subtopics": [
+        {
+          "title": "The convoy effect",
+          "text": "Picture one CPU-heavy process of 100 ms and ten tiny processes of 1 ms each. If the big one arrived first, all ten small ones wait more than 100 ms for 1 ms of work. On the road this is a truck holding up a line of scooters — everyone is forced to move at the truck's speed. This single problem is the main reason FCFS is not used alone in real systems."
+        },
+        {
+          "title": "Order matters enormously",
+          "text": "The very same set of processes gives completely different averages depending on who arrived first. In our example below the average waiting time is 7.25 ms. If the same four had arrived shortest-first, it would drop to 5.5 ms — the work is identical, only the order changed. FCFS has no way to exploit this; SJF does."
+        }
+      ],
+      "realLife": "The queue at the college fee counter. A student paying hostel plus tuition plus exam fees with a cheque takes fifteen minutes, and the person behind him — who only needs a signature — must still wait the full fifteen minutes. Fair, but slow for everyone.",
+      "worked": "<strong>Example</strong> — four processes, all arriving at time 0, in the order P1, P2, P3, P4.<br><br><strong>Process&nbsp;&nbsp;Burst Time</strong><br>P1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5 ms<br>P2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3 ms<br>P3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8 ms<br>P4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4 ms<br><br><strong>Step 1 — Gantt chart</strong> (serve in arrival order):<br><code>| P1 | P2 | P3 | P4 |</code><br><code>0....5....8...16...20</code><br><br><strong>Step 2 — Completion time</strong> = where each block ends:<br>P1 = 5, P2 = 8, P3 = 16, P4 = 20<br><br><strong>Step 3 — Turnaround = Completion − Arrival</strong> (arrival is 0 for all):<br>P1 = 5, P2 = 8, P3 = 16, P4 = 20<br><br><strong>Step 4 — Waiting = Turnaround − Burst</strong>:<br>P1 = 5 − 5 = <strong>0</strong><br>P2 = 8 − 3 = <strong>5</strong><br>P3 = 16 − 8 = <strong>8</strong><br>P4 = 20 − 4 = <strong>16</strong><br><br><strong>Step 5 — Averages</strong>:<br>Average Waiting Time = (0 + 5 + 8 + 16) / 4 = 29 / 4 = <strong>7.25 ms</strong><br>Average Turnaround Time = (5 + 8 + 16 + 20) / 4 = 49 / 4 = <strong>12.25 ms</strong><br><br><em>Self-check:</em> average burst = (5+3+8+4)/4 = 5. And 7.25 + 5 = 12.25 ✓",
+      "mistake": "Do not sort the processes by burst time in FCFS — that is SJF! In FCFS you must keep the arrival order exactly as given in the question, even if it looks inefficient.",
+      "examAnswer": "First Come First Serve is a non-preemptive scheduling algorithm in which the processor is allocated to processes strictly in the order of their arrival, implemented using a simple first-in first-out queue. Its principal advantages are simplicity of implementation and the absence of starvation. Its principal disadvantage is the convoy effect, in which a single process with a long CPU burst forces all subsequent short processes to wait, resulting in a high average waiting time. Consequently FCFS is unsuitable for interactive and time-sharing systems.",
+      "remember": "FCFS = ration-shop queue. Fair order, terrible average.",
+      "why": "It is the baseline every other algorithm is compared against, and its numerical is the easiest guaranteed marks in the whole unit.",
+      "practice": "Three processes arrive at time 0 in the order A (burst 10), B (burst 2), C (burst 3). Find the average waiting time under FCFS, then find it again if the order had been B, C, A."
+    },
+    {
+      "title": "Shortest Job First and Shortest Run Time Next (SRTN)",
+      "teacher": "Here is a trick every shopkeeper knows. If someone just wants change for a hundred rupees, serve him in ten seconds and the whole queue moves faster. Serving the shortest job first is mathematically the best thing you can do for average waiting time — and it is also the most dangerous.",
+      "explain": "<strong>Shortest Job First (SJF)</strong> picks the Ready process with the smallest CPU burst. It is non-preemptive. Its preemptive version is <strong>Shortest Run Time Next (SRTN)</strong>, also called Shortest Remaining Time First: every time a new process arrives, the OS compares its burst with the <em>remaining</em> time of the running process and switches if the newcomer is shorter.",
+      "keyPoints": [
+        "SJF gives the <strong>provably minimum average waiting time</strong> for a given set of processes.",
+        "SJF is non-preemptive; SRTN is its preemptive version and gives an even lower average.",
+        "In SRTN the decision is made on <strong>remaining</strong> time, not original burst time.",
+        "In SRTN, a new arrival is the only thing that can cause a preemption.",
+        "Big problem: the burst time is <strong>not known in advance</strong> — it must be predicted.",
+        "Prediction uses <strong>exponential averaging</strong>: τ<sub>n+1</sub> = α·t<sub>n</sub> + (1 − α)·τ<sub>n</sub>, usually with α = 0.5.",
+        "Big problem two: <strong>starvation</strong> — a long process may never run if short ones keep arriving.",
+        "Mostly used in batch systems where a time estimate is submitted with the job."
+      ],
+      "subtopics": [
+        {
+          "title": "Why SJF is optimal",
+          "text": "Think of two processes waiting, one short and one long. If you run the long one first, the short one waits for the whole long burst. If you run the short one first, the long one waits only for the short burst — a much smaller penalty. Extending this swap argument to any number of processes proves that shortest-first always gives the minimum average waiting time. No algorithm can beat SJF on that one measure."
+        },
+        {
+          "title": "The impossible part — knowing the future",
+          "text": "The scheduler cannot know how long a process will run. So it <em>predicts</em> the next burst from the previous ones using exponential averaging: the new prediction is a mix of the most recent actual burst and the old prediction. With α = 0.5 both count equally; with α = 0 the prediction never changes; with α = 1 only the last burst matters. This is the honest answer to 'how is SJF implemented in practice'."
+        },
+        {
+          "title": "Starvation — and the cure",
+          "text": "A process with a 50 ms burst may sit forever while 2 ms jobs keep arriving. This is called <strong>starvation</strong> or indefinite blocking. The standard cure is <strong>aging</strong>: slowly increase the priority of a process the longer it waits, so eventually it must be chosen. HRRN, the next topic, builds this cure directly into its formula."
+        }
+      ],
+      "realLife": "At the medical shop, if the person ahead of you has a ten-item prescription and you only want one strip of Crocin, everyone finishes faster if the shopkeeper hands you the strip first. But if customers with one item keep arriving, the person with the long list may stand there all evening — that is starvation.",
+      "worked": "<strong>Part A — SJF (non-preemptive)</strong><br>Same four processes as FCFS, all arriving at time 0:<br>P1 = 5, P2 = 3, P3 = 8, P4 = 4<br><br>Sort by burst: P2 (3), P4 (4), P1 (5), P3 (8).<br><br>Gantt chart:<br><code>| P2 | P4 | P1 | P3 |</code><br><code>0....3....7...12...20</code><br><br>Completion: P2 = 3, P4 = 7, P1 = 12, P3 = 20<br>Turnaround (arrival 0, so = completion): P2 = 3, P4 = 7, P1 = 12, P3 = 20<br>Waiting = TAT − Burst:<br>P2 = 3 − 3 = <strong>0</strong> · P4 = 7 − 4 = <strong>3</strong> · P1 = 12 − 5 = <strong>7</strong> · P3 = 20 − 8 = <strong>12</strong><br><br>Average Waiting Time = (0 + 3 + 7 + 12) / 4 = 22 / 4 = <strong>5.50 ms</strong><br>Average Turnaround Time = (3 + 7 + 12 + 20) / 4 = 42 / 4 = <strong>10.50 ms</strong><br><em>Check:</em> 5.50 + 5 = 10.50 ✓ &nbsp; (FCFS gave 7.25 and 12.25 — SJF is clearly better.)<br><br><strong>Part B — SRTN (preemptive)</strong><br>Now with different arrival times:<br><strong>Process&nbsp;&nbsp;Arrival&nbsp;&nbsp;Burst</strong><br>P1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8<br>P2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4<br>P3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9<br>P4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5<br><br><em>t = 0:</em> only P1 is here. Run P1.<br><em>t = 1:</em> P2 arrives with burst 4. P1 has 7 left. 4 &lt; 7 → <strong>preempt P1</strong>, run P2.<br><em>t = 2:</em> P3 arrives with 9. P2 has 3 left. 3 is smallest → P2 continues.<br><em>t = 3:</em> P4 arrives with 5. P2 has 2 left. P2 continues.<br><em>t = 5:</em> P2 finishes. Remaining: P1 = 7, P3 = 9, P4 = 5. Smallest is P4 → run P4.<br><em>t = 10:</em> P4 finishes. Remaining: P1 = 7, P3 = 9. Run P1.<br><em>t = 17:</em> P1 finishes. Run P3 until 26.<br><br>Gantt chart:<br><code>| P1 | P2 | P4  | P1  | P3  |</code><br><code>0....1....5....10....17....26</code><br><br>Completion: P1 = 17, P2 = 5, P3 = 26, P4 = 10<br>Turnaround = Completion − Arrival:<br>P1 = 17 − 0 = 17 · P2 = 5 − 1 = 4 · P3 = 26 − 2 = 24 · P4 = 10 − 3 = 7<br>Waiting = TAT − Burst:<br>P1 = 17 − 8 = <strong>9</strong> · P2 = 4 − 4 = <strong>0</strong> · P3 = 24 − 9 = <strong>15</strong> · P4 = 7 − 5 = <strong>2</strong><br><br>Average Waiting Time = (9 + 0 + 15 + 2) / 4 = 26 / 4 = <strong>6.50 ms</strong><br>Average Turnaround Time = (17 + 4 + 24 + 7) / 4 = 52 / 4 = <strong>13.00 ms</strong><br><em>Check:</em> average burst = 26/4 = 6.5, and 6.50 + 6.50 = 13.00 ✓",
+      "mistake": "In SRTN students compare the new arrival's burst with the running process's ORIGINAL burst. Wrong — always compare with the <strong>remaining</strong> time. At t = 1 above, P1's remaining time is 7, not 8.",
+      "examAnswer": "Shortest Job First is a non-preemptive scheduling algorithm that allocates the processor to the ready process having the smallest next CPU burst, and it is provably optimal in the sense that it yields the minimum average waiting time for a given set of processes. Shortest Run Time Next, also called Shortest Remaining Time First, is its preemptive counterpart, in which the arrival of a process whose burst is shorter than the remaining time of the running process causes an immediate preemption. The principal limitations of both are that the length of the next CPU burst cannot be known in advance and must be estimated by exponential averaging, and that processes with long bursts may suffer indefinite starvation.",
+      "remember": "SJF = shortest first, best average, but you must guess the future. SRTN = SJF that can interrupt.",
+      "why": "SJF's optimality and its two problems (prediction and starvation) are a standard theory question, and the SRTN numerical is a standard 7-mark numerical.",
+      "practice": "Processes P1(arrival 0, burst 7), P2(arrival 2, burst 4), P3(arrival 4, burst 1), P4(arrival 5, burst 4). Draw the SRTN Gantt chart and compute the average waiting time."
+    },
+    {
+      "title": "Round Robin Scheduling",
+      "teacher": "Imagine a teacher with twelve students and only one microphone. Give each student exactly one minute, then pass it on, round and round. Nobody is ignored and everybody gets to speak quickly. That, exactly, is Round Robin.",
+      "explain": "<strong>Round Robin (RR)</strong> gives every process a fixed slice of CPU time called the <strong>time quantum</strong> (typically 10 to 100 ms). When the quantum expires, the process is preempted and sent to the <strong>back</strong> of the ready queue, and the next process runs. It is FCFS plus preemption, and it is the classic algorithm for time-sharing systems.",
+      "keyPoints": [
+        "Preemptive; the ready queue is circular (FIFO with wrap-around).",
+        "The <strong>time quantum</strong> (or time slice) is the fixed amount each process gets per turn.",
+        "A preempted process goes to the <strong>tail</strong> of the ready queue, never the head.",
+        "Excellent <strong>response time</strong> and completely fair — no starvation ever.",
+        "Average turnaround time is usually <strong>worse</strong> than SJF.",
+        "If the quantum is <strong>very large</strong>, RR becomes exactly FCFS.",
+        "If the quantum is <strong>very small</strong>, response is great but context-switch overhead destroys performance (this extreme is called processor sharing).",
+        "Rule of thumb: choose a quantum such that about 80% of CPU bursts finish within one quantum."
+      ],
+      "subtopics": [
+        {
+          "title": "Choosing the time quantum",
+          "text": "This is the whole design problem of RR. Too large and you lose interactivity — the system behaves like FCFS. Too small and the CPU spends most of its time switching instead of working. The quantum must be much larger than the context-switch time, which is why real systems use 10 to 100 ms against a switch cost of a few microseconds."
+        },
+        {
+          "title": "What RR is really good at",
+          "text": "RR is not trying to win on average waiting time — it will usually lose that to SJF. It is trying to make sure <em>nobody waits long for their first turn</em>. In our worked example below, RR gives an average response time of 4.5 ms against FCFS's 7.25 ms. That is the number that decides whether your machine feels responsive."
+        },
+        {
+          "title": "Where a returning process goes",
+          "text": "When a process uses up its quantum it joins the <strong>back</strong> of the queue. If another process arrives at exactly the same instant, the usual convention in textbook problems is that the <em>new arrival</em> joins the queue first and the preempted process goes behind it. State whichever convention you use in your answer — examiners accept either as long as you are consistent."
+        }
+      ],
+      "realLife": "Your college computer lab has one printer and a 2-minute limit per student. Nobody can hog it with a 200-page document — after two minutes they go back to the end of the line. Everyone gets something printed quickly, though the big document takes many rounds to finish.",
+      "worked": "<strong>Example</strong> — same four processes, all arriving at time 0, queue order P1, P2, P3, P4, <strong>time quantum = 3 ms</strong>.<br>P1 = 5, P2 = 3, P3 = 8, P4 = 4<br><br><strong>Step-by-step</strong> (remaining time shown in brackets):<br><em>0–3:</em> P1 runs 3 → P1 has 2 left, goes to back. Queue: P2, P3, P4, P1<br><em>3–6:</em> P2 runs 3 → P2 has 0 → <strong>P2 completes at 6</strong>. Queue: P3, P4, P1<br><em>6–9:</em> P3 runs 3 → P3 has 5 left, goes to back. Queue: P4, P1, P3<br><em>9–12:</em> P4 runs 3 → P4 has 1 left, goes to back. Queue: P1, P3, P4<br><em>12–14:</em> P1 runs its last 2 → <strong>P1 completes at 14</strong>. Queue: P3, P4<br><em>14–17:</em> P3 runs 3 → P3 has 2 left, goes to back. Queue: P4, P3<br><em>17–18:</em> P4 runs its last 1 → <strong>P4 completes at 18</strong>. Queue: P3<br><em>18–20:</em> P3 runs its last 2 → <strong>P3 completes at 20</strong><br><br><strong>Gantt chart</strong>:<br><code>| P1 | P2 | P3 | P4 | P1 | P3 | P4| P3 |</code><br><code>0....3....6....9...12...14...17..18...20</code><br><br><strong>Completion:</strong> P1 = 14, P2 = 6, P3 = 20, P4 = 18<br><strong>Turnaround</strong> (arrival 0): P1 = 14, P2 = 6, P3 = 20, P4 = 18<br><strong>Waiting = TAT − Burst:</strong><br>P1 = 14 − 5 = <strong>9</strong><br>P2 = 6 − 3 = <strong>3</strong><br>P3 = 20 − 8 = <strong>12</strong><br>P4 = 18 − 4 = <strong>14</strong><br><br>Average Waiting Time = (9 + 3 + 12 + 14) / 4 = 38 / 4 = <strong>9.50 ms</strong><br>Average Turnaround Time = (14 + 6 + 20 + 18) / 4 = 58 / 4 = <strong>14.50 ms</strong><br><em>Check:</em> 9.50 + 5 = 14.50 ✓<br><br><strong>But look at response time</strong> (first time each process ran):<br>P1 = 0, P2 = 3, P3 = 6, P4 = 9 → average = 18 / 4 = <strong>4.50 ms</strong><br>Under FCFS the response times were 0, 5, 8, 16 → average = <strong>7.25 ms</strong>.<br>So RR is worse on waiting time but much better on response time. That is the whole trade-off.",
+      "mistake": "Two classic errors. (1) Putting a preempted process at the FRONT of the queue — it must go to the back. (2) Giving a process a full quantum when it only needs part of it: if 2 ms of burst remain and the quantum is 3 ms, it runs only 2 ms and then leaves the CPU immediately.",
+      "examAnswer": "Round Robin is a preemptive scheduling algorithm designed for time-sharing systems, in which each process is allocated a fixed time quantum of the processor. If a process does not complete within its quantum it is preempted and placed at the tail of the ready queue, and the processor is given to the next process. Round Robin guarantees a bounded response time and is free from starvation, but it generally yields a higher average turnaround time than Shortest Job First. Its performance depends critically on the size of the time quantum: an excessively large quantum degenerates into First Come First Serve, whereas an excessively small quantum causes the context-switching overhead to dominate.",
+      "remember": "Big quantum → becomes FCFS. Tiny quantum → drowns in context switches. Preempted process goes to the BACK.",
+      "why": "Round Robin is the most commonly asked numerical in this unit, and the quantum trade-off is the most commonly asked theory follow-up.",
+      "practice": "Processes P1 = 4, P2 = 5, P3 = 2, P4 = 1 all arrive at time 0 in that order. Draw the Round Robin Gantt chart for quantum = 2 and find the average waiting time."
+    },
+    {
+      "title": "Highest Response Ratio Next (HRRN)",
+      "teacher": "SJF has one ugly flaw — a big job can wait forever. So somebody asked a clever question: what if waiting itself slowly increased your priority? Wait long enough and you must get your turn. That simple idea is HRRN.",
+      "explain": "<strong>HRRN</strong> is a non-preemptive algorithm that, whenever the CPU becomes free, computes a <strong>response ratio</strong> for every waiting process and picks the highest one. The formula is <strong>Response Ratio = (W + S) / S</strong>, where W is how long the process has already waited and S is its service (burst) time. Because W keeps growing, no process can starve.",
+      "keyPoints": [
+        "Formula: <strong>Response Ratio = (Waiting time + Service time) / Service time</strong>.",
+        "An equivalent form is <strong>1 + (W / S)</strong> — useful for quick mental checks.",
+        "Non-preemptive: ratios are computed only when the CPU becomes free.",
+        "The minimum possible ratio is <strong>1</strong> (a process that has not waited at all).",
+        "Short jobs get a high ratio quickly (small S), so HRRN still favours short jobs like SJF.",
+        "Long jobs get a rising ratio as W grows, so they <strong>cannot starve</strong> — aging is built into the formula.",
+        "It still needs the service time S to be known or estimated, exactly like SJF.",
+        "Designed as a compromise between FCFS (fair) and SJF (efficient)."
+      ],
+      "subtopics": [
+        {
+          "title": "Reading the formula correctly",
+          "text": "In (W + S) / S, the numerator W + S is what the turnaround time <em>would be</em> if the process started right now, and the denominator S is the work it actually needs. So the ratio is really 'how much total time will this cost me for each unit of useful work'. A high ratio means the process has been punished a lot relative to its size — so serve it."
+        },
+        {
+          "title": "How it kills starvation",
+          "text": "Take a long job with S = 100. At first W = 0 and the ratio is only 1.0, so short jobs beat it. But after waiting 400 units, its ratio becomes (400 + 100) / 100 = 5.0, which beats a fresh 2-unit job whose ratio is only 1.0. Waiting, by itself, eventually wins. This is exactly the aging idea written as a formula."
+        },
+        {
+          "title": "The order of work in a numerical",
+          "text": "Recompute the ratios at every point where the CPU becomes free — <em>only</em> for processes that have already arrived by that moment. Do not include a process that has not arrived yet, and do not recompute in the middle of a running process, because HRRN is non-preemptive. Write the ratio values in your answer sheet; examiners give marks for the working, not just the final Gantt chart."
+        }
+      ],
+      "realLife": "A good doctor's clinic: normally the quickest cases go first, but the receptionist keeps noting how long each patient has been sitting. Somebody who has waited three hours gets called even though his case is long — because waiting itself has earned him priority.",
+      "worked": "<strong>Example</strong><br><strong>Process&nbsp;&nbsp;Arrival&nbsp;&nbsp;Burst (S)</strong><br>P1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3<br>P2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6<br>P3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4<br>P4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5<br><br><strong>Decision at t = 0</strong> — only P1 has arrived, so run P1 from 0 to 3.<br><br><strong>Decision at t = 3</strong> — arrived and waiting: P2 (came at 2), P3 (came at 3).<br>P2: W = 3 − 2 = 1, S = 6 → RR = (1 + 6) / 6 = 7/6 = <strong>1.167</strong><br>P3: W = 3 − 3 = 0, S = 4 → RR = (0 + 4) / 4 = <strong>1.000</strong><br>Highest is P2 → run P2 from 3 to 9.<br><br><strong>Decision at t = 9</strong> — waiting: P3 (came at 3), P4 (came at 4).<br>P3: W = 9 − 3 = 6, S = 4 → RR = (6 + 4) / 4 = 10/4 = <strong>2.50</strong><br>P4: W = 9 − 4 = 5, S = 5 → RR = (5 + 5) / 5 = 10/5 = <strong>2.00</strong><br>Highest is P3 → run P3 from 9 to 13.<br><br><strong>Decision at t = 13</strong> — only P4 left → run P4 from 13 to 18.<br><br><strong>Gantt chart</strong>:<br><code>| P1 | P2  | P3 | P4 |</code><br><code>0....3.....9...13...18</code><br><br><strong>Completion:</strong> P1 = 3, P2 = 9, P3 = 13, P4 = 18<br><strong>Turnaround = Completion − Arrival:</strong><br>P1 = 3 − 0 = 3 · P2 = 9 − 2 = 7 · P3 = 13 − 3 = 10 · P4 = 18 − 4 = 14<br><strong>Waiting = TAT − Burst:</strong><br>P1 = 3 − 3 = <strong>0</strong> · P2 = 7 − 6 = <strong>1</strong> · P3 = 10 − 4 = <strong>6</strong> · P4 = 14 − 5 = <strong>9</strong><br><br>Average Waiting Time = (0 + 1 + 6 + 9) / 4 = 16 / 4 = <strong>4.00 units</strong><br>Average Turnaround Time = (3 + 7 + 10 + 14) / 4 = 34 / 4 = <strong>8.50 units</strong><br><em>Check:</em> average burst = (3+6+4+5)/4 = 4.5, and 4.00 + 4.50 = 8.50 ✓",
+      "mistake": "Do not write the formula upside down as S / (W + S) — the ratio must GROW as waiting grows. And do not recompute ratios in the middle of a running process: HRRN is non-preemptive, so ratios are only compared when the CPU actually becomes free.",
+      "examAnswer": "Highest Response Ratio Next is a non-preemptive scheduling algorithm in which, whenever the processor becomes available, the response ratio of every waiting process is computed as (W + S) divided by S, where W denotes the time the process has already spent waiting and S denotes its estimated service time, and the process with the highest ratio is selected. Because short processes possess a small denominator they obtain a high ratio quickly, while long processes accumulate an increasing numerator as they wait. HRRN therefore retains much of the efficiency of Shortest Job First while eliminating starvation, and is regarded as a compromise between First Come First Serve and Shortest Job First.",
+      "remember": "RR = (Waiting + Service) / Service. Wait longer, rank higher. Nobody starves.",
+      "why": "HRRN is the standard answer to 'how can starvation in SJF be avoided?' — a question that appears in both theory and numerical form.",
+      "practice": "P1 (arrival 0, burst 4), P2 (arrival 1, burst 3), P3 (arrival 2, burst 6). Apply HRRN, showing every response ratio you compute, and find the average waiting time."
+    },
+    {
+      "title": "Multilevel Feedback Queues and Performance Comparison",
+      "teacher": "All the algorithms so far had one weakness — they need to be told what kind of job a process is. What if the OS could simply watch a process and figure that out by itself? That is the beautiful idea behind Multilevel Feedback Queues, and it is what your laptop actually uses.",
+      "explain": "A <strong>Multilevel Queue</strong> splits the ready queue into several fixed queues with different priorities. A <strong>Multilevel Feedback Queue (MLFQ)</strong> goes one step further and lets a process <em>move between</em> queues based on its behaviour: a process that uses up its whole quantum is demoted to a lower-priority queue, while one that waits too long is promoted. This way the OS discovers which processes are interactive and which are CPU-hungry, without being told.",
+      "keyPoints": [
+        "Multilevel Queue = several separate queues, each with its own algorithm; a process <strong>cannot</strong> change queue.",
+        "Multilevel <strong>Feedback</strong> Queue = the same, but a process <strong>can</strong> move up or down. That is the only difference.",
+        "Uses a whole quantum → <strong>demoted</strong> (it looks CPU-bound). Blocks for I/O early → stays high (it looks interactive).",
+        "Higher-priority queues get <strong>smaller quanta</strong>; lower queues get larger quanta and usually run FCFS.",
+        "A process in a lower queue runs only when all higher queues are empty.",
+        "<strong>Aging</strong> (periodically promoting long-waiting processes back to the top) is what prevents starvation.",
+        "It is the most general CPU scheduling algorithm — and the most complex to tune.",
+        "Design parameters: number of queues, the algorithm and quantum for each queue, the demotion rule, the promotion rule, and which queue a new process enters."
+      ],
+      "subtopics": [
+        {
+          "title": "A typical three-queue setup",
+          "text": "<strong>Queue 0</strong> — Round Robin, quantum 8 ms, highest priority. <strong>Queue 1</strong> — Round Robin, quantum 16 ms. <strong>Queue 2</strong> — FCFS, lowest priority. A new process enters Queue 0. If it finishes or blocks within 8 ms it is interactive and stays. If it uses the full 8 ms it drops to Queue 1; if it uses the full 16 ms there too, it drops to Queue 2 where it runs in the background whenever the CPU is spare."
+        },
+        {
+          "title": "Why this works so well in practice",
+          "text": "Interactive work — your keystrokes, mouse clicks, a chat app — does a tiny bit of CPU work and then waits for you. So it never uses a full quantum and stays at the top, giving excellent response. A video render or a compile uses every quantum it gets, so it sinks to the bottom, where it still gets plenty of CPU but never blocks your typing. The OS achieved this <em>without knowing anything</em> about the programs."
+        },
+        {
+          "title": "Performance evaluation — the four methods",
+          "text": "How do we actually decide which algorithm is better? <strong>(1) Deterministic modelling</strong> — take a fixed workload and compute the averages, exactly like the worked examples in this unit; simple and exact, but only valid for that one workload. <strong>(2) Queueing models</strong> — describe arrivals and bursts as probability distributions; Little's formula, <em>n = λ × W</em> (average queue length = arrival rate × average waiting time), comes from here. <strong>(3) Simulation</strong> — run a software model of the system on real or generated traces. <strong>(4) Implementation</strong> — code it into a real OS and measure; the most accurate and by far the most expensive."
+        }
+      ],
+      "realLife": "Think of a hospital triage. Everyone starts at the emergency desk (top queue). A patient needing a quick dressing is done in two minutes and never gets moved. A patient who clearly needs three hours of surgery is moved to a scheduled ward — still treated, but not blocking the emergency desk. And nobody is left sitting forever, because a patient waiting too long gets called back up.",
+      "table": {
+        "headers": ["Algorithm", "Preemptive?", "Avg WT on our 4 jobs", "Strength", "Weakness"],
+        "rows": [
+          ["FCFS", "No", "7.25 ms", "Simplest; no starvation", "Convoy effect; poor for interactive use"],
+          ["SJF", "No", "5.50 ms (best)", "Minimum possible average waiting time", "Burst must be predicted; long jobs starve"],
+          ["SRTN", "Yes", "preemptive SJF", "Even better averages than SJF", "Many context switches; starvation"],
+          ["Round Robin (q = 3)", "Yes", "9.50 ms", "Best response time (4.50 ms); perfectly fair", "Higher turnaround; quantum must be tuned"],
+          ["HRRN", "No", "starvation-free", "Efficiency of SJF without starvation", "Still needs service time; non-preemptive"],
+          ["MLFQ", "Yes", "adaptive", "Learns process behaviour by itself", "Many parameters; hardest to tune"]
+        ]
+      },
+      "worked": "<strong>Putting the numbers side by side</strong><br>Same four processes (P1 = 5, P2 = 3, P3 = 8, P4 = 4, all arriving at time 0):<br><br><strong>Algorithm&nbsp;&nbsp;&nbsp;&nbsp;Avg WT&nbsp;&nbsp;&nbsp;&nbsp;Avg TAT&nbsp;&nbsp;&nbsp;&nbsp;Avg Response</strong><br>FCFS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12.25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.25<br>SJF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.50<br>RR (q = 3)&nbsp;&nbsp;&nbsp;&nbsp;9.50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14.50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>4.50</strong><br><br><strong>Read this table carefully — it is the whole point of the unit:</strong><br>· SJF wins on waiting time and turnaround time. It always will — it is mathematically optimal there.<br>· Round Robin <em>loses</em> on both those measures but wins clearly on response time.<br>· So there is <strong>no single best algorithm</strong>. A batch payroll system should use SJF. An interactive lab server should use Round Robin. A general-purpose laptop uses MLFQ, which mixes both.<br><br><em>How the response times were found:</em> the first moment each process ran.<br>FCFS: 0, 5, 8, 16 → 29/4 = 7.25<br>SJF (order P2, P4, P1, P3): P1 = 7, P2 = 0, P3 = 12, P4 = 3 → 22/4 = 5.50<br>RR: 0, 3, 6, 9 → 18/4 = 4.50",
+      "mistake": "The difference between a Multilevel Queue and a Multilevel FEEDBACK Queue is exactly one word: in a plain multilevel queue a process is stuck in its queue forever; only the feedback version lets it move. Losing this distinction loses the whole mark.",
+      "examAnswer": "A multilevel queue scheduling algorithm partitions the ready queue into several separate queues of differing priority, each of which may employ its own scheduling algorithm, and a process is permanently assigned to one queue. A multilevel feedback queue extends this scheme by permitting processes to migrate between queues according to their observed behaviour: a process that consumes its entire time quantum is moved to a lower-priority queue with a larger quantum, whereas a process that waits excessively long may be promoted, a technique known as aging, which prevents starvation. This enables the operating system to distinguish interactive processes from CPU-bound processes automatically, and it is therefore the most general and most widely used scheduling scheme, although it requires the careful tuning of several parameters.",
+      "remember": "Multilevel = fixed queues. Feedback = processes can move. Demoted for greed, promoted for patience.",
+      "why": "MLFQ is what Windows and Linux actually use, and 'compare all scheduling algorithms' is a guaranteed long-answer question — the comparison table above is your whole answer.",
+      "practice": "Explain with a three-queue example how a multilevel feedback queue distinguishes an interactive process from a CPU-bound one, and state how starvation is prevented."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "What is the correct difference between a program and a process?",
+      "options": [
+        "A program is faster than a process",
+        "A program is a passive file on disk; a process is a program in execution",
+        "They are exactly the same thing",
+        "A process is stored on disk and a program in memory"
+      ],
+      "answer": 1,
+      "why": "A program is passive — just instructions in a file. A process is active: loaded in memory, with its own program counter, stack and resources."
+    },
+    {
+      "q": "A running process requests data from the hard disk. Which transition happens immediately?",
+      "options": [
+        "Running → Ready",
+        "Running → Terminated",
+        "Running → Waiting",
+        "Ready → Waiting"
+      ],
+      "answer": 2,
+      "why": "Asking for I/O blocks the process, so it moves Running → Waiting. When the data arrives it goes Waiting → Ready, never straight back to Running."
+    },
+    {
+      "q": "Which of these is NOT stored in the Process Control Block?",
+      "options": [
+        "Program counter",
+        "Process state",
+        "The full source code of the program",
+        "CPU register values"
+      ],
+      "answer": 2,
+      "why": "The PCB stores the process's identity, state, program counter, registers, scheduling, memory and I/O information — not the source code, which is never even loaded."
+    },
+    {
+      "q": "Four processes with bursts 5, 3, 8 and 4 arrive together in that order. What is the average waiting time under FCFS?",
+      "options": [
+        "5.50 ms",
+        "7.25 ms",
+        "9.50 ms",
+        "12.25 ms"
+      ],
+      "answer": 1,
+      "why": "Waiting times are 0, 5, 8, 16. Their sum is 29, and 29 / 4 = 7.25 ms. (12.25 ms is the average turnaround time, not the waiting time.)"
+    },
+    {
+      "q": "Which scheduling algorithm gives the provably minimum average waiting time?",
+      "options": [
+        "First Come First Serve",
+        "Round Robin",
+        "Shortest Job First",
+        "Highest Response Ratio Next"
+      ],
+      "answer": 2,
+      "why": "SJF is optimal for average waiting time. Its problems are that burst time must be predicted, and that long processes can starve."
+    },
+    {
+      "q": "If the Round Robin time quantum is made extremely large, Round Robin behaves exactly like…",
+      "options": [
+        "Shortest Job First",
+        "First Come First Serve",
+        "Highest Response Ratio Next",
+        "Shortest Remaining Time First"
+      ],
+      "answer": 1,
+      "why": "With a huge quantum nobody is ever preempted, so each process runs to completion in arrival order — that is precisely FCFS."
+    },
+    {
+      "q": "In HRRN, a process has waited 6 units and its service time is 4 units. What is its response ratio?",
+      "options": [
+        "1.50",
+        "2.50",
+        "0.40",
+        "10.00"
+      ],
+      "answer": 1,
+      "why": "Response Ratio = (W + S) / S = (6 + 4) / 4 = 10 / 4 = 2.50. Note the ratio can never be less than 1."
+    },
+    {
+      "q": "What is the one thing a Multilevel Feedback Queue allows that a plain Multilevel Queue does not?",
+      "options": [
+        "Using more than one queue",
+        "Giving different priorities to queues",
+        "Letting a process move between queues",
+        "Using Round Robin inside a queue"
+      ],
+      "answer": 2,
+      "why": "Both have several prioritised queues. Only the FEEDBACK version lets a process be demoted or promoted based on its behaviour — that movement is the feedback."
+    },
+    {
+      "q": "During a context switch, how much useful user work is done?",
+      "options": [
+        "None at all — it is pure overhead",
+        "Double the normal amount",
+        "The same as normal execution",
+        "It depends on the scheduling algorithm"
+      ],
+      "answer": 0,
+      "why": "A context switch only saves one process's state and loads another's. No user instructions execute, which is why a very small time quantum is wasteful."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Draw the process state diagram and explain each of the five states and every transition between them in your own words.",
+      "hint": "Do not forget to explain WHY there is no direct arrow from Waiting to Running."
+    },
+    {
+      "q": "What is a Process Control Block? List its contents and explain what a context switch is and why it is considered overhead."
+    },
+    {
+      "q": "Consider four processes with arrival times 0, 1, 2, 3 and burst times 8, 4, 9, 5. Draw the Gantt chart and compute the average waiting time and average turnaround time using (a) FCFS and (b) Shortest Remaining Time Next. Compare the two results.",
+      "hint": "In SRTN, compare the new arrival's burst with the REMAINING time of the running process."
+    },
+    {
+      "q": "Explain Round Robin scheduling. Discuss in detail the effect of the time quantum on its performance, taking one very large and one very small quantum as examples."
+    },
+    {
+      "q": "Explain the Highest Response Ratio Next algorithm with its formula, and describe how a Multilevel Feedback Queue works. State which of the two better suits an interactive laptop and justify your answer."
+    }
+  ]
+};

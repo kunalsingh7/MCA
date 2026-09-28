@@ -226,6 +226,73 @@ header.hero p {
   flex-shrink: 0;
 }
 
+/* ---------- Unit navigation ---------- */
+.unit-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.unit-pill {
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-soft);
+  padding: 7px 15px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.unit-pill:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.unit-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.unit-pill.missing {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.unit-panel {
+  display: none;
+}
+.unit-panel.active {
+  display: block;
+  animation: fadeIn 0.25s ease;
+}
+
+.unit-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 4px;
+  flex-wrap: wrap;
+}
+
+.unit-badge {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 11px;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+}
+
+.unit-name {
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
 /* ---------- Progress bar ---------- */
 .progress-wrap {
   display: flex;

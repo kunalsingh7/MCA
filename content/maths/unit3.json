@@ -1,0 +1,692 @@
+/* Mathematical Foundation (MCA 110) — Unit 3. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.maths = UNITS.maths || [];
+UNITS.maths[2] = {
+  "num": 3,
+  "title": "Propositional Logic and Quantifiers",
+  "problem": "Everyday language is full of 'maybe', 'probably' and 'it depends'. A computer cannot work with that. An <code>if</code> statement must decide TRUE or FALSE, with no arguing, every single time.",
+  "solution": "Propositional logic strips a sentence down to true or false, gives us five exact connectives and a truth table to settle any argument mechanically. Predicates and quantifiers then extend this to statements about 'all' and 'some'.",
+  "objectives": [
+    "Decide whether a given sentence is a proposition, and explain why a question or command is not",
+    "Write and complete truth tables for ¬, ∧, ∨, → and ↔",
+    "State exactly when p → q is false, and apply it without hesitation",
+    "Classify a compound proposition as a tautology, a contradiction or a contingency",
+    "Apply De Morgan's laws and the other standard laws in the algebra of propositions",
+    "Prove a logical equivalence or a logical implication using a complete truth table",
+    "Write the converse, inverse and contrapositive of a conditional, and identify which is equivalent",
+    "Explain the difference between a proposition and a predicate, and negate statements using ∀ and ∃"
+  ],
+  "topics": [
+    {
+      "title": "What is a Proposition?",
+      "teacher": "Let me ask you something. 'Bhopal is in Madhya Pradesh' — is that true or false? Easy, true. Now: 'Please close the window.' Is THAT true or false? You cannot answer, can you? That single difference is where this whole unit begins.",
+      "explain": "A <strong>proposition</strong> (or statement) is a <strong>declarative sentence which is either true or false, but not both</strong>. Its truth value is written T (or 1) for true and F (or 0) for false. Questions, commands, requests and exclamations are NOT propositions, because they simply cannot be called true or false.",
+      "keyPoints": [
+        "A proposition must be a <strong>declarative</strong> sentence (it declares something).",
+        "It must have exactly one truth value: <strong>T or F, never both, never neither</strong>.",
+        "A FALSE sentence is still a proposition — '2 + 2 = 5' is a perfectly good proposition.",
+        "NOT propositions: questions ('What is your name?'), commands ('Shut the door.'), exclamations ('How nice!'), requests.",
+        "NOT a proposition: 'x + 2 = 5' — the truth depends on x. This is an <strong>open sentence</strong> or predicate.",
+        "NOT a proposition: 'This sentence is false' — it is a paradox, both true and false at once.",
+        "A <strong>simple (atomic)</strong> proposition contains no connective; letters p, q, r stand for them.",
+        "A <strong>compound</strong> proposition is built from simple ones using connectives."
+      ],
+      "subtopics": [
+        {
+          "title": "The one-question test",
+          "text": "Ask yourself: 'can I stick the word TRUE or the word FALSE on the end of this sentence and have it make sense?' 'Delhi is the capital of India — TRUE.' That works, so it is a proposition. 'Close the door — TRUE'? That is nonsense, so it is not a proposition. Use this test every time."
+        },
+        {
+          "title": "False is still fine",
+          "text": "Many students think a proposition has to be a true statement. It does not. '2 + 2 = 5' is definitely a proposition — its truth value is simply F. What matters is that the sentence <em>has</em> a truth value, not which value it has."
+        },
+        {
+          "title": "Open sentences are the tricky case",
+          "text": "'x &gt; 3' cannot be labelled true or false until you know x. Such a sentence is called an open sentence or <strong>predicate</strong>, written P(x). It becomes a proposition as soon as you give x a value (P(5) is true) or attach a quantifier ('for all x, x &gt; 3' is false). We return to this in the last two topics."
+        }
+      ],
+      "realLife": "Your exam answer sheet is full of propositions — every statement you write is marked right or wrong. But the instruction at the top, 'Attempt any five questions', is a command, so it can never be marked true or false. Same page, two completely different kinds of sentence.",
+      "worked": "<strong>Decide which of these are propositions.</strong><br>1. 'Bhopal is the capital of Madhya Pradesh.' → declarative, and true. <strong>Proposition (T)</strong><br>2. '5 + 3 = 9' → declarative, and false. <strong>Proposition (F)</strong> — being false does not matter.<br>3. 'What is the time?' → a question. <strong>Not a proposition</strong><br>4. 'Please submit the assignment.' → a request/command. <strong>Not a proposition</strong><br>5. 'x + 1 = 4' → depends on x. <strong>Not a proposition — it is a predicate P(x)</strong><br>6. 'How beautiful the sunset is!' → an exclamation. <strong>Not a proposition</strong><br>7. 'This statement is false.' → if true it is false, if false it is true. <strong>Not a proposition (a paradox)</strong>",
+      "mistake": "Students reject a sentence as 'not a proposition' just because it is false. Wrong — false statements are propositions too. The only sentences rejected are those that have NO truth value at all: questions, commands, exclamations, open sentences and paradoxes.",
+      "examAnswer": "A proposition, also called a statement, is a declarative sentence which is either true or false, but not both simultaneously. The truth or falsity of a proposition is called its truth value, denoted by T (or 1) and F (or 0) respectively. Sentences which are interrogative, imperative or exclamatory are not propositions, since no truth value can be assigned to them; similarly an open sentence such as x + 1 = 4 is not a proposition, because its truth value depends on the value of the variable. A proposition containing no connective is called a simple or atomic proposition, and one formed by combining simple propositions with logical connectives is called a compound proposition.",
+      "remember": "Proposition = you can label it TRUE or FALSE. Questions and commands cannot be labelled, so they are out.",
+      "why": "Every <code>if</code> condition in a program must evaluate to exactly one of true or false — the computer cannot handle a sentence that has no truth value.",
+      "practice": "For each sentence, say whether it is a proposition and give its truth value if it is: (a) 'Delhi is in India' (b) 'Open your book' (c) '7 is an even number' (d) 'y − 2 = 0'."
+    },
+    {
+      "title": "The Five Logical Connectives and Their Truth Tables",
+      "teacher": "Now we join propositions together — exactly the way you join sentences with 'and', 'or', 'not' in everyday Hindi or English. There are only five joiners to learn, and one small table tells you everything each one does. Learn this table and half of Unit 3 is finished.",
+      "explain": "Logical connectives combine simple propositions into compound ones. The five you must know are <strong>NOT (¬), AND (∧), OR (∨), IMPLIES (→) and IF AND ONLY IF (↔)</strong>. A <strong>truth table</strong> lists every possible combination of truth values and shows the result — with n variables it has <strong>2ⁿ rows</strong>.",
+      "keyPoints": [
+        "<strong>¬p (NOT, negation)</strong> — simply flips the truth value. Only ONE proposition involved.",
+        "<strong>p ∧ q (AND, conjunction)</strong> — true ONLY when both p and q are true.",
+        "<strong>p ∨ q (OR, disjunction)</strong> — false ONLY when both are false. This is inclusive OR.",
+        "<strong>p → q (IMPLIES, conditional)</strong> — false ONLY when p is true and q is false.",
+        "<strong>p ↔ q (IFF, biconditional)</strong> — true when p and q have the SAME truth value.",
+        "A truth table with n variables needs <strong>2ⁿ rows</strong>: 2 variables → 4 rows, 3 variables → 8 rows.",
+        "Order of precedence (strongest first): <strong>¬, then ∧, then ∨, then →, then ↔</strong>.",
+        "Use brackets whenever you are unsure — they cost nothing and prevent wrong answers.",
+        "Only ¬ is a <strong>unary</strong> connective; the other four are <strong>binary</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "AND and OR in plain words",
+          "text": "<strong>AND is strict</strong>: 'I will pass in Maths AND in OS' is true only if both actually happen. One failure makes the whole thing false. <strong>OR is generous</strong>: 'I will have tea OR coffee' is true if you have tea, true if you have coffee, and still true if you have both. In logic, OR always includes the 'both' case unless the question says 'exclusive or'."
+        },
+        {
+          "title": "Filling in the rows in the correct order",
+          "text": "Always list the combinations in the same standard order — TT, TF, FT, FF for two variables. Doing it in a fixed order means you never miss a case, and the examiner can follow your work instantly. For three variables start with TTT and end with FFF, all 8 rows."
+        },
+        {
+          "title": "Precedence, with an example",
+          "text": "¬p ∧ q means (¬p) ∧ q, NOT ¬(p ∧ q) — these give different answers, so the brackets matter. Similarly p ∨ q → r means (p ∨ q) → r, because ∨ binds more tightly than →. When in doubt, write the brackets yourself."
+        }
+      ],
+      "realLife": "Any online form you fill: 'Password must contain a letter AND a number' — both are compulsory. 'Log in with email OR mobile number' — either one is enough, and having both is fine too. The website is literally running ∧ and ∨.",
+      "worked": "<strong>Full truth table for all five connectives (2 variables → 2² = 4 rows).</strong><br><code>p | q | ¬p | p∧q | p∨q | p→q | p↔q</code><br><code>--+---+----+-----+-----+-----+----</code><br><code>T | T |  F |  T  |  T  |  T  |  T</code><br><code>T | F |  F |  F  |  T  |  F  |  F</code><br><code>F | T |  T |  F  |  T  |  T  |  F</code><br><code>F | F |  T |  F  |  F  |  T  |  T</code><br><br><strong>Read each column as a rule:</strong><br>¬p — just the opposite of p.<br>p ∧ q — only one T in the whole column, in the first row. AND is hard to satisfy.<br>p ∨ q — only one F, in the last row. OR is easy to satisfy.<br>p → q — only one F, in the second row (p true, q false). <strong>Memorise this row.</strong><br>p ↔ q — T in rows 1 and 4, exactly where p and q agree.",
+      "table": {
+        "headers": [
+          "p",
+          "q",
+          "¬p",
+          "p ∧ q",
+          "p ∨ q",
+          "p → q",
+          "p ↔ q"
+        ],
+        "rows": [
+          [
+            "T",
+            "T",
+            "F",
+            "T",
+            "T",
+            "T",
+            "T"
+          ],
+          [
+            "T",
+            "F",
+            "F",
+            "F",
+            "T",
+            "F",
+            "F"
+          ],
+          [
+            "F",
+            "T",
+            "T",
+            "F",
+            "T",
+            "T",
+            "F"
+          ],
+          [
+            "F",
+            "F",
+            "T",
+            "F",
+            "F",
+            "T",
+            "T"
+          ]
+        ]
+      },
+      "mistake": "Students write only 3 rows, or list the combinations in a random order and repeat one. Always write 2ⁿ rows in the fixed order TT, TF, FT, FF — a missing row loses marks even if every entry you did write is correct.",
+      "examAnswer": "Logical connectives are operators used to combine propositions into compound propositions. The negation ¬p is true when p is false and false when p is true. The conjunction p ∧ q is true only when both p and q are true. The disjunction p ∨ q is false only when both p and q are false. The conditional p → q is false only when p is true and q is false. The biconditional p ↔ q is true only when p and q have the same truth value. The behaviour of any compound proposition is exhibited by its truth table, which lists all 2ⁿ possible assignments of truth values to its n component propositions.",
+      "remember": "AND needs everything. OR needs anything. NOT flips. IMPLIES fails only on T→F. IFF means 'same'.",
+      "why": "These five connectives are exactly the operators inside every <code>if</code> condition, every database WHERE clause and every digital logic gate you will study.",
+      "practice": "Construct the complete truth table for ¬p ∨ q. Compare its final column with the column for p → q. What do you notice?"
+    },
+    {
+      "title": "The Conditional p → q — The One Everybody Gets Wrong",
+      "teacher": "I am giving this one its own topic because it trips up almost every student, every year. Please read it twice. 'If it rains, I will bring an umbrella.' When exactly have I broken my promise? Think about it before reading on — the answer is the whole topic.",
+      "explain": "The conditional <strong>p → q</strong> (read 'if p then q') is <strong>FALSE in one single case only: when p is TRUE and q is FALSE</strong>. In every other case it is TRUE — including both cases where p is false, which is called <strong>vacuous truth</strong>.",
+      "keyPoints": [
+        "<strong>p → q is FALSE only when p = T and q = F.</strong> Nothing else makes it false.",
+        "p is called the <strong>antecedent</strong> or hypothesis; q is the <strong>consequent</strong> or conclusion.",
+        "If p is FALSE, then p → q is automatically TRUE — this is <strong>vacuous truth</strong>.",
+        "Think of it as a <strong>promise</strong>: it is broken only if the condition happened but the result did not.",
+        "<strong>p → q is logically equivalent to ¬p ∨ q</strong> — a very useful rewriting.",
+        "Also equivalent to its contrapositive <strong>¬q → ¬p</strong>.",
+        "English forms of p → q: 'if p then q', 'p implies q', 'p only if q', 'q if p', 'p is sufficient for q', 'q is necessary for p'.",
+        "p → q does NOT mean p causes q — logic cares only about truth values, not about cause."
+      ],
+      "subtopics": [
+        {
+          "title": "The promise story — the fastest way to remember it",
+          "text": "Say: 'If it rains, I will bring an umbrella.' Case 1: it rains and I bring one — promise kept, T. Case 2: it rains and I do not bring one — promise BROKEN, F. Case 3: it does not rain and I bring one anyway — I did not break anything, T. Case 4: it does not rain and I bring nothing — again nothing broken, T. Exactly one F, in case 2. That is the truth table of p → q."
+        },
+        {
+          "title": "Vacuous truth — why a false p makes it true",
+          "text": "'If the Sun rises in the west, I will give you ₹1000.' Have I lied? No — the Sun never rises in the west, so the condition never triggers and I can never be caught out. A conditional with a false antecedent is true by default. It feels strange but it is completely consistent, and it is a favourite exam question."
+        },
+        {
+          "title": "'Only if' is not the same as 'if'",
+          "text": "'You may enter only if you have an ID card' means enter → has ID. But 'you may enter if you have an ID card' means has ID → enter. The arrow points in opposite directions. Read the words 'if' and 'only if' very carefully — 'p only if q' translates to p → q."
+        }
+      ],
+      "realLife": "Your college notice says: 'If your attendance is below 75%, you will be debarred from the exam.' The rule is broken only in one situation — attendance below 75% AND the student still allowed to sit. If attendance is 90%, the rule says nothing at all about you, so it has not been violated either way.",
+      "worked": "<strong>Truth table of p → q, with the promise 'If it rains (p), I will bring an umbrella (q)'.</strong><br><code>p | q | p → q | What actually happened</code><br><code>--+---+-------+-----------------------</code><br><code>T | T |   T   | It rained, I brought it — promise KEPT</code><br><code>T | F |   F   | It rained, I did NOT bring it — promise BROKEN</code><br><code>F | T |   T   | No rain, I brought it anyway — nothing broken</code><br><code>F | F |   T   | No rain, no umbrella — nothing broken</code><br><br><strong>Only one F in the whole column — row 2.</strong><br><br><strong>Now verify p → q ≡ ¬p ∨ q using a truth table:</strong><br><code>p | q | ¬p | ¬p ∨ q | p → q</code><br><code>--+---+----+--------+------</code><br><code>T | T |  F |   T    |   T</code><br><code>T | F |  F |   F    |   F</code><br><code>F | T |  T |   T    |   T</code><br><code>F | F |  T |   T    |   T</code><br>The last two columns are identical in every row, so <strong>p → q ≡ ¬p ∨ q</strong>. ∎",
+      "mistake": "The biggest error in this whole unit: thinking p → q is false when p is false. It is NOT. A false antecedent makes the conditional TRUE (vacuous truth). Burn this into your memory — <strong>the only F row is T → F</strong>.",
+      "examAnswer": "The conditional statement p → q, read as 'if p then q', is a compound proposition which is false only in the case where p is true and q is false, and is true in all other cases. Here p is called the antecedent or hypothesis and q is called the consequent or conclusion. In particular, if the antecedent p is false then p → q is true irrespective of the truth value of q, a situation described as vacuous truth. The conditional is logically equivalent to ¬p ∨ q and also to its contrapositive ¬q → ¬p. It should be noted that p → q asserts only a relationship between truth values and does not imply any causal connection between p and q.",
+      "remember": "p → q is false ONLY on the T → F row. False p = automatically true. A promise is broken only when the condition happens and the result does not.",
+      "why": "Every rule, every guarantee and every <code>if</code> condition in code is a conditional. Misreading this one row causes wrong answers in logic, in proofs and in programming.",
+      "practice": "Give the truth value of each: (a) 'If 2 + 2 = 4 then Delhi is in India' (b) 'If 2 + 2 = 5 then Delhi is in Pakistan' (c) 'If 2 + 2 = 4 then 3 is even'. Justify each in one line."
+    },
+    {
+      "title": "Tautology, Contradiction and Contingency",
+      "teacher": "Some sentences are true no matter what — 'either it will rain today or it will not'. You cannot lose with that statement. Others are guaranteed false. In logic these have proper names, and finding them is just a matter of reading the last column of a truth table.",
+      "explain": "A compound proposition is a <strong>tautology</strong> if its final column is T in every row, a <strong>contradiction</strong> if it is F in every row, and a <strong>contingency</strong> if the column contains both T and F. Build the truth table, look at the last column, and name it.",
+      "keyPoints": [
+        "<strong>Tautology:</strong> always true, whatever the truth values of the variables. Symbol T.",
+        "<strong>Contradiction (fallacy):</strong> always false. Symbol F.",
+        "<strong>Contingency:</strong> sometimes true and sometimes false — most propositions are of this kind.",
+        "Classic tautology: <strong>p ∨ ¬p</strong> (the law of the excluded middle).",
+        "Classic contradiction: <strong>p ∧ ¬p</strong>.",
+        "The negation of a tautology is a contradiction, and vice versa.",
+        "Other standard tautologies: (p ∧ q) → p, p → (p ∨ q), [(p → q) ∧ p] → q.",
+        "If P ↔ Q is a tautology, then P and Q are <strong>logically equivalent</strong>.",
+        "If P → Q is a tautology, we say P <strong>logically implies</strong> Q, written P ⇒ Q."
+      ],
+      "subtopics": [
+        {
+          "title": "The method — there is only one",
+          "text": "Write all 2ⁿ rows, add one column for each small piece of the formula, work from the inside outwards, and then read the final column. All T means tautology. All F means contradiction. A mixture means contingency. Never try to judge by looking at the formula alone."
+        },
+        {
+          "title": "Why tautologies are so useful",
+          "text": "A tautology is a rule of reasoning that can never fail, so you may use it freely inside any proof. [(p → q) ∧ p] → q is the tautology called <strong>modus ponens</strong>, which is the formal version of 'if the rule holds and the condition is met, the conclusion follows'. Every valid argument you write is built from tautologies like this."
+        },
+        {
+          "title": "Contradictions catch mistakes",
+          "text": "If your working ever produces p ∧ ¬p, something is wrong — that formula is false in every single row. In programming, a condition like <code>(x &gt; 5) && (x &lt; 3)</code> is a contradiction, so the block inside can never run. Compilers actually warn you about this."
+        }
+      ],
+      "realLife": "Before a cricket match a commentator says 'India will either win or not win.' It is a tautology — always true, and completely useless as information. A tautology is guaranteed correct precisely because it tells you nothing new.",
+      "worked": "<strong>Show that [(p → q) ∧ p] → q is a tautology.</strong><br>Two variables, so 2² = 4 rows. Build it column by column.<br><br><code>p | q | p→q | (p→q)∧p | [(p→q)∧p]→q</code><br><code>--+---+-----+---------+-------------</code><br><code>T | T |  T  |    T    |      T</code><br><code>T | F |  F  |    F    |      T</code><br><code>F | T |  T  |    F    |      T</code><br><code>F | F |  T  |    F    |      T</code><br><br><strong>Row by row:</strong><br>Row 1: p→q = T; T ∧ T = T; then T → q(T) = T<br>Row 2: p→q = F (the only F row); F ∧ T = F; then F → q(F) = <strong>T</strong> (false antecedent!)<br>Row 3: p→q = T; T ∧ F = F; then F → T = T<br>Row 4: p→q = T; T ∧ F = F; then F → F = <strong>T</strong><br><br>The last column is <strong>T in every row</strong>, so the proposition is a <strong>tautology</strong>. It is the rule of inference called <em>modus ponens</em>. ∎<br><br><strong>Quick contradiction check:</strong> p ∧ ¬p → when p = T, ¬p = F, so T ∧ F = F; when p = F, ¬p = T, so F ∧ T = F. Always F, hence a <strong>contradiction</strong>.",
+      "table": {
+        "headers": [
+          "",
+          "Tautology",
+          "Contradiction",
+          "Contingency"
+        ],
+        "rows": [
+          [
+            "Final column",
+            "All T",
+            "All F",
+            "Mixture of T and F"
+          ],
+          [
+            "Also called",
+            "Valid formula",
+            "Fallacy",
+            "Contingent formula"
+          ],
+          [
+            "Standard example",
+            "p ∨ ¬p",
+            "p ∧ ¬p",
+            "p ∧ q"
+          ],
+          [
+            "Its negation is a",
+            "Contradiction",
+            "Tautology",
+            "Contingency"
+          ],
+          [
+            "Tells you something new?",
+            "No, always true",
+            "No, always false",
+            "Yes, depends on p and q"
+          ]
+        ]
+      },
+      "mistake": "Do not decide by looking at one or two rows. A formula is a tautology only if EVERY row gives T. Check all 2ⁿ rows before naming it — one missed F row turns a 'tautology' into a contingency and loses the whole answer.",
+      "examAnswer": "A compound proposition which is true for every possible assignment of truth values to its component propositions is called a tautology, one which is false for every such assignment is called a contradiction or fallacy, and one which is true for some assignments and false for others is called a contingency. These are determined by constructing the complete truth table and examining the final column. For example p ∨ ¬p is a tautology and p ∧ ¬p is a contradiction. The negation of a tautology is a contradiction and the negation of a contradiction is a tautology. Furthermore, two propositions P and Q are logically equivalent if and only if P ↔ Q is a tautology, and P logically implies Q if and only if P → Q is a tautology.",
+      "remember": "All T = tautology. All F = contradiction. Mixed = contingency. Always read the LAST column.",
+      "why": "Proving a formula is a tautology is the standard way to prove an argument is valid — in exams, in mathematical proofs and in verifying that program logic is correct.",
+      "practice": "Using a full truth table, determine whether (p ∧ q) → p is a tautology, a contradiction or a contingency."
+    },
+    {
+      "title": "Algebra of Propositions and De Morgan's Laws",
+      "teacher": "You already know how to simplify 2(x + 3) into 2x + 6 in ordinary algebra. Logic has exactly the same kind of rules — you can open brackets, swap sides and cancel. Same skill, new symbols. And De Morgan's laws are the two you will use most.",
+      "explain": "The <strong>algebra of propositions</strong> is a set of standard equivalences that let you rewrite a compound proposition into a simpler one without changing its truth table. The most important are <strong>De Morgan's laws</strong>: <strong>¬(p ∧ q) ≡ ¬p ∨ ¬q</strong> and <strong>¬(p ∨ q) ≡ ¬p ∧ ¬q</strong>.",
+      "keyPoints": [
+        "<strong>Idempotent:</strong> p ∨ p ≡ p, p ∧ p ≡ p.",
+        "<strong>Commutative:</strong> p ∨ q ≡ q ∨ p, p ∧ q ≡ q ∧ p.",
+        "<strong>Associative:</strong> (p ∨ q) ∨ r ≡ p ∨ (q ∨ r), and the same for ∧.",
+        "<strong>Distributive:</strong> p ∧ (q ∨ r) ≡ (p ∧ q) ∨ (p ∧ r), and p ∨ (q ∧ r) ≡ (p ∨ q) ∧ (p ∨ r).",
+        "<strong>Identity:</strong> p ∨ F ≡ p, p ∧ T ≡ p.",
+        "<strong>Domination (null):</strong> p ∨ T ≡ T, p ∧ F ≡ F.",
+        "<strong>Complement:</strong> p ∨ ¬p ≡ T, p ∧ ¬p ≡ F.",
+        "<strong>Double negation (involution):</strong> ¬(¬p) ≡ p.",
+        "<strong>De Morgan:</strong> ¬(p ∧ q) ≡ ¬p ∨ ¬q, and ¬(p ∨ q) ≡ ¬p ∧ ¬q.",
+        "<strong>Absorption:</strong> p ∨ (p ∧ q) ≡ p, p ∧ (p ∨ q) ≡ p.",
+        "<strong>Conditional rewrite:</strong> p → q ≡ ¬p ∨ q."
+      ],
+      "subtopics": [
+        {
+          "title": "De Morgan in everyday words",
+          "text": "'It is NOT true that I passed Maths AND OS' means 'I failed Maths OR I failed OS' — at least one of them went wrong. And 'it is NOT true that I will have tea OR coffee' means 'I will not have tea AND I will not have coffee' — both are ruled out. Push the NOT inside and the connective <strong>flips</strong>: AND becomes OR, OR becomes AND."
+        },
+        {
+          "title": "Duality — learn half, get half free",
+          "text": "Every law comes in a pair. Swap ∧ with ∨ and swap T with F, and a true law turns into another true law. This is the <strong>principle of duality</strong>. So you only ever need to memorise one of each pair and you can reconstruct the other in the exam."
+        },
+        {
+          "title": "How to simplify step by step",
+          "text": "Write the law you are using beside every line, like this: ¬(p ∨ ¬q) ≡ ¬p ∧ ¬(¬q) [De Morgan] ≡ ¬p ∧ q [double negation]. Naming the law on each line is where a large part of the marks sit, so never skip it."
+        }
+      ],
+      "realLife": "A shopping filter says 'show items that are NOT (in stock AND under ₹500)'. By De Morgan that is 'out of stock OR ₹500 and above'. The website's database query does exactly this rewriting to run faster.",
+      "worked": "<strong>Prove De Morgan's first law ¬(p ∧ q) ≡ ¬p ∨ ¬q by truth table.</strong><br><code>p | q | p∧q | ¬(p∧q) | ¬p | ¬q | ¬p ∨ ¬q</code><br><code>--+---+-----+--------+----+----+--------</code><br><code>T | T |  T  |   F    |  F |  F |    F</code><br><code>T | F |  F  |   T    |  F |  T |    T</code><br><code>F | T |  F  |   T    |  T |  F |    T</code><br><code>F | F |  F  |   T    |  T |  T |    T</code><br>Column 4 and column 7 match in every row, so <strong>¬(p ∧ q) ≡ ¬p ∨ ¬q</strong>. ∎<br><br><strong>Now simplify ¬(p ∨ ¬q) using the laws.</strong><br>¬(p ∨ ¬q)<br>≡ ¬p ∧ ¬(¬q) &nbsp;&nbsp;[De Morgan]<br>≡ ¬p ∧ q &nbsp;&nbsp;[Double negation]<br><strong>Answer: ¬p ∧ q</strong><br><br><strong>One more: simplify p ∨ (p ∧ q).</strong><br>≡ (p ∧ T) ∨ (p ∧ q) &nbsp;&nbsp;[Identity]<br>≡ p ∧ (T ∨ q) &nbsp;&nbsp;[Distributive]<br>≡ p ∧ T &nbsp;&nbsp;[Domination]<br>≡ <strong>p</strong> &nbsp;&nbsp;[Identity] — this is the absorption law.",
+      "table": {
+        "headers": [
+          "Law",
+          "With ∨ (OR)",
+          "With ∧ (AND)"
+        ],
+        "rows": [
+          [
+            "Idempotent",
+            "p ∨ p ≡ p",
+            "p ∧ p ≡ p"
+          ],
+          [
+            "Commutative",
+            "p ∨ q ≡ q ∨ p",
+            "p ∧ q ≡ q ∧ p"
+          ],
+          [
+            "Associative",
+            "(p ∨ q) ∨ r ≡ p ∨ (q ∨ r)",
+            "(p ∧ q) ∧ r ≡ p ∧ (q ∧ r)"
+          ],
+          [
+            "Distributive",
+            "p ∨ (q ∧ r) ≡ (p∨q) ∧ (p∨r)",
+            "p ∧ (q ∨ r) ≡ (p∧q) ∨ (p∧r)"
+          ],
+          [
+            "Identity",
+            "p ∨ F ≡ p",
+            "p ∧ T ≡ p"
+          ],
+          [
+            "Domination",
+            "p ∨ T ≡ T",
+            "p ∧ F ≡ F"
+          ],
+          [
+            "Complement",
+            "p ∨ ¬p ≡ T",
+            "p ∧ ¬p ≡ F"
+          ],
+          [
+            "De Morgan",
+            "¬(p ∨ q) ≡ ¬p ∧ ¬q",
+            "¬(p ∧ q) ≡ ¬p ∨ ¬q"
+          ],
+          [
+            "Absorption",
+            "p ∨ (p ∧ q) ≡ p",
+            "p ∧ (p ∨ q) ≡ p"
+          ]
+        ]
+      },
+      "mistake": "The most common De Morgan error is forgetting to flip the connective: writing ¬(p ∧ q) ≡ ¬p ∧ ¬q. Wrong. The NOT distributes onto both parts AND the ∧ turns into ∨. Negate both, then flip the joiner.",
+      "examAnswer": "The algebra of propositions consists of a set of standard logical equivalences which permit a compound proposition to be replaced by a simpler one having the same truth table. These include the idempotent laws p ∨ p ≡ p and p ∧ p ≡ p, the commutative and associative laws, the distributive laws p ∧ (q ∨ r) ≡ (p ∧ q) ∨ (p ∧ r) and p ∨ (q ∧ r) ≡ (p ∨ q) ∧ (p ∨ r), the identity laws p ∨ F ≡ p and p ∧ T ≡ p, the complement laws p ∨ ¬p ≡ T and p ∧ ¬p ≡ F, the law of double negation ¬(¬p) ≡ p, the absorption laws, and De Morgan's laws ¬(p ∧ q) ≡ ¬p ∨ ¬q and ¬(p ∨ q) ≡ ¬p ∧ ¬q. Each law may be verified by constructing the corresponding truth table, and the laws occur in dual pairs obtained by interchanging ∨ with ∧ and T with F.",
+      "remember": "De Morgan: break the bracket, negate both, FLIP the joiner. AND ↔ OR.",
+      "why": "These laws let you simplify long conditions in code and in database queries, and they are the same laws used to minimise Boolean circuits in digital electronics.",
+      "practice": "Use the laws of the algebra of propositions to simplify ¬(¬p ∧ q), naming the law used at each step. Then verify your answer with a truth table."
+    },
+    {
+      "title": "Logical Equivalence and Logical Implication",
+      "teacher": "Two sentences can look completely different and still say exactly the same thing — like 'I am not unhappy' and 'I am happy'. In logic we can PROVE that, mechanically, with a truth table. No arguing, no opinion.",
+      "explain": "Two propositions P and Q are <strong>logically equivalent</strong> (written P ≡ Q) if they have <strong>identical truth tables</strong> — equivalently, if P ↔ Q is a tautology. P <strong>logically implies</strong> Q (written P ⇒ Q) if <strong>P → Q is a tautology</strong>, that is, Q is true whenever P is true.",
+      "keyPoints": [
+        "<strong>P ≡ Q</strong> means their final truth-table columns match in every row.",
+        "P ≡ Q holds if and only if <strong>P ↔ Q is a tautology</strong>.",
+        "<strong>P ⇒ Q</strong> means P → Q is a tautology — Q is never false while P is true.",
+        "≡ and ⇒ are <strong>not connectives</strong>; they are statements ABOUT propositions (metalogic). ↔ and → are the connectives.",
+        "Equivalence works both ways; implication works one way only.",
+        "P ≡ Q is the same as having both P ⇒ Q and Q ⇒ P.",
+        "Standard equivalence: <strong>p → q ≡ ¬p ∨ q</strong>.",
+        "Standard implications: p ∧ q ⇒ p (simplification); p ⇒ p ∨ q (addition).",
+        "<strong>Modus ponens:</strong> (p → q) ∧ p ⇒ q. <strong>Modus tollens:</strong> (p → q) ∧ ¬q ⇒ ¬p.",
+        "<strong>Hypothetical syllogism:</strong> (p → q) ∧ (q → r) ⇒ (p → r)."
+      ],
+      "subtopics": [
+        {
+          "title": "How to prove an equivalence — two accepted methods",
+          "text": "<strong>Method 1 (truth table):</strong> build a column for each side and show the two columns are identical row by row. Always safe, always accepted. <strong>Method 2 (algebraic):</strong> start from one side and use the laws of the algebra of propositions, naming each law, until you reach the other side. Use method 1 when the formula is short, method 2 when it has three or more variables and the table would be long."
+        },
+        {
+          "title": "Implication versus equivalence — one arrow or two",
+          "text": "p ∧ q ⇒ p is true: if both hold, certainly p holds. But the reverse, p ⇒ p ∧ q, is false — p being true tells us nothing about q. So this is an implication in one direction only, not an equivalence. Never upgrade a one-way implication into an equivalence."
+        },
+        {
+          "title": "Modus ponens and modus tollens in real reasoning",
+          "text": "<strong>Modus ponens:</strong> 'If it rains the match is cancelled. It rained. Therefore the match was cancelled.' <strong>Modus tollens:</strong> 'If it rains the match is cancelled. The match was NOT cancelled. Therefore it did not rain.' Both are valid. But 'the match was cancelled, therefore it rained' is <em>invalid</em> — the match might have been cancelled for some other reason."
+        }
+      ],
+      "realLife": "Two different search queries on a shopping site — 'not (cheap and fast)' and 'expensive or slow' — bring back exactly the same products. The website proved they are logically equivalent, so it runs whichever one is faster.",
+      "worked": "<strong>Prove p → q ≡ ¬q → ¬p (a conditional is equivalent to its contrapositive).</strong><br><code>p | q | p→q | ¬p | ¬q | ¬q → ¬p</code><br><code>--+---+-----+----+----+--------</code><br><code>T | T |  T  |  F |  F |    T</code><br><code>T | F |  F  |  F |  T |    F</code><br><code>F | T |  T  |  T |  F |    T</code><br><code>F | F |  T  |  T |  T |    T</code><br><br><strong>Row 2 explained:</strong> ¬q = T and ¬p = F, so ¬q → ¬p is T → F = <strong>F</strong> — matching p → q = F. ✔<br><strong>Row 4 explained:</strong> ¬q = T and ¬p = T, so T → T = <strong>T</strong>. ✔<br><br>Column 3 and column 6 are identical in all four rows, therefore <strong>p → q ≡ ¬q → ¬p</strong>. ∎<br><br><strong>Check the implication p ∧ q ⇒ p:</strong> is (p ∧ q) → p a tautology?<br>Row TT: (T) → T = T · Row TF: (F) → T = T · Row FT: (F) → F = T · Row FF: (F) → F = T<br>All T, so yes — <strong>p ∧ q logically implies p</strong>.",
+      "mistake": "Do not confuse the connective → with the statement ⇒. p → q is a proposition that can be true or false. P ⇒ Q is a claim that P → Q is a tautology, i.e. true in every row. Same for ↔ and ≡. Examiners look for this distinction.",
+      "examAnswer": "Two propositions P and Q are said to be logically equivalent, written P ≡ Q, if they possess identical truth tables, that is, if they have the same truth value for every possible assignment of truth values to their component propositions. Equivalently, P ≡ Q if and only if the biconditional P ↔ Q is a tautology. A proposition P is said to logically imply a proposition Q, written P ⇒ Q, if the conditional P → Q is a tautology, so that Q is true whenever P is true. Logical equivalence is therefore a two-way relation, holding if and only if both P ⇒ Q and Q ⇒ P, whereas logical implication holds in one direction only. Standard examples include p → q ≡ ¬p ∨ q, the equivalence of a conditional with its contrapositive, and the implication p ∧ q ⇒ p.",
+      "remember": "≡ means the two columns match everywhere. ⇒ means the arrow-formula is a tautology. Equivalence is two-way, implication is one-way.",
+      "why": "Proving equivalences is how compilers optimise conditions, how database engines rewrite queries, and how you shorten a long <code>if</code> without changing its behaviour.",
+      "practice": "Using truth tables, show that ¬(p → q) ≡ p ∧ ¬q. State in words what this equivalence is saying."
+    },
+    {
+      "title": "Converse, Inverse and Contrapositive",
+      "teacher": "Take one sentence — 'if it rains, the ground gets wet' — and jumble it three different ways. Two of the jumbles change the meaning completely. Only one keeps it. Knowing which one is a guaranteed exam question, and it is worth easy marks.",
+      "explain": "From a conditional <strong>p → q</strong> we form three related statements: the <strong>converse q → p</strong>, the <strong>inverse ¬p → ¬q</strong>, and the <strong>contrapositive ¬q → ¬p</strong>. Only the <strong>contrapositive is logically equivalent to the original</strong>. The converse and the inverse are equivalent to each other, but not to p → q.",
+      "keyPoints": [
+        "Original (conditional): <strong>p → q</strong>.",
+        "<strong>Converse:</strong> q → p — the arrow is reversed.",
+        "<strong>Inverse:</strong> ¬p → ¬q — both parts are negated, arrow unchanged.",
+        "<strong>Contrapositive:</strong> ¬q → ¬p — reversed AND both negated.",
+        "<strong>p → q ≡ ¬q → ¬p</strong> — original and contrapositive are equivalent. ✔",
+        "<strong>q → p ≡ ¬p → ¬q</strong> — converse and inverse are equivalent to each other. ✔",
+        "p → q is NOT equivalent to its converse, and NOT equivalent to its inverse. ✘",
+        "Contrapositive = converse of the inverse = inverse of the converse.",
+        "Proving the contrapositive is a legitimate way to prove the original statement."
+      ],
+      "subtopics": [
+        {
+          "title": "The classic example that makes it obvious",
+          "text": "Original: 'If it rains, the ground is wet.' True. <strong>Converse:</strong> 'If the ground is wet, it rained.' Not necessarily — a water tanker may have passed. <strong>Inverse:</strong> 'If it does not rain, the ground is not wet.' Again not necessarily, same tanker. <strong>Contrapositive:</strong> 'If the ground is not wet, it did not rain.' This must be true — if it had rained, the ground would be wet. Only the contrapositive survives."
+        },
+        {
+          "title": "Why proving the contrapositive is allowed",
+          "text": "Because the two are logically equivalent, proving ¬q → ¬p proves p → q. This is called <strong>proof by contraposition</strong> and it is often much easier. For example, to prove 'if n² is even then n is even', it is simpler to prove 'if n is odd then n² is odd' — just take n = 2k+1 and square it."
+        },
+        {
+          "title": "A quick way to build all three",
+          "text": "Write p → q. For the <strong>converse</strong>, swap only. For the <strong>inverse</strong>, negate only. For the <strong>contrapositive</strong>, swap AND negate. Three mechanical operations — do not try to reason it out in the exam hall, just apply the recipe."
+        }
+      ],
+      "realLife": "Hostel rule: 'If you are a first-year student, you must be in by 8 pm.' The contrapositive — 'if you are not required to be in by 8 pm, you are not a first-year student' — says exactly the same thing. But the converse, 'if you are in by 8 pm you are a first-year student', is clearly wrong; seniors come back early too.",
+      "worked": "<strong>Take p → q: 'If it rains (p), the ground is wet (q).'</strong><br><strong>Converse (q → p):</strong> 'If the ground is wet, then it rained.' — NOT equivalent<br><strong>Inverse (¬p → ¬q):</strong> 'If it does not rain, the ground is not wet.' — NOT equivalent<br><strong>Contrapositive (¬q → ¬p):</strong> 'If the ground is not wet, then it did not rain.' — <strong>EQUIVALENT</strong> ✔<br><br><strong>Truth table proof (all four columns together):</strong><br><code>p | q | p→q | q→p | ¬p→¬q | ¬q→¬p</code><br><code>--+---+-----+-----+-------+------</code><br><code>T | T |  T  |  T  |   T   |   T</code><br><code>T | F |  F  |  T  |   T   |   F</code><br><code>F | T |  T  |  F  |   F   |   T</code><br><code>F | F |  T  |  T  |   T   |   T</code><br><br><strong>Compare the columns:</strong><br>p→q gives T F T T. Contrapositive gives T F T T → <strong>identical, so equivalent</strong> ✔<br>Converse gives T T F T. Inverse gives T T F T → <strong>identical to each other</strong> ✔<br>But T F T T ≠ T T F T, so the original is <strong>not</strong> equivalent to the converse or the inverse (look at rows 2 and 3). ∎",
+      "table": {
+        "headers": [
+          "Name",
+          "Formula",
+          "Made by",
+          "Equivalent to p → q?"
+        ],
+        "rows": [
+          [
+            "Conditional (original)",
+            "p → q",
+            "—",
+            "Yes (itself)"
+          ],
+          [
+            "Converse",
+            "q → p",
+            "Swap only",
+            "No"
+          ],
+          [
+            "Inverse",
+            "¬p → ¬q",
+            "Negate only",
+            "No"
+          ],
+          [
+            "Contrapositive",
+            "¬q → ¬p",
+            "Swap AND negate",
+            "Yes ✔"
+          ]
+        ]
+      },
+      "mistake": "Assuming the converse is automatically true is the single most common reasoning error, in exams and in real life. 'All doctors studied biology' does not mean 'everyone who studied biology is a doctor'. Only the contrapositive is safe.",
+      "examAnswer": "Given a conditional proposition p → q, three related conditionals may be formed. The converse is q → p, obtained by interchanging the antecedent and the consequent. The inverse is ¬p → ¬q, obtained by negating both the antecedent and the consequent. The contrapositive is ¬q → ¬p, obtained by both interchanging and negating them. Of these, only the contrapositive is logically equivalent to the original conditional, that is p → q ≡ ¬q → ¬p, as may be verified by comparing their truth tables. The converse and the inverse are logically equivalent to each other but not to the original statement. Consequently, a conditional statement may validly be proved by proving its contrapositive, a technique known as proof by contraposition.",
+      "remember": "Converse = swap. Inverse = negate. Contrapositive = swap AND negate — and it is the ONLY one equal to the original.",
+      "why": "Mixing up a statement with its converse is the classic logical fallacy, and proof by contraposition is a standard technique you will use throughout mathematics and algorithm analysis.",
+      "practice": "For 'If a number is divisible by 6, then it is divisible by 3', write the converse, inverse and contrapositive. State the truth value of each and say which is equivalent to the original."
+    },
+    {
+      "title": "Predicates and First Order Logic",
+      "teacher": "Propositional logic has one weakness. It cannot express 'every student in this class has a laptop', because the sentence talks about a variable — a student — not a fixed fact. So we upgrade. Predicates are simply propositions with a blank space waiting to be filled.",
+      "explain": "A <strong>predicate</strong> P(x) is a declarative sentence containing one or more variables; it is <strong>not</strong> a proposition until the variables are given values or are quantified. <strong>First order logic</strong> (also called predicate logic) extends propositional logic with predicates, variables and quantifiers, making it far more expressive.",
+      "keyPoints": [
+        "A <strong>predicate</strong> P(x) is a statement whose truth depends on the variable x.",
+        "P(x) becomes a proposition when x is given a value: if P(x) is 'x &gt; 3', then P(5) is T and P(2) is F.",
+        "The set of allowed values of x is the <strong>domain</strong> or universe of discourse.",
+        "Predicates may have several variables: P(x, y) = 'x is taller than y'.",
+        "The number of variables is the <strong>arity</strong> — P(x) is unary, P(x,y) is binary.",
+        "<strong>First order logic = propositional logic + predicates + variables + quantifiers.</strong>",
+        "Propositional logic can only say 'Ram has a laptop'; first order logic can say 'every student has a laptop'.",
+        "First order logic quantifies over <strong>objects</strong> (students, numbers), not over predicates themselves.",
+        "A variable tied to a quantifier is <strong>bound</strong>; one that is not is <strong>free</strong>. A formula with a free variable is still not a proposition."
+      ],
+      "subtopics": [
+        {
+          "title": "Two ways to turn P(x) into a proposition",
+          "text": "Either <strong>substitute</strong> a value — P(5) is now definitely true or definitely false — or <strong>quantify</strong> it, as in 'for all x, P(x)' or 'there exists an x such that P(x)'. Until one of these two things happens, P(x) has no truth value and cannot be a proposition."
+        },
+        {
+          "title": "The domain changes everything",
+          "text": "Take P(x): 'x² ≥ 0'. Over the real numbers, 'for all x, P(x)' is true. Now take Q(x): 'x + 2 = 0'. Over the integers, 'there exists x with Q(x)' is true (x = −2), but over the natural numbers it is false. Always state the domain — a quantified statement is meaningless without it."
+        },
+        {
+          "title": "Why first order logic matters in computing",
+          "text": "Every SQL query is essentially first order logic: <code>SELECT name FROM student WHERE marks &gt; 60</code> is asking for all x in the table such that the predicate marks(x) &gt; 60 holds. Database theory, Prolog and formal program verification are all built directly on predicate logic."
+        }
+      ],
+      "realLife": "A college form has a blank: 'Student ____ has paid the fee.' By itself it is neither true nor false. Fill in 'Priya' and it becomes a proposition you can check against the register. That blank is exactly what a predicate is.",
+      "worked": "<strong>Let the domain be the natural numbers and P(x): 'x is an even number'.</strong><br>P(x) on its own → truth value unknown. <strong>Not a proposition.</strong><br>P(4) → '4 is even' → <strong>TRUE.</strong> Now it IS a proposition.<br>P(7) → '7 is even' → <strong>FALSE.</strong> Still a proposition.<br><br><strong>Now a two-variable predicate.</strong> Let Q(x, y): 'x + y = 10' over the natural numbers.<br>Q(4, 6) → 4 + 6 = 10 → <strong>TRUE</strong><br>Q(3, 5) → 3 + 5 = 8 ≠ 10 → <strong>FALSE</strong><br>Q(x, 6) → still has a free variable x → <strong>not yet a proposition</strong><br><br><strong>Quantifying instead of substituting:</strong><br>'For all x, P(x)' → 'every natural number is even' → <strong>FALSE</strong> (3 is a counter-example)<br>'There exists x such that P(x)' → 'some natural number is even' → <strong>TRUE</strong> (x = 2)<br>Both are now genuine propositions.",
+      "mistake": "Writing that P(x) is a proposition. It is not — it is an open sentence with no truth value. It becomes a proposition only after you substitute a value for x or attach a quantifier to it.",
+      "examAnswer": "A predicate, also called a propositional function or open sentence, is a declarative sentence P(x) containing one or more variables, whose truth value cannot be determined until the variables are assigned values from a specified set called the domain or universe of discourse. Thus a predicate is not itself a proposition, but becomes one either when the variables are replaced by particular elements of the domain, or when they are bound by quantifiers. Predicates may involve several variables, as in P(x, y), in which case the number of variables is called the arity of the predicate. First order logic, or predicate logic, extends propositional logic by admitting predicates, variables and quantifiers, and is therefore able to express general statements about all or some members of a domain, which propositional logic alone cannot express.",
+      "remember": "Predicate = proposition with a blank. Fill the blank or quantify it, and only then does it become true or false.",
+      "why": "Predicate logic is the formal language behind SQL queries, Prolog programs, AI knowledge representation and every formal proof of program correctness.",
+      "practice": "Let the domain be the integers and P(x): 'x &gt; 0'. Give the truth value of P(3), P(−1) and P(0). Explain in one line why P(x) itself is not a proposition."
+    },
+    {
+      "title": "Universal and Existential Quantifiers",
+      "teacher": "Just two symbols left, and they are the two words you use every day: ALL and SOME. 'All students must wear ID cards' versus 'some students forgot their ID card'. Logic writes these as ∀ and ∃. And the really important bit — what happens when you say NO to each of them.",
+      "explain": "The <strong>universal quantifier ∀x P(x)</strong> reads 'for all x, P(x)' and is true only when P(x) holds for <em>every</em> x in the domain. The <strong>existential quantifier ∃x P(x)</strong> reads 'there exists an x such that P(x)' and is true when P(x) holds for <em>at least one</em> x. Negating a quantifier <strong>swaps it and negates the inside</strong>.",
+      "keyPoints": [
+        "<strong>∀ (universal) = 'for all', 'for every', 'each'.</strong> An upside-down A, for All.",
+        "<strong>∃ (existential) = 'there exists', 'some', 'at least one'.</strong> A backward E, for Exists.",
+        "∀x P(x) is TRUE only if P(x) holds for every single x in the domain.",
+        "<strong>One counter-example destroys a ∀ statement.</strong>",
+        "∃x P(x) is TRUE if P(x) holds for at least one x; <strong>one example is enough to prove it</strong>.",
+        "To DISPROVE ∃x P(x) you must show P(x) fails for every x — much harder.",
+        "<strong>¬∀x P(x) ≡ ∃x ¬P(x)</strong> — 'not all' means 'at least one does not'.",
+        "<strong>¬∃x P(x) ≡ ∀x ¬P(x)</strong> — 'none' means 'every one does not'.",
+        "These two rules are De Morgan's laws for quantifiers: <strong>flip the quantifier, negate the inside</strong>.",
+        "The truth value always depends on the <strong>domain</strong> — always state it.",
+        "With mixed quantifiers, ORDER MATTERS: ∀x∃y P(x,y) is not the same as ∃y∀x P(x,y)."
+      ],
+      "subtopics": [
+        {
+          "title": "Proving versus disproving — they are not symmetric",
+          "text": "To <strong>prove</strong> ∀x P(x) you must check every x (or give a general argument). To <strong>disprove</strong> it you need just one counter-example. For ∃x P(x) it is the reverse: one example proves it, but disproving it needs you to rule out every x. Knowing which job you have saves a lot of time in the exam."
+        },
+        {
+          "title": "Negation — the rule students most often get wrong",
+          "text": "The negation of 'all students passed' is NOT 'all students failed'. It is '<strong>at least one</strong> student did not pass'. Symbolically ¬∀x P(x) ≡ ∃x ¬P(x). Similarly, the negation of 'some student cheated' is 'no student cheated', that is '<strong>every</strong> student did not cheat': ¬∃x P(x) ≡ ∀x ¬P(x). Flip the quantifier, then negate what is inside."
+        },
+        {
+          "title": "Why the order of mixed quantifiers matters",
+          "text": "Let the domain be people and L(x,y) mean 'x likes y'. Then ∀x ∃y L(x,y) says 'everybody likes somebody' — each person may like a different person. But ∃y ∀x L(x,y) says 'there is one particular person whom everybody likes'. The second is a much stronger claim. Never reorder quantifiers of different types."
+        }
+      ],
+      "realLife": "Hostel notice: 'All students must show an ID card at the gate.' That is ∀. If even one student gets in without one, the statement is false. Another notice: 'Some students have paid the mess bill.' That is ∃ — showing one paid receipt is enough to prove it.",
+      "worked": "<strong>Let the domain be the natural numbers {1, 2, 3, …} and P(x): 'x &gt; 0'.</strong><br>∀x P(x) → 'every natural number is greater than 0' → <strong>TRUE</strong><br>∃x P(x) → 'some natural number is greater than 0' → <strong>TRUE</strong> (x = 1 works)<br><br><strong>Now Q(x): 'x is even', same domain.</strong><br>∀x Q(x) → 'every natural number is even' → <strong>FALSE</strong>, counter-example x = 3<br>∃x Q(x) → 'some natural number is even' → <strong>TRUE</strong>, example x = 2<br><br><strong>Negating quantified statements — the main exam skill.</strong><br>Statement: 'All students in this class passed Maths.' → ∀x P(x)<br>Negation: ¬∀x P(x) ≡ ∃x ¬P(x)<br>In words: '<strong>There is at least one student in this class who did not pass Maths.</strong>'<br><em>WRONG negation:</em> 'All students failed Maths.' ✘<br><br>Statement: 'Some student in this class owns a car.' → ∃x C(x)<br>Negation: ¬∃x C(x) ≡ ∀x ¬C(x)<br>In words: '<strong>No student in this class owns a car</strong>', that is, every student does not own a car.<br><br><strong>The pattern:</strong> ∀ becomes ∃, ∃ becomes ∀, and the inside gets a ¬.",
+      "table": {
+        "headers": [
+          "",
+          "Universal ∀",
+          "Existential ∃"
+        ],
+        "rows": [
+          [
+            "Read as",
+            "For all / for every",
+            "There exists / for some"
+          ],
+          [
+            "∀x P(x) / ∃x P(x) is true when",
+            "P(x) true for EVERY x",
+            "P(x) true for AT LEAST ONE x"
+          ],
+          [
+            "To prove it",
+            "Check every x",
+            "Give one example"
+          ],
+          [
+            "To disprove it",
+            "Give one counter-example",
+            "Show it fails for every x"
+          ],
+          [
+            "Its negation",
+            "¬∀x P(x) ≡ ∃x ¬P(x)",
+            "¬∃x P(x) ≡ ∀x ¬P(x)"
+          ],
+          [
+            "Everyday example",
+            "All students wear ID cards",
+            "Some students forgot the ID card"
+          ]
+        ]
+      },
+      "mistake": "The negation of 'all passed' is 'at least one did not pass', NOT 'all failed'. Students write the opposite statement instead of the proper negation and lose full marks. Remember: flip the quantifier, negate the inside — never just negate the inside on its own.",
+      "examAnswer": "Quantifiers are used to express the extent to which a predicate is true over a domain. The universal quantifier, denoted ∀, when applied to a predicate P(x) gives the statement ∀x P(x), read 'for all x, P(x)', which is true if and only if P(x) is true for every element x of the domain; a single counter-example is sufficient to establish its falsity. The existential quantifier, denoted ∃, gives the statement ∃x P(x), read 'there exists an x such that P(x)', which is true if and only if P(x) is true for at least one element of the domain. The negations of quantified statements are governed by the laws ¬∀x P(x) ≡ ∃x ¬P(x) and ¬∃x P(x) ≡ ∀x ¬P(x), so that in negating a quantified statement the quantifier is interchanged and the predicate is negated. The truth value of a quantified statement always depends on the domain of discourse.",
+      "remember": "∀ = ALL (upside-down A). ∃ = EXISTS (backward E). To negate: FLIP the quantifier and NEGATE the inside.",
+      "why": "Quantifiers appear in every mathematical definition you will meet ('for every ε there exists a δ…'), in every database query and in the formal specification of any algorithm.",
+      "practice": "Write the negation of each, in symbols and in words: (a) 'All students in the class have a laptop' (b) 'Some student scored above 90' (c) ∀x (x² ≥ 0) over the real numbers."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Which of the following is a proposition?",
+      "options": [
+        "What is your name?",
+        "Please close the door.",
+        "2 + 3 = 6",
+        "x + 1 = 4"
+      ],
+      "answer": 2,
+      "why": "'2 + 3 = 6' is declarative and definitely false, so it has a truth value and IS a proposition. Questions and commands have no truth value, and 'x + 1 = 4' depends on x, so it is a predicate."
+    },
+    {
+      "q": "The conditional p → q is FALSE only when…",
+      "options": [
+        "p is false and q is true",
+        "p is true and q is false",
+        "both p and q are false",
+        "both p and q are true"
+      ],
+      "answer": 1,
+      "why": "Think of it as a promise: it is broken only when the condition happens (p true) but the result does not (q false). Every other row is true, including both rows where p is false."
+    },
+    {
+      "q": "The biconditional p ↔ q is true when…",
+      "options": [
+        "p and q have the same truth value",
+        "p is true, whatever q is",
+        "q is false, whatever p is",
+        "always — it is a tautology"
+      ],
+      "answer": 0,
+      "why": "p ↔ q is T in the rows TT and FF, that is, exactly when p and q agree. It is F when they differ."
+    },
+    {
+      "q": "A compound proposition that is false for every assignment of truth values is called a…",
+      "options": [
+        "Tautology",
+        "Contingency",
+        "Contradiction",
+        "Predicate"
+      ],
+      "answer": 2,
+      "why": "All F in the final column means contradiction (also called a fallacy). All T would be a tautology; a mixture would be a contingency."
+    },
+    {
+      "q": "By De Morgan's law, ¬(p ∧ q) is equivalent to…",
+      "options": [
+        "¬p ∧ ¬q",
+        "¬p ∨ ¬q",
+        "p ∨ q",
+        "p → q"
+      ],
+      "answer": 1,
+      "why": "Break the bracket, negate both parts, and FLIP the connective — AND becomes OR. Forgetting to flip is the most common error here."
+    },
+    {
+      "q": "Which of these is logically equivalent to p → q?",
+      "options": [
+        "Its converse, q → p",
+        "Its inverse, ¬p → ¬q",
+        "Its contrapositive, ¬q → ¬p",
+        "None of these"
+      ],
+      "answer": 2,
+      "why": "Only the contrapositive has the same truth table as the original. The converse and inverse are equivalent to each other, but not to p → q."
+    },
+    {
+      "q": "A truth table for a compound proposition with 3 variables has how many rows?",
+      "options": [
+        "3",
+        "6",
+        "8",
+        "9"
+      ],
+      "answer": 2,
+      "why": "The number of rows is 2ⁿ where n is the number of variables. For n = 3 that is 2³ = 8 rows."
+    },
+    {
+      "q": "The negation ¬∀x P(x) is equivalent to…",
+      "options": [
+        "∀x ¬P(x)",
+        "∃x ¬P(x)",
+        "¬∃x P(x)",
+        "∀x P(x)"
+      ],
+      "answer": 1,
+      "why": "Flip the quantifier and negate the inside. 'Not all x satisfy P' means 'at least one x does not satisfy P'. It does NOT mean 'no x satisfies P'."
+    },
+    {
+      "q": "The sentence 'x + 2 = 7' over the integers is…",
+      "options": [
+        "A tautology",
+        "A contradiction",
+        "A predicate, not a proposition",
+        "An existential quantifier"
+      ],
+      "answer": 2,
+      "why": "Its truth value depends on x, so it has no fixed truth value. It is an open sentence or predicate P(x), and becomes a proposition only when x is given a value or quantified."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Define a proposition. Give three sentences that are propositions and three that are not, explaining in one line why each of the non-examples fails."
+    },
+    {
+      "q": "Construct the complete truth table for the five connectives ¬, ∧, ∨, → and ↔ on two propositions p and q. State clearly the single case in which p → q is false and explain it using an everyday promise.",
+      "hint": "Four rows in the standard order TT, TF, FT, FF. The only F for p → q is the second row."
+    },
+    {
+      "q": "Using a truth table, prove that [(p → q) ∧ p] → q is a tautology. Then state, with reasons, whether p ∧ ¬p is a tautology, a contradiction or a contingency."
+    },
+    {
+      "q": "State De Morgan's laws for propositions and prove one of them by a truth table. Then simplify ¬(¬p ∨ q), naming the law used at each step."
+    },
+    {
+      "q": "For the statement 'If a number is divisible by 4, then it is divisible by 2', write its converse, inverse and contrapositive, give the truth value of each, and state which one is logically equivalent to the original and why."
+    }
+  ]
+};

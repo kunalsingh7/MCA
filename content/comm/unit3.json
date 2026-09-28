@@ -1,0 +1,591 @@
+/* Technical Communication (MCA 112) — Unit 3. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.comm = UNITS.comm || [];
+UNITS.comm[2] = {
+  "num": 3,
+  "title": "Developing Writing Skills",
+  "problem": "You know the answer in your head, but on paper it comes out as long, tangled sentences that the examiner has to read twice. In an email, the reader misses your actual request because it is buried in paragraph three.",
+  "solution": "Writing is a set of rules you can learn, not a talent you are born with. This unit gives you those rules — for sentences, for paragraphs, for précis, for essays, for the web — with real before-and-after rewrites you can copy.",
+  "objectives": [
+    "List and explain the elements of effective writing",
+    "Rewrite a wordy or passive sentence into a clear, active, concise one",
+    "Build a paragraph with a topic sentence, supporting sentences and a concluding sentence",
+    "Use linking words correctly to create coherence between sentences",
+    "Explain the art of condensation and why it is a professional skill",
+    "Write a précis following the standard rules of length, person, tense and title",
+    "Structure an essay with an introduction, body and conclusion, and name the main essay types",
+    "Adapt writing for the web using scannable, front-loaded, plain-language style",
+    "Use AI tools responsibly as a drafting and checking aid, not a replacement for your thinking"
+  ],
+  "topics": [
+    {
+      "title": "Elements of Effective Writing",
+      "teacher": "Think of the last message you received that annoyed you — too long, unclear, or you had to reply asking 'what exactly do you need?' Effective writing is simply writing that never makes your reader do that.",
+      "explain": "Effective writing has a small set of qualities: <strong>clarity</strong>, <strong>coherence</strong>, <strong>conciseness</strong>, <strong>correctness</strong>, and an <strong>appropriate tone</strong> matched to the audience. Good writing is not decorated writing — it is writing the reader understands completely on the first reading.",
+      "keyPoints": [
+        "<strong>Clarity</strong> — only one possible meaning; simple, exact words.",
+        "<strong>Coherence</strong> — ideas flow in logical order and connect smoothly.",
+        "<strong>Conciseness</strong> — every unnecessary word removed, no necessary fact lost.",
+        "<strong>Correctness</strong> — accurate facts, spelling, grammar and punctuation.",
+        "<strong>Appropriate tone</strong> — formal for a report, warm for a thank-you note.",
+        "<strong>Audience awareness</strong> — write for the reader's knowledge level, not yours.",
+        "<strong>Completeness</strong> — the reader should not need to ask a follow-up question.",
+        "<strong>Purpose</strong> — decide before writing: to inform, request, persuade or instruct.",
+        "Always revise. A first draft is never the final draft."
+      ],
+      "subtopics": [
+        {
+          "title": "Know your reader before your first sentence",
+          "text": "The same information is written three different ways for three readers. To a professor: formal and detailed. To a teammate: direct and technical. To a non-technical client: plain words with no jargon. Ask three questions first — Who will read this? What do they already know? What do I want them to do after reading? Everything else follows from those answers."
+        },
+        {
+          "title": "Tone: formal, semi-formal and informal",
+          "text": "<strong>Formal</strong> writing avoids contractions and slang, and uses complete sentences — used for reports, applications and official letters. <strong>Semi-formal</strong> is the normal register of workplace email: polite, direct, contractions allowed. <strong>Informal</strong> is for friends. The commonest professional error is writing to a manager in the tone you use with friends, or writing to a friendly colleague like a legal notice."
+        },
+        {
+          "title": "The revision habit",
+          "text": "Professional writers do not write well — they revise well. After the first draft, read it once for meaning, once for unnecessary words, and once aloud for awkward sentences. Reading aloud is surprisingly effective: if you run out of breath in a sentence, it is too long, and if you stumble, the reader will too."
+        }
+      ],
+      "realLife": "Compare 'Sir, kindly do the needful at the earliest' with 'Sir, could you please approve my leave application by Friday? I have attached the form.' The second one is clear, complete and courteous — and it actually gets acted upon.",
+      "table": {
+        "headers": [
+          "Element",
+          "What It Means",
+          "Quick Test"
+        ],
+        "rows": [
+          [
+            "Clarity",
+            "One possible meaning only",
+            "Could a tired reader misread this?"
+          ],
+          [
+            "Coherence",
+            "Ideas connect in logical order",
+            "Does each sentence follow the last?"
+          ],
+          [
+            "Conciseness",
+            "No wasted words",
+            "Can I cut a word without losing meaning?"
+          ],
+          [
+            "Correctness",
+            "Facts, grammar, spelling accurate",
+            "Have I proofread it once more?"
+          ],
+          [
+            "Tone",
+            "Suited to the reader and purpose",
+            "Would the reader feel respected?"
+          ],
+          [
+            "Completeness",
+            "Nothing important missing",
+            "Will they have to ask me anything?"
+          ]
+        ]
+      },
+      "mistake": "Using big, difficult words does not make writing look intelligent — it makes it look like the writer is hiding something. 'Utilise' is not better than 'use'; 'at this point in time' is not better than 'now'.",
+      "examAnswer": "The elements of effective writing are clarity, coherence, conciseness, correctness, appropriate tone and audience awareness. Clarity requires the use of simple and exact words so that the text carries only one possible meaning. Coherence requires that ideas be arranged in a logical order and connected smoothly. Conciseness requires the removal of unnecessary words without the loss of necessary information. Correctness requires accuracy of facts, grammar, spelling and punctuation. An appropriate tone ensures that the level of formality suits the reader and the purpose, while audience awareness ensures that the content is pitched at the reader's level of knowledge. Effective writing is further achieved through careful revision, since a first draft is rarely adequate.",
+      "remember": "Clear, Coherent, Concise, Correct, Courteous tone — write for the reader, not for yourself.",
+      "why": "Every element in this list is a marking point in a definition question, and every one of them is something your future manager will silently judge you on.",
+      "practice": "Take any message you sent this week and rewrite it to satisfy all six elements in the table."
+    },
+    {
+      "title": "Writing Effective Sentences",
+      "teacher": "Most weak writing is not weak ideas — it is good ideas trapped inside bad sentences. Fix the sentence and the idea suddenly shines. Here are four repairs that work almost every time.",
+      "explain": "An effective sentence carries <strong>one main idea</strong>, prefers the <strong>active voice</strong>, puts words in the natural order, and contains no unnecessary words. Short sentences are not childish — in technical writing they are a sign of skill.",
+      "keyPoints": [
+        "<strong>One idea per sentence</strong> — split a long sentence at every 'and' that joins two full ideas.",
+        "<strong>Prefer active voice</strong> — 'The team completed the project', not 'The project was completed by the team'.",
+        "Active voice is shorter, clearer and names who is responsible.",
+        "Passive voice is acceptable when the doer is unknown or unimportant.",
+        "<strong>Correct word order</strong> — keep the subject, verb and object close together.",
+        "Place modifiers next to the word they describe, or the meaning changes.",
+        "<strong>Cut wordiness</strong> — 'due to the fact that' becomes 'because'.",
+        "Aim for an average of 15 to 20 words per sentence.",
+        "Vary sentence length so the writing does not sound mechanical.",
+        "Use positive form: 'remember to save' beats 'do not forget to save'."
+      ],
+      "subtopics": [
+        {
+          "title": "Active vs passive voice",
+          "text": "In the <strong>active voice</strong> the subject does the action: 'Ravi submitted the report.' In the <strong>passive voice</strong> the subject receives it: 'The report was submitted by Ravi.' Active is shorter, clearer and shows responsibility, so prefer it. Passive is genuinely useful in three cases: when the doer is unknown ('The window was broken'), when the doer does not matter ('The samples were tested at 40 degrees'), or when you deliberately want to avoid blaming a person."
+        },
+        {
+          "title": "Misplaced modifiers change the meaning",
+          "text": "Word order is not decoration — it is meaning. 'She only submitted the form' suggests she did nothing else with it. 'She submitted only the form' means she submitted nothing besides the form. Keep describing words next to the word they describe. The classic error is: 'Running for the bus, my bag fell' — which says the bag was running."
+        },
+        {
+          "title": "Common wordy phrases and their cures",
+          "text": "'Due to the fact that' → 'because'. 'In order to' → 'to'. 'At this point in time' → 'now'. 'In the event that' → 'if'. 'A large number of' → 'many'. 'Is able to' → 'can'. 'Make a decision' → 'decide'. Learning ten of these pairs will visibly improve every page you write from tomorrow."
+        }
+      ],
+      "realLife": "Read any circular from a government office and count how many sentences run past forty words. Now read a well-written app notification: 'Your order will arrive by 7 PM.' Nine words, zero confusion. That is the standard to aim for.",
+      "worked": "<strong>Rewrite 1 — wordy to concise</strong><br><strong>Before:</strong> 'Due to the fact that the server was not working in a proper manner, we were not able to make a decision regarding the launch at this point in time.' (31 words)<br><strong>After:</strong> 'Because the server was faulty, we could not decide about the launch now.' (13 words)<br><em>What changed:</em> 'due to the fact that' → 'because' · 'not working in a proper manner' → 'faulty' · 'were not able to' → 'could not' · 'make a decision regarding' → 'decide about' · 'at this point in time' → 'now'. Same meaning, 18 words saved.<br><br><strong>Rewrite 2 — passive to active</strong><br><strong>Before:</strong> 'The report was submitted by the team on Monday and it was approved by the manager on Tuesday.' (18 words)<br><strong>After:</strong> 'The team submitted the report on Monday. The manager approved it on Tuesday.' (13 words)<br><em>What changed:</em> both clauses flipped to active, and one long sentence split into two. Now each sentence carries one idea and names who did what.<br><br><strong>Rewrite 3 — one idea per sentence</strong><br><strong>Before:</strong> 'The workshop will start at 10 AM and the venue is the seminar hall and students must bring their identity cards and registration is compulsory.' (25 words, four ideas in one sentence)<br><strong>After:</strong> 'The workshop will start at 10 AM in the seminar hall. Registration is compulsory. Please bring your identity card.' (19 words, three clean sentences)<br><em>What changed:</em> every 'and' that joined two complete ideas became a full stop.",
+      "mistake": "Do not think the passive voice is 'more formal' or 'more scientific'. Modern technical writing, including most scientific journals, actively recommends the active voice because it is clearer and shorter.",
+      "examAnswer": "An effective sentence expresses one main idea clearly, economically and in the natural order of words. The active voice, in which the subject performs the action, should generally be preferred to the passive voice, since it is shorter, clearer and identifies the person responsible; the passive voice is appropriate only where the doer is unknown, unimportant, or deliberately not named. Sentences should be of moderate length, averaging about fifteen to twenty words, and long sentences containing several complete ideas should be divided. Modifiers must be placed next to the words they describe, as misplacement alters the meaning. Finally, wordy expressions such as 'due to the fact that' should be replaced by simple equivalents such as 'because'.",
+      "remember": "One idea, active voice, right order, no wasted words.",
+      "why": "This is the single highest-value topic in the unit for a student whose English is still developing — these four repairs work on every sentence you will ever write.",
+      "practice": "Rewrite: 'It was decided by the committee that the event would be postponed due to the fact that there was a large number of absentees.' Make it active and concise."
+    },
+    {
+      "title": "Developing Logical Paragraphs",
+      "teacher": "A paragraph is not 'some sentences until the page looks full'. It is one idea, properly built, with a beginning, a middle and an end — like a tiny essay.",
+      "explain": "A well-built paragraph has a <strong>topic sentence</strong> stating its one idea, several <strong>supporting sentences</strong> explaining or proving it, and often a <strong>concluding sentence</strong> that closes or links forward. It must have <strong>unity</strong> (one idea only) and <strong>coherence</strong> (sentences in logical, connected order).",
+      "keyPoints": [
+        "<strong>Topic sentence</strong> — states the paragraph's single main idea, usually first.",
+        "<strong>Supporting sentences</strong> — examples, reasons, facts, explanation.",
+        "<strong>Concluding sentence</strong> — sums up or links to the next paragraph.",
+        "<strong>Unity</strong> — one idea per paragraph; delete anything that strays.",
+        "<strong>Coherence</strong> — sentences in logical order, joined by linking words.",
+        "<strong>Adequate development</strong> — enough support to convince, not one bare line.",
+        "<strong>Emphasis</strong> — the most important point placed where it is noticed.",
+        "Typical length: 4 to 8 sentences, roughly 80 to 150 words.",
+        "New idea = new paragraph. Always."
+      ],
+      "subtopics": [
+        {
+          "title": "Unity — one idea, nothing else",
+          "text": "Unity means every sentence in the paragraph serves the topic sentence. If you are writing about why online classes reduce travel time, and you slip in a sentence about the cost of laptops, that sentence breaks unity — it belongs in a different paragraph. The test is simple: read each sentence and ask 'does this support my topic sentence?' If no, cut it or move it."
+        },
+        {
+          "title": "Coherence — the sentences must hold together",
+          "text": "Coherence means the reader never has to jump. It is achieved by logical order (time order, importance order, cause and effect, general to specific), by linking words, by repeating key terms rather than inventing new synonyms, and by consistent pronouns and tense. A paragraph can have perfect unity and still be incoherent if the sentences are in a jumbled order."
+        },
+        {
+          "title": "Ways to develop a paragraph",
+          "text": "Choose a development pattern to suit the idea: by <strong>examples</strong>, by <strong>definition</strong>, by <strong>comparison and contrast</strong>, by <strong>cause and effect</strong>, by <strong>classification</strong>, or by <strong>process</strong> (step by step). Knowing these patterns solves the blank-page problem — you stop asking 'what do I write next?' and start filling a known shape."
+        }
+      ],
+      "realLife": "Think of a WhatsApp message that jumps from your exam date to your cousin's wedding to a Netflix show in one block of text. You reread it three times to follow it. That is a paragraph with no unity — and examiners feel exactly the same way.",
+      "worked": "<strong>Building a paragraph, piece by piece</strong><br><strong>Topic sentence:</strong> 'Regular exercise helps students perform better in their studies.'<br><strong>Support 1 (reason):</strong> 'Physical activity improves blood flow to the brain, which sharpens concentration.'<br><strong>Support 2 (example):</strong> 'For instance, a short walk before study makes it easier to sit for a long session.'<br><strong>Support 3 (reason):</strong> 'Moreover, exercise reduces stress, which is a common cause of poor performance in examinations.'<br><strong>Concluding sentence:</strong> 'Therefore, even thirty minutes of daily exercise is an investment in academic success, not a distraction from it.'<br><br><strong>Now a broken version — spot the fault:</strong><br>'Regular exercise helps students perform better in their studies. It improves concentration. <em>My cousin bought a new cycle last week.</em> Exercise also reduces stress.'<br><strong>Fault:</strong> the third sentence has nothing to do with the topic sentence. That is a failure of <strong>unity</strong> — delete it.",
+      "mistake": "Do not start a new paragraph just because the current one 'looks long'. Paragraph breaks follow IDEAS, not page appearance. One idea finished = one paragraph finished.",
+      "examAnswer": "A paragraph is a group of sentences that develops one single idea. It normally consists of a topic sentence, which states the central idea and usually appears at the beginning; supporting sentences, which explain, illustrate or prove that idea through reasons, examples and facts; and a concluding sentence, which summarises the point or links it to the next paragraph. An effective paragraph must possess unity, meaning that every sentence relates to the single controlling idea, and coherence, meaning that the sentences are arranged in a logical order and connected by suitable transitional expressions. It must also be adequately developed, containing sufficient support to convince the reader, and should give proper emphasis to its most important point.",
+      "remember": "Topic sentence → Support → Conclusion. Unity = one idea. Coherence = smooth order.",
+      "why": "Every long exam answer you write is a set of paragraphs. Examiners give marks faster to answers whose paragraphs have a visible topic sentence.",
+      "practice": "Write one paragraph of six sentences on 'Why I chose MCA', with a clear topic sentence, three supporting sentences and a concluding sentence."
+    },
+    {
+      "title": "Linking Words and Transitions",
+      "teacher": "Linking words are the road signs of writing. Without them the reader keeps asking 'wait, how did we get here?' With them, your answer feels organised even when the content is the same.",
+      "explain": "<strong>Transitions</strong> (or linking words) are words and phrases that show the relationship between one idea and the next — addition, contrast, cause, sequence, example or conclusion. They are the main tool for creating <strong>coherence</strong>.",
+      "keyPoints": [
+        "<strong>Addition:</strong> also, moreover, furthermore, in addition, besides.",
+        "<strong>Contrast:</strong> however, but, on the other hand, nevertheless, although.",
+        "<strong>Cause:</strong> because, since, as, due to, owing to.",
+        "<strong>Effect/result:</strong> therefore, thus, hence, consequently, as a result.",
+        "<strong>Sequence:</strong> first, next, then, afterwards, finally.",
+        "<strong>Example:</strong> for example, for instance, such as, namely.",
+        "<strong>Conclusion:</strong> in short, in conclusion, to sum up, overall.",
+        "Transitions signal the RELATIONSHIP — use the one that matches the real logic.",
+        "Do not overuse them; one per two or three sentences is usually enough."
+      ],
+      "subtopics": [
+        {
+          "title": "Choose the transition that matches the logic",
+          "text": "The commonest error is using a contrast word where there is no contrast. 'The server crashed. However, we lost the data.' — there is no contrast here; the second fact follows from the first, so the correct word is 'therefore' or 'as a result'. Using the wrong transition confuses the reader more than using none at all."
+        },
+        {
+          "title": "Transitions between paragraphs, not just sentences",
+          "text": "In a long answer or essay, begin some paragraphs with a phrase that connects back: 'Having examined the causes, we may now consider the remedies.' This makes an answer feel planned rather than assembled, and it is one of the easiest ways to make an average exam answer read like a strong one."
+        },
+        {
+          "title": "Do not decorate — connect",
+          "text": "Students sometimes sprinkle 'moreover' and 'furthermore' into every sentence, believing it looks academic. It looks mechanical instead. Use a transition only where the reader genuinely needs a signal about how the next idea relates to the last one."
+        }
+      ],
+      "realLife": "Giving directions to a friend: 'Go straight, THEN turn left at the temple, BUT if the road is closed, take the second lane INSTEAD.' Those capitalised words are transitions — remove them and the directions become impossible to follow.",
+      "table": {
+        "headers": [
+          "Relationship",
+          "Linking Words",
+          "Example"
+        ],
+        "rows": [
+          [
+            "Addition",
+            "also, moreover, furthermore",
+            "The plan is cheap. Moreover, it is fast."
+          ],
+          [
+            "Contrast",
+            "however, but, nevertheless",
+            "It is cheap. However, it is slow."
+          ],
+          [
+            "Cause",
+            "because, since, owing to",
+            "It failed because the server crashed."
+          ],
+          [
+            "Result",
+            "therefore, thus, as a result",
+            "The server crashed; therefore, we lost data."
+          ],
+          [
+            "Sequence",
+            "first, next, finally",
+            "First install it. Next, configure it."
+          ],
+          [
+            "Example",
+            "for example, such as",
+            "Use plain words, for example 'use' not 'utilise'."
+          ]
+        ]
+      },
+      "mistake": "'However' shows contrast; 'therefore' shows result. Swapping them is the most frequent linking-word error in student writing, and it makes the logic look broken even when the ideas are right.",
+      "examAnswer": "Transitional expressions, commonly called linking words, are words and phrases that indicate the logical relationship between successive ideas and thereby create coherence in writing. They may indicate addition, as in 'moreover' and 'furthermore'; contrast, as in 'however' and 'nevertheless'; cause, as in 'because' and 'since'; result, as in 'therefore' and 'consequently'; sequence, as in 'first', 'next' and 'finally'; illustration, as in 'for example' and 'such as'; or conclusion, as in 'in short' and 'to sum up'. The transition selected must accurately reflect the actual relationship between the ideas, and transitions should be used sparingly, since excessive use makes writing appear mechanical.",
+      "remember": "Adding? moreover. Opposing? however. Causing? because. Resulting? therefore.",
+      "why": "Coherence marks in an exam answer come almost entirely from these words. They are the cheapest possible upgrade to your writing.",
+      "practice": "Join these with the correct linking word: 'The library closes at six. / She studies at home now.' Then explain why you chose that word."
+    },
+    {
+      "title": "The Art of Condensation",
+      "teacher": "Here is something odd — writing short is much harder than writing long. Anyone can fill two pages. Saying the same thing accurately in six lines is a genuine skill, and employers pay for it.",
+      "explain": "<strong>Condensation</strong> is the art of reducing a piece of writing to its essential meaning, in far fewer words, without losing any important idea and without changing the writer's meaning. Summary, abstract, précis and an executive summary are all forms of condensation.",
+      "keyPoints": [
+        "Condensation = keep the meaning, cut the words.",
+        "You remove examples, repetitions, illustrations and decorative words.",
+        "You keep the main ideas, essential facts and the logical order.",
+        "You must NOT add your own opinion or any new idea.",
+        "Forms: summary, abstract, précis, executive summary, minutes of a meeting.",
+        "It requires reading comprehension FIRST — you cannot condense what you did not understand.",
+        "It is written in your OWN words, not a copy-paste of selected lines.",
+        "The result must still read as a smooth, connected passage."
+      ],
+      "subtopics": [
+        {
+          "title": "What gets cut and what stays",
+          "text": "<strong>Cut:</strong> examples and illustrations, repeated ideas, long descriptions, quotations, rhetorical questions, and wordy phrases. <strong>Keep:</strong> the central theme, the main supporting points, essential facts and figures, and the logical sequence. The test is: if removing it does not change what the reader learns, it goes."
+        },
+        {
+          "title": "Where you will actually use it",
+          "text": "An <strong>abstract</strong> at the top of a research paper, an <strong>executive summary</strong> at the start of a project report, <strong>minutes</strong> of a meeting, a bug report summary, or a status update to a manager who has ninety seconds. In professional life, the ability to give the one-paragraph version of a twenty-page document is noticed immediately."
+        },
+        {
+          "title": "Condensation is a test of understanding",
+          "text": "You cannot shorten what you have not understood, because you cannot tell which parts are essential. This is why condensation exercises are set in comprehension papers — they prove understanding far better than any multiple-choice question can."
+        }
+      ],
+      "realLife": "Your friend tells you a 20-minute story about a college fest. Later you tell someone else: 'The fest was well organised but the sound system failed during the final performance.' You just condensed 20 minutes into one accurate sentence.",
+      "mistake": "Condensation is not choosing some original sentences and deleting the rest. That is selective copying. A proper condensation is rewritten in your own words while keeping the writer's meaning exactly.",
+      "examAnswer": "Condensation is the art of reducing a passage to its essential meaning in substantially fewer words, without omitting any important idea and without altering the writer's meaning. In condensing a passage, the writer removes illustrations, examples, repetitions, quotations and superfluous expressions, while retaining the central theme, the principal supporting points, essential facts and the logical sequence of ideas. The condensed version must be expressed in the writer's own words and must read as a continuous and coherent passage; no new idea, comment or personal opinion may be introduced. Summaries, abstracts, précis, executive summaries and minutes of meetings are all practical forms of condensation.",
+      "remember": "Same meaning, fewer words, your own words, no new ideas.",
+      "why": "Condensation is a directly examinable topic and it is the professional skill behind every abstract, summary and status report you will write at work.",
+      "practice": "Condense any one news article of 300 words into 60 words without losing a single main point."
+    },
+    {
+      "title": "Précis Writing — Steps and Rules",
+      "teacher": "A précis is condensation with a strict rulebook. The good news is that the rules are fixed and few — learn them once and you can never lose marks by guessing what the examiner wants.",
+      "explain": "A <strong>précis</strong> is a brief, clear and complete summary of a passage, written in your own words, in about <strong>one-third</strong> of the original length. It must include the central idea and all important points, in the original order, with <strong>a title</strong>, and it must add nothing new.",
+      "keyPoints": [
+        "<strong>Length:</strong> roughly one-third of the original — count the words and state the count.",
+        "<strong>Own words:</strong> do not copy sentences from the passage.",
+        "<strong>Third person:</strong> even if the passage uses 'I' or 'we'.",
+        "<strong>Past tense:</strong> normally used, unless the passage states universal truths.",
+        "<strong>Title:</strong> compulsory — short, and reflecting the central idea.",
+        "<strong>No new ideas</strong>, no personal opinion, no comment on the passage.",
+        "<strong>Indirect speech:</strong> convert any direct speech into indirect.",
+        "<strong>One paragraph</strong>, continuous prose — no headings or bullet points.",
+        "Keep the original ORDER of ideas; do not rearrange.",
+        "Remove examples, repetition, illustrations and quotations."
+      ],
+      "subtopics": [
+        {
+          "title": "The step-by-step method",
+          "text": "<strong>1.</strong> Read the passage twice — once for the general sense, once for detail. <strong>2.</strong> Find the central idea and underline the main points. <strong>3.</strong> Count the original words and calculate one-third as your target. <strong>4.</strong> Write a rough draft in your own words from your underlined points, not from the passage. <strong>5.</strong> Check the word count and trim. <strong>6.</strong> Give a suitable title. <strong>7.</strong> Write the fair copy and state the word count at the end."
+        },
+        {
+          "title": "Why third person and past tense",
+          "text": "A précis is written from the outside — you are reporting what the writer said, not speaking as the writer. So 'I believe education must change' becomes 'The writer believed that education must change.' The exception is a statement of permanent or universal truth ('water boils at 100 degrees Celsius'), which stays in the present tense."
+        },
+        {
+          "title": "The most common ways students lose marks",
+          "text": "Copying whole sentences from the passage; forgetting the title; writing more than half the original length; adding an opinion such as 'in my view this is correct'; using bullet points instead of a paragraph; and dropping an important point while keeping a colourful example. Check for these six before you submit."
+        }
+      ],
+      "realLife": "Every abstract at the top of a research paper is a précis. So is the two-line summary your project guide asks for after you have spent an hour explaining your idea.",
+      "worked": "<strong>Original passage (103 words):</strong><br>'Many students believe that reading a chapter once is enough to remember it. In reality, the human memory forgets most new information within a few days unless that information is used again. Teachers therefore advise students to revise a topic on the same day they learn it, again after one week, and once more before the examination. This method is called spaced revision. It does not require extra hours of study; it only requires that the same hours be spread out instead of being spent all at once. Students who follow it usually remember more and feel far less anxious before their examinations.'<br><br><strong>Step 1 — Central idea:</strong> One reading is not enough; revision spread over time works better.<br><strong>Step 2 — Main points underlined:</strong> (a) one reading is not enough (b) memory fades unless information is reused (c) revise same day, after a week, before the exam (d) this is called spaced revision (e) it needs no extra hours, only better spacing (f) it improves memory and reduces anxiety.<br><strong>Step 3 — Target length:</strong> 103 ÷ 3 ≈ 34 words. Aim for about 35 to 38.<br><strong>Step 4 — Cut:</strong> the phrase 'Many students believe' (opinion framing), 'It does not require extra hours of study; it only requires…' (compress to one clause), 'far less anxious before their examinations' (compress).<br><br><strong>TITLE: Spaced Revision</strong><br><strong>Précis (37 words):</strong> 'One reading is not enough, because memory fades unless information is reused. Teachers advise spaced revision — the same day, after a week, and before the examination. Requiring no extra hours, it improves memory and reduces examination anxiety.'<br><br><strong>Check the rules:</strong> Title ✅ · Own words ✅ · Third person ✅ · One paragraph ✅ · No new ideas ✅ · 37 of 103 words, close to one-third ✅ · All six main points present ✅",
+      "mistake": "The most common failure is length. Students write 70 percent of the original and call it a précis. Count the original words, divide by three, write the target number at the top of your rough page, and hold yourself to it.",
+      "examAnswer": "A précis is a brief, clear and coherent summary of a passage, written in the summariser's own words, and reduced to approximately one-third of the original length. The procedure consists of reading the passage twice to grasp its sense, identifying the central idea and underlining the main points, calculating the target word count, preparing a rough draft from the underlined points, revising it for length and clarity, supplying a suitable title, and writing the fair copy with the word count stated. A précis must be written in the third person and generally in the past tense, must preserve the original order of ideas, must exclude examples, illustrations, repetitions and direct speech, and must not contain any new idea, comment or personal opinion of the writer.",
+      "remember": "One-third · own words · third person · past tense · title · no new ideas.",
+      "why": "Précis writing appears as a full-mark question in almost every technical communication paper, and the marks are lost on the rules, not on the English.",
+      "practice": "Take any 150-word editorial paragraph. Write a précis of about 50 words with a title, then check it against all six rules."
+    },
+    {
+      "title": "Essay Writing",
+      "teacher": "An essay is just a long answer with a plan. The students who write well in exams are not faster writers — they spend three minutes making a skeleton before they start.",
+      "explain": "An essay is a structured piece of writing on a single subject, consisting of an <strong>introduction</strong>, a <strong>body</strong> of several paragraphs, and a <strong>conclusion</strong>. Each body paragraph carries one point, and all of them serve the main idea stated in the introduction.",
+      "keyPoints": [
+        "<strong>Introduction</strong> — opening hook, background, and the main idea or thesis.",
+        "<strong>Body</strong> — several paragraphs, ONE main point per paragraph, with support.",
+        "<strong>Conclusion</strong> — restate the main idea, sum up, end with a thought or suggestion.",
+        "Plan an outline BEFORE writing — 3 to 5 minutes well spent.",
+        "<strong>Narrative</strong> essay — tells a story, usually in time order.",
+        "<strong>Descriptive</strong> essay — describes a person, place or thing using the senses.",
+        "<strong>Expository</strong> essay — explains a topic with facts and reasons.",
+        "<strong>Argumentative / persuasive</strong> essay — takes a side and proves it.",
+        "<strong>Reflective</strong> essay — the writer's own thoughts on an abstract theme.",
+        "Never introduce a brand-new argument in the conclusion."
+      ],
+      "subtopics": [
+        {
+          "title": "How to plan in three minutes",
+          "text": "Write the topic at the top of a rough page. Under it, jot four or five points that come to mind. Strike out the weakest. Number the rest in a sensible order. That numbered list is now your body paragraphs — one point each. Now write. The three minutes spent here saves you from the mid-essay panic of 'what do I say next?'"
+        },
+        {
+          "title": "Writing a strong introduction and conclusion",
+          "text": "The <strong>introduction</strong> should open with something that earns attention — a short fact, a question or a striking statement — then narrow to your main idea in one clear sentence. The <strong>conclusion</strong> should restate that main idea in fresh words, briefly gather the points you made, and close with a forward-looking thought or suggestion. Never introduce a new argument in the conclusion; it leaves the reader hanging."
+        },
+        {
+          "title": "The types, and how to tell them apart",
+          "text": "<strong>Narrative</strong> answers 'what happened?' <strong>Descriptive</strong> answers 'what is it like?' <strong>Expository</strong> answers 'what is it and how does it work?' <strong>Argumentative</strong> answers 'what should we think, and why?' <strong>Reflective</strong> answers 'what do I think about this idea?' Read the question wording carefully — 'discuss', 'explain' and 'do you agree' point to three different essay types."
+        }
+      ],
+      "realLife": "Compare two students given 'Impact of social media on students'. One starts writing immediately and repeats the same point three times. The other spends three minutes listing four points — time waste, awareness, comparison anxiety, learning opportunities — and writes four clean paragraphs. Same knowledge, very different marks.",
+      "worked": "<strong>A three-minute outline for: 'Impact of Social Media on Students'</strong><br><strong>Introduction:</strong> Hook — an average student checks the phone over a hundred times a day. Background — social media is now part of daily student life. Main idea: social media affects students both positively and negatively, and the outcome depends on how it is used.<br><strong>Body 1 — Benefit:</strong> access to learning material, doubt-solving groups, career information.<br><strong>Body 2 — Benefit:</strong> connection and communication skills, exposure to opportunities.<br><strong>Body 3 — Harm:</strong> loss of study time and broken concentration.<br><strong>Body 4 — Harm:</strong> comparison with others causing anxiety and low confidence.<br><strong>Conclusion:</strong> restate that the tool is neutral; suggest fixed usage hours and phone-free study blocks.<br><br><strong>Sample introduction written from that outline:</strong><br>'An average student today checks his phone more than a hundred times a day. Social media has become part of student life as naturally as textbooks once were. It brings genuine benefits, such as easy access to study material, but also real harm, such as broken concentration. Its final effect depends less on the platform than on how carefully the student uses it.'",
+      "mistake": "Do not write one enormous paragraph. Even a perfect answer loses marks if the examiner cannot see the structure. Paragraph breaks are visible evidence that you planned.",
+      "examAnswer": "An essay is a structured composition on a single subject, consisting of three principal parts. The introduction attracts the reader's attention, provides the necessary background and states the central idea or thesis. The body consists of several paragraphs, each developing one main point through reasons, examples and evidence, arranged in a logical order and connected by transitional expressions. The conclusion restates the central idea in different words, summarises the main points and closes with a suitable final thought or suggestion, without introducing any new argument. Essays may be classified as narrative, descriptive, expository, argumentative or persuasive, and reflective, according to their purpose. An outline prepared before writing ensures unity, coherence and adequate development.",
+      "remember": "Plan first · Introduction, Body, Conclusion · one point per paragraph.",
+      "why": "Essays carry the largest single block of marks in a language paper, and the same structure is what you will use for every long answer in every other subject.",
+      "practice": "Make a full outline (introduction, four body points, conclusion) for the topic 'Should artificial intelligence be taught in every degree course?'"
+    },
+    {
+      "title": "Writing for the Web",
+      "teacher": "Here is the uncomfortable truth about online readers: they do not read, they scan. They look for what they need, and if they cannot find it in a few seconds, they leave. Web writing is built around that fact.",
+      "explain": "Writing for the web means writing for a reader who <strong>scans</strong> rather than reads. So you front-load the key message, keep paragraphs very short, use clear headings and bullet points, write in plain language, and make every link and heading meaningful on its own.",
+      "keyPoints": [
+        "<strong>Front-load</strong> — put the most important information in the first line.",
+        "This is the <strong>inverted pyramid</strong>: conclusion first, details after.",
+        "<strong>Short paragraphs</strong> — two to four lines; one idea each.",
+        "<strong>Scannable headings and sub-headings</strong> that say what the section contains.",
+        "<strong>Bullet points and numbered lists</strong> instead of long dense sentences.",
+        "<strong>Plain language</strong> — no jargon unless the audience shares it.",
+        "<strong>Meaningful link text</strong> — 'download the fee structure', not 'click here'.",
+        "Use <strong>white space</strong>; a wall of text is never read online.",
+        "Keep sentences short; aim for 15 to 20 words.",
+        "Write <strong>accessible</strong> text: describe images, use clear headings in order."
+      ],
+      "subtopics": [
+        {
+          "title": "The inverted pyramid",
+          "text": "Journalists invented this and the web adopted it. Put the conclusion or the most important fact in the first sentence, supporting details next, and background last. A print reader builds up to your point; an online reader may leave after two lines, so the point must come first. Never save your best information for the end online."
+        },
+        {
+          "title": "Why scannable formatting matters so much",
+          "text": "Online readers move their eyes down the left side of a page, pausing at headings, bold words and bullets. Writing that has no visual landmarks gives their eyes nothing to stop at. Headings, short paragraphs, bold key terms and lists are therefore not decoration — they are how an online reader navigates."
+        },
+        {
+          "title": "Web writing vs print writing",
+          "text": "Print writing can be longer, more formal and can build an argument gradually; the reader is committed. Web writing must be shorter, more direct, chunked and immediately useful; the reader is one tap from leaving. The same content therefore needs genuine rewriting, not just copy-pasting, when it moves from a report to a web page."
+        }
+      ],
+      "realLife": "Look at how you use a college website. You do not read the welcome paragraph — you scan for 'Admissions' or 'Results'. Every visitor treats your writing exactly the way you treat that website.",
+      "worked": "<strong>Rewriting a notice for the web</strong><br><strong>Before (print style, buried message):</strong><br>'The Department of Computer Applications is pleased to inform all the students of the institution that in keeping with the academic calendar prepared at the beginning of the session, and after due consultation with the faculty members concerned, it has been decided that the semester examinations shall commence from the 12th of December.'<br><br><strong>After (web style, front-loaded and scannable):</strong><br><strong>Semester exams start 12 December</strong><br>'Exams for all MCA students begin on 12 December.<br>· Timetable: available on the notice board from 1 December<br>· Hall tickets: collect from the department office<br>· Queries: write to the examination cell'<br><br><em>What changed:</em> the date moved from the last line to the heading; one 55-word sentence became a short line plus three bullets; formal padding ('is pleased to inform', 'after due consultation') was deleted; and each item is now findable in one second.",
+      "mistake": "Never write 'click here' as link text. It tells the reader nothing about the destination and is unusable for someone using a screen reader. Write what the link actually leads to.",
+      "examAnswer": "Writing for the web differs from print writing because online readers scan rather than read continuously. The key message should therefore be front-loaded, following the inverted pyramid structure in which the most important information appears first and background details last. Paragraphs should be short, usually of two to four lines, and each should contain a single idea. Content should be made scannable through informative headings and sub-headings, bullet points and numbered lists, and adequate white space. Plain language should be used in preference to jargon, sentences should be kept short, and link text should describe its destination rather than reading merely 'click here'. Web content should also be accessible, with meaningful headings and descriptions for images.",
+      "remember": "Scan, not read: key message first, short chunks, clear headings, plain words.",
+      "why": "Almost everything you write professionally — emails, documentation, tickets, README files, product copy — is read on a screen by someone in a hurry.",
+      "practice": "Take any long notice from your college notice board and rewrite it in web style: a clear heading, a one-line key message and three bullets."
+    },
+    {
+      "title": "Leveraging AI Tools Responsibly",
+      "teacher": "You already have AI writing tools on your phone. The real question is not whether to use them — it is how to use them so your own English gets stronger instead of weaker. Here is the honest guidance.",
+      "explain": "AI writing tools can help you <strong>plan, draft, check and improve</strong> your writing. But they cannot supply your understanding, your judgement or your responsibility for what you submit. Use AI as a <strong>drafting and checking aid</strong> — you remain the author, the fact-checker and the person accountable.",
+      "keyPoints": [
+        "Good uses: brainstorming an outline, suggesting alternative wording, checking grammar.",
+        "Good uses: explaining a difficult passage, generating practice questions for yourself.",
+        "Good uses: shortening your own draft, or pointing out unclear sentences.",
+        "AI can produce confident, fluent text that is factually WRONG — always verify.",
+        "Never submit AI text you have not read, understood and edited yourself.",
+        "Submitting AI work as your own is <strong>plagiarism</strong> under most institutional rules.",
+        "Never paste confidential, personal or company data into a public AI tool.",
+        "Disclose AI assistance where your institution or employer requires it.",
+        "Write your OWN first draft first — otherwise your writing skill never develops.",
+        "You remain responsible for every error in what you submit, whoever drafted it."
+      ],
+      "subtopics": [
+        {
+          "title": "A workflow that makes you better, not lazier",
+          "text": "Write your own rough draft first, however imperfect. Then ask the AI to point out unclear sentences, grammar errors or wordiness — and ask it <em>why</em> each change is better. Read the explanation, then make the edit yourself. Done this way, every assignment becomes an English lesson. Done the other way round, you learn nothing and your exam writing stays weak, because there is no AI in the exam hall."
+        },
+        {
+          "title": "Verify everything factual",
+          "text": "AI tools generate text that sounds authoritative even when it is wrong — invented references, wrong dates, plausible but false definitions. This is often called <strong>hallucination</strong>. For anything you will be graded or judged on, check facts against your textbook, your notes or a reliable source. The examiner blames you, not the tool."
+        },
+        {
+          "title": "Academic honesty and privacy",
+          "text": "Most universities treat unacknowledged AI-generated submissions as plagiarism, and the rules differ between institutions, so check your own. Separately, never paste confidential material — project code under an agreement, personal details of others, unpublished research — into a public AI service. Treat it as you would a public website."
+        },
+        {
+          "title": "What AI genuinely cannot do for you",
+          "text": "It cannot decide what YOU think, it cannot know your specific context, and it cannot take responsibility. In an interview, a viva or an exam hall, the only writing skill available to you is the one in your own head. Use the tool to accelerate learning, not to replace it."
+        }
+      ],
+      "realLife": "Two students use an AI tool for an assignment. The first pastes the question and submits the output — and freezes in the viva when asked to explain one line. The second writes her own draft, asks the tool to flag weak sentences, and edits them herself — and answers the viva easily, because she wrote it.",
+      "table": {
+        "headers": [
+          "",
+          "Responsible Use",
+          "Irresponsible Use"
+        ],
+        "rows": [
+          [
+            "Drafting",
+            "You write first, AI suggests improvements",
+            "AI writes, you paste it in"
+          ],
+          [
+            "Facts",
+            "You verify every claim",
+            "You trust the output blindly"
+          ],
+          [
+            "Learning",
+            "You ask why a change is better",
+            "You accept changes without reading"
+          ],
+          [
+            "Honesty",
+            "You disclose help where required",
+            "You present it as fully your own"
+          ],
+          [
+            "Privacy",
+            "No confidential data pasted",
+            "Client or personal data pasted in"
+          ]
+        ]
+      },
+      "mistake": "Do not assume fluent English means correct content. AI output is often grammatically perfect and factually wrong — and a wrong fact in confident language is more dangerous than an obvious mistake.",
+      "examAnswer": "Artificial intelligence tools can assist the writing process by helping to generate outlines, suggest alternative expressions, check grammar and style, condense drafts and explain difficult material. They should, however, be used as an aid to the writer's own thinking rather than as a substitute for it. The writer should prepare an original draft before seeking assistance, should examine and understand every suggested change, and should verify all factual content independently, since such tools may generate fluent but inaccurate information. Confidential or personal data must not be entered into public tools, and the assistance received should be disclosed wherever institutional or professional rules require it. Ultimate responsibility for the accuracy, originality and quality of the finished work always remains with the writer.",
+      "remember": "AI is a helper, not the author. You draft, it checks, you verify, you own it.",
+      "why": "This is a new but increasingly asked syllabus topic, and getting the habit right now decides whether these tools make your English stronger or leave it permanently weak.",
+      "practice": "Write one paragraph yourself. Then list three specific things you would ask an AI tool to check in it — and say what you would still verify on your own."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Which sentence is in the ACTIVE voice?",
+      "options": [
+        "The report was submitted by Ravi",
+        "Ravi submitted the report",
+        "The report has been submitted",
+        "It was decided that the report be submitted"
+      ],
+      "answer": 1,
+      "why": "In the active voice the subject performs the action. 'Ravi' does the submitting, so he is the subject and the sentence is active — shorter and clearer."
+    },
+    {
+      "q": "'Due to the fact that' should normally be replaced by…",
+      "options": [
+        "Owing to the circumstance that",
+        "Because",
+        "In view of the fact",
+        "As a result of which"
+      ],
+      "answer": 1,
+      "why": "'Because' says exactly the same thing in one word. Cutting wordy phrases like this is the fastest way to make writing concise."
+    },
+    {
+      "q": "A précis should normally be about how long compared with the original?",
+      "options": [
+        "One-half",
+        "One-third",
+        "Two-thirds",
+        "One-tenth"
+      ],
+      "answer": 1,
+      "why": "The standard rule is roughly one-third of the original word count. Students most often lose marks by writing far more than this."
+    },
+    {
+      "q": "Which of these is NOT allowed in a précis?",
+      "options": [
+        "A suitable title",
+        "Your own words",
+        "Your personal opinion on the passage",
+        "The original order of ideas"
+      ],
+      "answer": 2,
+      "why": "A précis reports the writer's ideas only. Adding comment, opinion or any new idea breaks the basic rule of précis writing."
+    },
+    {
+      "q": "The sentence that states the main idea of a paragraph is the…",
+      "options": [
+        "Topic sentence",
+        "Supporting sentence",
+        "Transitional sentence",
+        "Concluding sentence"
+      ],
+      "answer": 0,
+      "why": "The topic sentence carries the paragraph's single controlling idea, and every supporting sentence must relate back to it."
+    },
+    {
+      "q": "'The server crashed. ______, we lost the data.' Which linking word fits?",
+      "options": [
+        "However",
+        "Nevertheless",
+        "Therefore",
+        "On the other hand"
+      ],
+      "answer": 2,
+      "why": "Losing the data is the RESULT of the crash, so a result word such as 'therefore' is correct. The other three signal contrast, which does not exist here."
+    },
+    {
+      "q": "The principle that every sentence in a paragraph must relate to one single idea is called…",
+      "options": [
+        "Coherence",
+        "Unity",
+        "Emphasis",
+        "Conciseness"
+      ],
+      "answer": 1,
+      "why": "Unity means one idea per paragraph. Coherence is different — it means the sentences are in a logical order and smoothly connected."
+    },
+    {
+      "q": "In writing for the web, 'front-loading' means…",
+      "options": [
+        "Putting the most important information first",
+        "Using a large font at the top",
+        "Adding many images at the start",
+        "Writing the conclusion at the end"
+      ],
+      "answer": 0,
+      "why": "Online readers scan and may leave within seconds, so the key message goes in the first line — the inverted pyramid structure."
+    },
+    {
+      "q": "What is the most responsible way to use an AI writing tool for an assignment?",
+      "options": [
+        "Paste the question and submit the output",
+        "Write your own draft, then use AI to flag weak sentences and verify facts yourself",
+        "Use it only for the title",
+        "Copy the output and change a few words"
+      ],
+      "answer": 1,
+      "why": "You remain the author and are responsible for accuracy. Drafting first and then reviewing AI suggestions develops your own writing; copying output does not."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Explain the elements of effective writing. Then take any short message you have written recently and rewrite it so that it satisfies each element."
+    },
+    {
+      "q": "Rewrite the following in the active voice and make it concise: 'It was decided by the committee that the annual function would be postponed due to the fact that a large number of students were not able to be present.' Explain each change you made.",
+      "hint": "Aim to roughly halve the word count. Name the rule behind every change."
+    },
+    {
+      "q": "What is a paragraph? Explain unity and coherence with examples, and write one model paragraph of six sentences showing a topic sentence, supporting sentences and a concluding sentence."
+    },
+    {
+      "q": "What is précis writing? Explain its rules and describe the step-by-step method, then write a précis of any 150-word passage from your textbook, with a title and the word count.",
+      "hint": "Check all six rules before you finish: length, own words, third person, past tense, title, no new ideas."
+    },
+    {
+      "q": "How does writing for the web differ from writing for print? Rewrite a long college notice in web style, and explain how you would responsibly use an AI tool to improve that rewrite without letting it write for you."
+    }
+  ]
+};

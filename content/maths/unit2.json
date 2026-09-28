@@ -1,0 +1,674 @@
+/* Mathematical Foundation (MCA 110) — Unit 2. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.maths = UNITS.maths || [];
+UNITS.maths[1] = {
+  "num": 2,
+  "title": "Algebraic Structures: Groups, Rings and Fields",
+  "problem": "We add numbers, we join strings, we rotate a shape, we shuffle a list. These look like four completely different jobs, so we end up learning four separate sets of rules — and forget them all before the exam.",
+  "solution": "Algebraic structures notice that all four follow the SAME few rules. Learn the rules once as a ladder (Semigroup → Monoid → Group → Abelian group) and every one of those situations is already solved.",
+  "objectives": [
+    "Define a binary operation and test it for closure, associativity, identity and inverse",
+    "Climb the ladder correctly: name a structure as semigroup, monoid, group or abelian group",
+    "Verify all group axioms for a concrete example such as (Z₅, +₅) using its addition table",
+    "Prove that the identity and the inverse are unique, and apply the cancellation laws",
+    "Test whether a given subset is a subgroup using the one-step subgroup test",
+    "Find the generators and the order of elements of a cyclic group such as (Z₆, +₆)",
+    "Write the left cosets of a subgroup, use Lagrange's theorem and identify a normal subgroup",
+    "Distinguish a homomorphism from an isomorphism, and define a ring and a field"
+  ],
+  "topics": [
+    {
+      "title": "Binary Operation and the Four Basic Properties",
+      "teacher": "Before we meet any scary word like 'group', let us agree on one small thing. What is the most ordinary thing you do in maths? You take TWO things and make ONE thing. 2 and 3 become 5. That is a binary operation, and this whole unit is built on it.",
+      "explain": "A <strong>binary operation</strong> * on a set G is a rule that takes any two elements a, b of G and produces exactly one result a * b. When that result always stays inside G we call it <strong>closed</strong>. Four properties — <strong>closure, associativity, identity and inverse</strong> — are the only things we will ever test, again and again.",
+      "keyPoints": [
+        "A <strong>binary operation</strong> takes two elements and gives one result: * : G × G → G.",
+        "<strong>Closure:</strong> for all a, b ∈ G, a * b is still in G.",
+        "<strong>Associative:</strong> (a * b) * c = a * (b * c) — brackets can move.",
+        "<strong>Identity (e):</strong> a * e = e * a = a for every a. It changes nothing.",
+        "<strong>Inverse (a⁻¹):</strong> a * a⁻¹ = a⁻¹ * a = e. It undoes a.",
+        "<strong>Commutative:</strong> a * b = b * a — order does not matter. This is an EXTRA, not one of the four.",
+        "An <strong>algebraic structure</strong> is simply a set together with one or more binary operations on it.",
+        "Identity for + is <strong>0</strong>; identity for × is <strong>1</strong>. Never mix them up."
+      ],
+      "subtopics": [
+        {
+          "title": "Closure — the property students forget to check",
+          "text": "Closure asks one question: does the answer fall back inside the same set? Addition on natural numbers is closed (3 + 4 = 7, still natural). Subtraction on natural numbers is <strong>not</strong> closed, because 3 − 4 = −1 has escaped the set. Always check closure first — if it fails, nothing else matters."
+        },
+        {
+          "title": "Associative is about brackets, commutative is about order",
+          "text": "These two get mixed up constantly. <strong>Associative</strong> moves the brackets: (2+3)+4 = 2+(3+4). <strong>Commutative</strong> swaps the elements: 2+3 = 3+2. Subtraction is neither — (5−3)−1 = 1 but 5−(3−1) = 3, and 5−3 ≠ 3−5."
+        },
+        {
+          "title": "Identity and inverse always come as a pair",
+          "text": "You cannot even talk about an inverse until you know the identity, because 'inverse' means 'brings me back to e'. So the order of checking is fixed: closure, then associativity, then identity, and only then inverse. Keep this order in the exam and you will never get stuck."
+        }
+      ],
+      "realLife": "Think of your UPI app. 'Send ₹100' and 'receive ₹100' are inverses of each other, and 'send ₹0' is the identity — it changes nothing in your balance. The rules of this unit are already inside your phone.",
+      "worked": "<strong>Test the set N = {1, 2, 3, …} under ordinary subtraction.</strong><br><strong>Closure?</strong> 3 − 4 = −1, and −1 ∉ N. <strong>FAILS</strong> — so it is not even a semigroup.<br><br><strong>Now test the set Z = {…, −2, −1, 0, 1, 2, …} under ordinary addition.</strong><br><strong>Closure?</strong> integer + integer = integer. ✔<br><strong>Associative?</strong> (2+3)+4 = 9 and 2+(3+4) = 9. ✔<br><strong>Identity?</strong> a + 0 = a for every a, so e = <strong>0</strong>. ✔<br><strong>Inverse?</strong> a + (−a) = 0, so the inverse of a is <strong>−a</strong>. ✔<br><strong>Commutative?</strong> 2+3 = 3+2. ✔<br>So (Z, +) satisfies everything.",
+      "mistake": "Students check associativity and identity but skip closure, because it 'looks obvious'. It is the property that most often fails — subtraction on N, division on Z, odd numbers under addition (3 + 5 = 8, an even number, so NOT closed).",
+      "examAnswer": "A binary operation * on a non-empty set G is a mapping from G × G to G which assigns to every ordered pair (a, b) of elements of G a unique element a * b. The operation is said to satisfy closure if a * b ∈ G for all a, b ∈ G; associativity if (a * b) * c = a * (b * c) for all a, b, c ∈ G; the identity property if there exists e ∈ G such that a * e = e * a = a for every a ∈ G; and the inverse property if for each a ∈ G there exists a⁻¹ ∈ G such that a * a⁻¹ = a⁻¹ * a = e. If in addition a * b = b * a for all a, b ∈ G, the operation is said to be commutative.",
+      "remember": "C-A-I-I: Closure, Associative, Identity, Inverse. Check them in that order, always.",
+      "why": "Every definition in this unit is just a different tick-list of these same four properties. Learn them properly once and the rest of the unit becomes easy marks.",
+      "practice": "Is the set of odd integers closed under addition? Is it closed under multiplication? Give one example for each answer."
+    },
+    {
+      "title": "The Ladder: Semigroup → Monoid → Group → Abelian Group",
+      "teacher": "This is THE topic of the unit. It is not four hard definitions — it is one staircase with four steps, and each step just adds ONE new property to the step below. If you learn this staircase, you have learnt half of Unit 2.",
+      "explain": "Start with a set and a binary operation. Add <strong>closure + associativity</strong> and you have a <strong>semigroup</strong>. Add an <strong>identity</strong> and it becomes a <strong>monoid</strong>. Add an <strong>inverse for every element</strong> and it becomes a <strong>group</strong>. Add <strong>commutativity</strong> and it becomes an <strong>abelian group</strong>. Each step keeps everything below it.",
+      "keyPoints": [
+        "<strong>Semigroup</strong> = closure + associativity.",
+        "<strong>Monoid</strong> = semigroup + identity element.",
+        "<strong>Group</strong> = monoid + inverse for EVERY element.",
+        "<strong>Abelian (commutative) group</strong> = group + a * b = b * a.",
+        "Every monoid is a semigroup; every group is a monoid; every abelian group is a group. The reverse is NOT true.",
+        "Semigroup only: positive integers under + (no identity, since 0 is missing).",
+        "Monoid but not a group: (Z, ×) — identity 1, but 2 has no integer inverse.",
+        "Group but not abelian: S₃, the permutations of three symbols.",
+        "Abelian group: (Z, +), (Q−{0}, ×), (Z₅, +₅).",
+        "The number of elements of a finite group G is called its <strong>order</strong>, written |G| or O(G)."
+      ],
+      "subtopics": [
+        {
+          "title": "One example for each step — memorise these four",
+          "text": "In an exam you are usually asked for an example, so keep one ready for each rung. <strong>Semigroup only:</strong> N = {1,2,3,…} under addition — closed and associative, but there is no 0, so no identity. <strong>Monoid only:</strong> (Z, ×) — closed, associative, identity 1, but 1/2 is not an integer so 2 has no inverse. <strong>Group, non-abelian:</strong> 2×2 invertible matrices under multiplication, or S₃. <strong>Abelian group:</strong> (Z, +)."
+        },
+        {
+          "title": "A useful computer-science example",
+          "text": "Take all non-empty strings and the operation 'join them together' (concatenation). \"ab\" * \"cd\" = \"abcd\". It is closed and associative, so it is a <strong>semigroup</strong>. Now allow the empty string \"\" as well — it changes nothing when joined, so it is the identity, and the structure becomes a <strong>monoid</strong>. It can never be a group, because once you have joined two strings you cannot un-join them."
+        },
+        {
+          "title": "Why abelian is named after a person",
+          "text": "'Abelian' comes from the mathematician Niels Henrik Abel, so it simply means <strong>commutative</strong>. Do not look for extra meaning in the word. If a question says 'show G is abelian', all it wants is a proof that a * b = b * a for all a, b ∈ G."
+        }
+      ],
+      "realLife": "Think of a school uniform check at the gate. Semigroup = shoes only. Monoid = shoes + ID card. Group = shoes + ID card + tie. Abelian group = all three plus the badge. Each level simply requires one more item than the level below it — nobody at a higher level is missing something from a lower level.",
+      "worked": "<strong>Is (Z₅, +₅) a group? Check every axiom.</strong><br>Z₅ = {0, 1, 2, 3, 4}, and a +₅ b means 'add normally, then keep the remainder on dividing by 5'.<br><br><strong>Addition table (mod 5):</strong><br><code>+₅ | 0  1  2  3  4</code><br><code>---+---------------</code><br><code> 0 | 0  1  2  3  4</code><br><code> 1 | 1  2  3  4  0</code><br><code> 2 | 2  3  4  0  1</code><br><code> 3 | 3  4  0  1  2</code><br><code> 4 | 4  0  1  2  3</code><br><br><strong>1. Closure</strong> — every entry inside the table is again one of 0,1,2,3,4. ✔<br><strong>2. Associative</strong> — ordinary addition is associative and taking the remainder does not disturb it. Check: (2 +₅ 3) +₅ 4 = 0 +₅ 4 = <strong>4</strong>, and 2 +₅ (3 +₅ 4) = 2 +₅ 2 = <strong>4</strong>. ✔<br><strong>3. Identity</strong> — the row for 0 and the column for 0 simply repeat the headings, so <strong>e = 0</strong>. ✔<br><strong>4. Inverse</strong> — look for 0 in each row: 0+₅0 = 0, 1+₅4 = 0, 2+₅3 = 0, 3+₅2 = 0, 4+₅1 = 0. Every element has an inverse. ✔<br><strong>5. Commutative</strong> — the table is symmetric about the main diagonal, e.g. 2+₅4 = 1 = 4+₅2. ✔<br><br><strong>Conclusion:</strong> (Z₅, +₅) is an <strong>abelian group of order 5</strong>.",
+      "table": {
+        "headers": [
+          "Property required",
+          "Semigroup",
+          "Monoid",
+          "Group",
+          "Abelian group"
+        ],
+        "rows": [
+          [
+            "Closure",
+            "Yes",
+            "Yes",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Associativity",
+            "Yes",
+            "Yes",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Identity element",
+            "No",
+            "Yes",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Inverse of every element",
+            "No",
+            "No",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Commutativity",
+            "No",
+            "No",
+            "No",
+            "Yes"
+          ],
+          [
+            "Standard example",
+            "(N, +)",
+            "(Z, ×)",
+            "S₃ (matrices)",
+            "(Z, +), (Z₅, +₅)"
+          ]
+        ]
+      },
+      "mistake": "'No' in this table means 'not required', NOT 'not allowed'. A semigroup is permitted to have an identity — it just is not forced to. So every monoid is still a semigroup. Students lose marks by writing 'a semigroup has no identity'; the correct wording is 'a semigroup does not require an identity'.",
+      "examAnswer": "Let G be a non-empty set with a binary operation *. The algebraic structure (G, *) is called a semigroup if * is closed and associative on G. A semigroup which also possesses an identity element e such that a * e = e * a = a for all a ∈ G is called a monoid. A monoid in which every element a ∈ G possesses an inverse a⁻¹ ∈ G such that a * a⁻¹ = a⁻¹ * a = e is called a group. A group in which the operation is further commutative, that is a * b = b * a for all a, b ∈ G, is called an abelian or commutative group. Thus every group is a monoid and every monoid is a semigroup, but the converse statements need not hold; for example (Z, ×) is a monoid but not a group, since 2 has no multiplicative inverse in Z.",
+      "remember": "Semigroup → add identity → Monoid → add inverse → Group → add commutativity → Abelian. Each step adds exactly ONE property.",
+      "why": "This ladder is a guaranteed exam question, usually worth full marks, and every later topic (subgroup, cyclic, coset, ring, field) assumes you know it cold.",
+      "practice": "Classify each of these as semigroup, monoid, group or abelian group, with reasons: (a) (N, +) (b) (Z, ×) (c) (Z, +) (d) (Q−{0}, ×)."
+    },
+    {
+      "title": "Standard Properties of Groups",
+      "teacher": "Now that we know what a group is, some very pleasant facts fall out for free. For example, a group can never have two different identity elements — it is simply impossible. These small proofs are short, they are asked every year, and they are the easiest marks in the unit.",
+      "explain": "From only the four group axioms we can prove several standard results: the <strong>identity is unique</strong>, the <strong>inverse of each element is unique</strong>, <strong>(a⁻¹)⁻¹ = a</strong>, <strong>(ab)⁻¹ = b⁻¹a⁻¹</strong>, and both <strong>cancellation laws</strong> hold. Each proof is two or three lines long.",
+      "keyPoints": [
+        "<strong>Identity is unique</strong> — a group has exactly one identity element.",
+        "<strong>Inverse is unique</strong> — each element has exactly one inverse.",
+        "<strong>Double inverse:</strong> (a⁻¹)⁻¹ = a.",
+        "<strong>Reverse order law:</strong> (a * b)⁻¹ = b⁻¹ * a⁻¹ — note the order flips.",
+        "<strong>Left cancellation:</strong> if a * b = a * c then b = c.",
+        "<strong>Right cancellation:</strong> if b * a = c * a then b = c.",
+        "In a group, the equations a * x = b and y * a = b each have exactly one solution.",
+        "In the operation (Cayley) table of a group, every element appears exactly once in every row and every column."
+      ],
+      "subtopics": [
+        {
+          "title": "Proof: the identity is unique",
+          "text": "Suppose e and e′ are both identity elements of G. Since e is an identity, e * e′ = e′. Since e′ is an identity, e * e′ = e. Therefore e = e′. So there cannot be two different identities. Write exactly these three lines in the exam."
+        },
+        {
+          "title": "Proof: the inverse is unique",
+          "text": "Suppose b and c are both inverses of a. Then b = b * e = b * (a * c) = (b * a) * c = e * c = c. So b = c. The only tools used were the identity, the inverse and associativity — which is why associativity matters so much."
+        },
+        {
+          "title": "Why the reverse order law flips",
+          "text": "Check it: (a * b) * (b⁻¹ * a⁻¹) = a * (b * b⁻¹) * a⁻¹ = a * e * a⁻¹ = a * a⁻¹ = e. So b⁻¹ * a⁻¹ really is the inverse of a * b. Think of socks and shoes: you put on socks then shoes, but you remove shoes first, then socks. Undoing happens in reverse order."
+        }
+      ],
+      "realLife": "Getting dressed is the reverse order law. Socks first, then shoes. To undo, you must remove the shoes first and the socks second — you cannot pull the socks off through the shoes. Undoing two steps always reverses their order.",
+      "worked": "<strong>Prove the left cancellation law: if a * b = a * c then b = c.</strong><br>Given a * b = a * c, and a⁻¹ exists because G is a group.<br>Multiply both sides on the LEFT by a⁻¹:<br>a⁻¹ * (a * b) = a⁻¹ * (a * c)<br>(a⁻¹ * a) * b = (a⁻¹ * a) * c &nbsp;&nbsp;(associativity)<br>e * b = e * c &nbsp;&nbsp;(definition of inverse)<br><strong>b = c</strong> &nbsp;&nbsp;(definition of identity) ∎<br><br><strong>Check it in (Z₅, +₅):</strong> 3 +₅ b = 3 +₅ c. Add the inverse of 3, which is 2, to both sides: 0 +₅ b = 0 +₅ c, so b = c. ✔",
+      "mistake": "Cancellation works only because an inverse exists. In a monoid it can fail: in (Z, ×) we have 0 × 2 = 0 × 3, but 2 ≠ 3 — because 0 has no inverse. Never cancel in a structure that is not a group.",
+      "examAnswer": "In any group G the following standard results hold. First, the identity element is unique, for if e and e′ are both identities then e = e * e′ = e′. Second, the inverse of each element is unique, for if b and c are both inverses of a then b = b * e = b * (a * c) = (b * a) * c = e * c = c. Third, (a⁻¹)⁻¹ = a, and for any a, b ∈ G we have (a * b)⁻¹ = b⁻¹ * a⁻¹, the order being reversed. Finally, both cancellation laws hold: a * b = a * c implies b = c, and b * a = c * a implies b = c, since each element possesses an inverse which may be applied to both sides.",
+      "remember": "Only ONE identity, only ONE inverse, and undoing flips the order: (ab)⁻¹ = b⁻¹a⁻¹.",
+      "why": "These are short proofs with high marks, and the cancellation laws are the tool you will use again and again in later proofs about subgroups and cosets.",
+      "practice": "Prove that the identity element of a group is unique. Then prove that (a * b)⁻¹ = b⁻¹ * a⁻¹."
+    },
+    {
+      "title": "Subgroups and How to Test One",
+      "teacher": "A subgroup is just a small group living inside a bigger group — like your project team inside your whole class. The team follows all the same rules, it is just smaller. And there is a one-line test to check it, which saves you a lot of exam time.",
+      "explain": "A non-empty subset H of a group G is a <strong>subgroup</strong> (written H ≤ G) if H is itself a group under the <em>same</em> operation. You do not need to re-check associativity — it is inherited from G. The quick test is: H is a subgroup if and only if H is non-empty and <strong>a * b⁻¹ ∈ H for all a, b ∈ H</strong>.",
+      "keyPoints": [
+        "H ≤ G means H ⊆ G and H is a group under the same operation.",
+        "<strong>One-step test:</strong> H ≠ ∅ and a * b⁻¹ ∈ H for all a, b ∈ H.",
+        "<strong>Two-step test:</strong> H is closed, and every element of H has its inverse in H.",
+        "Associativity is automatically inherited — never waste time proving it.",
+        "The identity of G must lie in H, and it is the same identity.",
+        "Every group G has two <strong>trivial subgroups</strong>: {e} and G itself.",
+        "Any other subgroup is called a <strong>proper subgroup</strong>.",
+        "Example: the even integers 2Z form a subgroup of (Z, +).",
+        "Subgroups of (Z₆, +₆): {0}, {0,3}, {0,2,4} and Z₆ itself."
+      ],
+      "subtopics": [
+        {
+          "title": "Why the one-step test works",
+          "text": "Take any a ∈ H. Putting b = a in the test gives a * a⁻¹ = e ∈ H, so the identity is in H. Putting a = e gives e * b⁻¹ = b⁻¹ ∈ H, so inverses are in H. Finally, for any a, b ∈ H we now know b⁻¹ ∈ H, so a * (b⁻¹)⁻¹ = a * b ∈ H, giving closure. All three come out of one condition."
+        },
+        {
+          "title": "The quickest way to reject a subset",
+          "text": "Check whether the identity is inside it. If e ∉ H then H is definitely not a subgroup, and you are done in one line. For example, the odd integers cannot be a subgroup of (Z, +), because 0 is even and therefore not in the set."
+        },
+        {
+          "title": "Finding all subgroups of a small group",
+          "text": "For a finite group, Lagrange's theorem (coming next) says the size of a subgroup must divide the size of the group. |Z₆| = 6, whose divisors are 1, 2, 3 and 6 — so look only for subgroups of those sizes. That is how you find {0}, {0,3}, {0,2,4} and Z₆ without guessing."
+        }
+      ],
+      "realLife": "Your whole MCA batch is the group. The students who share one project team form a subgroup — same college rules, same timetable, just a smaller set. And the batch coordinator (the identity) belongs to every team.",
+      "worked": "<strong>Show that H = {0, 3} is a subgroup of (Z₆, +₆).</strong><br>Z₆ = {0,1,2,3,4,5}, operation is addition modulo 6.<br><strong>Non-empty?</strong> Yes, 0 ∈ H. ✔<br><strong>Closure:</strong> 0+₆0 = 0 ∈ H, 0+₆3 = 3 ∈ H, 3+₆0 = 3 ∈ H, 3+₆3 = 6 mod 6 = 0 ∈ H. ✔<br><strong>Identity:</strong> 0 ∈ H. ✔<br><strong>Inverses:</strong> inverse of 0 is 0 ∈ H; inverse of 3 is 3, since 3+₆3 = 0, and 3 ∈ H. ✔<br><strong>Associativity:</strong> inherited from Z₆. ✔<br>So <strong>H ≤ Z₆</strong>, and |H| = 2 which divides |Z₆| = 6. ✔<br><br><strong>Now show K = {0, 1} is NOT a subgroup.</strong><br>1 +₆ 1 = 2, and 2 ∉ K. Closure fails, so K is not a subgroup.",
+      "mistake": "Never prove associativity for a subgroup — it is inherited from the parent group and earns zero marks. Spend that time on closure and inverses instead, which are where subsets actually fail.",
+      "examAnswer": "Let (G, *) be a group. A non-empty subset H of G is called a subgroup of G, written H ≤ G, if H itself forms a group under the same binary operation *. Since associativity is inherited from G, it is sufficient to verify closure, the presence of the identity and the presence of inverses. A convenient criterion, known as the one-step subgroup test, states that a non-empty subset H of G is a subgroup if and only if a * b⁻¹ ∈ H for all a, b ∈ H. Every group G possesses the trivial subgroups {e} and G itself; any other subgroup is called a proper subgroup. For example, the set of even integers forms a subgroup of the group (Z, +).",
+      "remember": "Subgroup = same operation, smaller set. Test a * b⁻¹ ∈ H. Never prove associativity.",
+      "why": "Subgroups lead directly to cosets, Lagrange's theorem, normal subgroups and factor groups — almost everything remaining in this unit is built on them.",
+      "practice": "Show that H = {0, 2, 4} is a subgroup of (Z₆, +₆) by checking closure, identity and inverses. Then explain why {1, 3, 5} is not."
+    },
+    {
+      "title": "Cyclic Groups, Generators and Order of an Element",
+      "teacher": "Imagine a group so well organised that ONE single element can produce every other element, just by repeating itself. That is a cyclic group — and a clock face is exactly this. Keep adding 1 and you eventually visit every hour.",
+      "explain": "A group G is <strong>cyclic</strong> if there is an element a ∈ G such that every element of G can be written as a power of a (or, for addition, a multiple of a). We write G = ⟨a⟩ and call a a <strong>generator</strong>. The <strong>order of an element</strong> a is the smallest positive integer n with aⁿ = e.",
+      "keyPoints": [
+        "G is cyclic if G = ⟨a⟩ = {aⁿ : n ∈ Z} for some a ∈ G.",
+        "Such an element a is called a <strong>generator</strong>; a group may have more than one.",
+        "For addition, 'powers' mean multiples: a, a+a, a+a+a, …",
+        "<strong>Order of an element a</strong> = smallest n &gt; 0 with aⁿ = e (or na = 0 for addition).",
+        "<strong>Every cyclic group is abelian</strong>, because aᵐ * aⁿ = aᵐ⁺ⁿ = aⁿ * aᵐ.",
+        "But an abelian group need NOT be cyclic — the Klein four-group is the standard counter-example.",
+        "(Z, +) is infinite cyclic, generated by 1 (and also by −1).",
+        "(Z₆, +₆) is cyclic of order 6, with generators 1 and 5.",
+        "Every subgroup of a cyclic group is itself cyclic.",
+        "A group of prime order is always cyclic, and every non-identity element generates it."
+      ],
+      "subtopics": [
+        {
+          "title": "Finding the order of an element",
+          "text": "Keep applying the operation until you land on the identity, and count the steps. In (Z₆, +₆) start at 2: 2, then 2+2 = 4, then 4+2 = 6 mod 6 = 0. Three steps, so the order of 2 is <strong>3</strong>. Similarly for 3: 3, then 3+3 = 0, so the order of 3 is <strong>2</strong>. Notice 3 and 2 both divide 6 — that is Lagrange's theorem at work."
+        },
+        {
+          "title": "How many generators does Zₙ have?",
+          "text": "An element k generates (Zₙ, +ₙ) exactly when k and n have no common factor other than 1, that is when gcd(k, n) = 1. For n = 6 the numbers coprime to 6 are 1 and 5, so Z₆ has exactly two generators. For n = 5, every one of 1, 2, 3, 4 is coprime to 5, so all four are generators — which is why every group of prime order is cyclic."
+        },
+        {
+          "title": "Cyclic implies abelian, but not the other way round",
+          "text": "The Klein four-group V = {e, a, b, c}, where a * a = b * b = c * c = e and a * b = c, is abelian but not cyclic: no single element can produce the other three, because every element returns to e after just two steps. So 'abelian' is a weaker condition than 'cyclic'."
+        }
+      ],
+      "realLife": "A 12-hour clock is a cyclic group. Start at 12 and keep adding 1 hour — you reach every hour on the dial and eventually return to 12. The element '1 hour' is the generator, and the order of '1 hour' is 12.",
+      "worked": "<strong>Show that (Z₆, +₆) is cyclic and find its generators.</strong><br>Z₆ = {0, 1, 2, 3, 4, 5}, operation is addition modulo 6.<br><br><strong>Try a = 1:</strong> 1, 1+1 = 2, +1 = 3, +1 = 4, +1 = 5, +1 = 0.<br>We obtained {1,2,3,4,5,0} = all of Z₆, so <strong>1 is a generator</strong> and Z₆ is cyclic. Order of 1 = 6.<br><br><strong>Try a = 5:</strong> 5, 5+5 = 10 mod 6 = 4, +5 = 9 mod 6 = 3, +5 = 8 mod 6 = 2, +5 = 7 mod 6 = 1, +5 = 6 mod 6 = 0.<br>We obtained {5,4,3,2,1,0} = all of Z₆, so <strong>5 is also a generator</strong>.<br><br><strong>Try a = 2:</strong> 2, 4, 0 — then it repeats. Only {0,2,4}, so 2 is NOT a generator; its order is 3 and ⟨2⟩ = {0,2,4} is a subgroup.<br><strong>Try a = 3:</strong> 3, 0 — only {0,3}, order 2, ⟨3⟩ = {0,3}.<br><strong>Try a = 4:</strong> 4, 2, 0 — only {0,2,4}, order 3.<br><br><strong>Answer:</strong> Z₆ is cyclic with exactly two generators, <strong>1 and 5</strong> — the elements coprime to 6.",
+      "mistake": "The order of a GROUP is the number of its elements; the order of an ELEMENT is how many times you must apply it to reach the identity. They are different things with the same name. In Z₆ the group order is 6 but the order of the element 3 is only 2.",
+      "examAnswer": "A group G is said to be cyclic if there exists an element a ∈ G such that every element of G can be expressed as an integral power of a, that is G = ⟨a⟩ = {aⁿ : n ∈ Z}; such an element a is called a generator of G. The order of an element a ∈ G is defined as the least positive integer n for which aⁿ = e, where e is the identity element. Every cyclic group is abelian, since aᵐ · aⁿ = aᵐ⁺ⁿ = aⁿ · aᵐ, though the converse is not true, the Klein four-group being abelian but not cyclic. Further, every subgroup of a cyclic group is cyclic, and every group of prime order is necessarily cyclic. For example, (Z₆, +₆) is cyclic of order 6 with generators 1 and 5.",
+      "remember": "Cyclic = one element makes them all. Cyclic ⇒ abelian, but abelian ⇏ cyclic.",
+      "why": "Cyclic groups are the simplest groups of all, and modular arithmetic — which is exactly (Zₙ, +ₙ) — is the basis of hashing, checksums and RSA cryptography.",
+      "practice": "Is (Z₅, +₅) cyclic? Find all its generators, and write the order of each element."
+    },
+    {
+      "title": "Cosets, Lagrange's Theorem and Normal Subgroups",
+      "teacher": "Here is a beautiful idea. Take a subgroup and slide it around inside the big group. Each slide gives you a 'shifted copy' called a coset, and these copies tile the whole group perfectly — no gaps, no overlaps. From that one picture comes Lagrange's theorem, one of the most famous results in algebra.",
+      "explain": "For a subgroup H of G and an element a ∈ G, the <strong>left coset</strong> is aH = {a * h : h ∈ H} and the <strong>right coset</strong> is Ha = {h * a : h ∈ H}. All cosets of H have the same size as H, and they partition G. This gives <strong>Lagrange's theorem</strong>: in a finite group, |H| always divides |G|. A subgroup for which aH = Ha for every a ∈ G is called a <strong>normal subgroup</strong>.",
+      "keyPoints": [
+        "<strong>Left coset:</strong> aH = {a * h : h ∈ H}. <strong>Right coset:</strong> Ha = {h * a : h ∈ H}.",
+        "Every coset has exactly the same number of elements as H.",
+        "Two cosets are either identical or completely disjoint — they partition G.",
+        "A coset is generally NOT a subgroup (only H itself, the coset eH, is).",
+        "<strong>Lagrange's theorem:</strong> if G is finite and H ≤ G, then |H| divides |G|.",
+        "The number of distinct cosets is the <strong>index</strong> [G : H] = |G| / |H|.",
+        "<strong>Corollary:</strong> the order of every element divides |G|.",
+        "<strong>Corollary:</strong> a group of prime order has no proper subgroups, and is cyclic.",
+        "<strong>Normal subgroup (H ⊴ G):</strong> aH = Ha for every a ∈ G, equivalently aHa⁻¹ ⊆ H.",
+        "In an abelian group EVERY subgroup is normal, since a * h = h * a always.",
+        "If H ⊴ G, the set of cosets G/H is itself a group, called the <strong>factor</strong> or <strong>quotient group</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "Why cosets tile the group perfectly",
+          "text": "Every element a of G lies in its own coset aH, because e ∈ H gives a * e = a. So the cosets cover all of G. And if two cosets share even one element, they turn out to be exactly the same set. Covering everything with no partial overlap means the cosets form a <strong>partition</strong> — and since each piece has |H| elements, |G| must be a multiple of |H|. That is the whole proof of Lagrange's theorem."
+        },
+        {
+          "title": "Normal subgroups — left and right must agree",
+          "text": "H is normal when the left coset and the right coset are the <em>same set</em> for every a. Note carefully: it does NOT require a * h = h * a for each individual h, only that the whole set aH equals the whole set Ha. In an abelian group this is automatic, so every subgroup of an abelian group is normal. In S₃ the subgroup {e, (1 2)} is not normal, while A₃ = {e, (1 2 3), (1 3 2)} is."
+        },
+        {
+          "title": "The factor (quotient) group G/H",
+          "text": "When H is normal, we can treat each coset as a single new 'element' and multiply cosets by the rule (aH)(bH) = (ab)H. This is well defined only because H is normal — that is exactly why normality matters. The result G/H is a group whose order is the index [G : H] = |G|/|H|. For example Z₆/{0,3} has 6/2 = 3 elements and behaves exactly like Z₃."
+        },
+        {
+          "title": "A warning about the converse of Lagrange",
+          "text": "Lagrange says |H| must divide |G|. It does NOT promise that a subgroup exists for every divisor of |G|. The alternating group A₄ has order 12 but possesses no subgroup of order 6. So use Lagrange to rule possibilities <em>out</em>, never to claim a subgroup must exist."
+        }
+      ],
+      "realLife": "Think of your batch of 60 students divided into project teams of 4. Every student is in exactly one team, no student is in two teams, and no team is half empty. So 4 must divide 60 — that is Lagrange's theorem in the canteen.",
+      "worked": "<strong>Find all left cosets of H = {0, 3} in G = (Z₆, +₆), and verify Lagrange.</strong><br>Here the operation is +₆, so the coset a + H = {a +₆ 0, a +₆ 3}.<br><br>0 + H = {0, 3}<br>1 + H = {1, 4}<br>2 + H = {2, 5}<br>3 + H = {3, 0} → same set as 0 + H<br>4 + H = {4, 1} → same set as 1 + H<br>5 + H = {5, 2} → same set as 2 + H<br><br><strong>Distinct cosets:</strong> {0,3}, {1,4}, {2,5} — exactly <strong>3</strong> of them.<br>They do not overlap, and together they contain all 6 elements of Z₆. ✔<br><br><strong>Lagrange check:</strong> |H| = 2, number of cosets (index) = 3, and 2 × 3 = 6 = |G|. ✔ So |H| divides |G|.<br><br><strong>Normal?</strong> Z₆ is abelian, so a + H = H + a for every a. Hence <strong>H ⊴ Z₆</strong>, and the factor group Z₆/H = { {0,3}, {1,4}, {2,5} } has order 3.",
+      "table": {
+        "headers": [
+          "",
+          "Subgroup H",
+          "Coset aH",
+          "Normal subgroup"
+        ],
+        "rows": [
+          [
+            "Contains identity?",
+            "Always",
+            "Only when aH = H",
+            "Always"
+          ],
+          [
+            "Is it a group?",
+            "Yes",
+            "Usually not",
+            "Yes"
+          ],
+          [
+            "Size",
+            "|H|",
+            "|H| (same as H)",
+            "|H|"
+          ],
+          [
+            "Extra condition",
+            "a * b⁻¹ ∈ H",
+            "aH = {a*h : h ∈ H}",
+            "aH = Ha for all a ∈ G"
+          ],
+          [
+            "Example in Z₆",
+            "{0, 3}",
+            "1 + H = {1, 4}",
+            "{0,3} (Z₆ is abelian)"
+          ]
+        ]
+      },
+      "mistake": "A coset is almost never a subgroup. In the example above, {1, 4} does not contain 0, so it cannot possibly be a group. Only the coset eH — which is H itself — is a subgroup.",
+      "examAnswer": "Let H be a subgroup of a group G and let a ∈ G. The set aH = {a * h : h ∈ H} is called the left coset of H in G determined by a, and Ha = {h * a : h ∈ H} is the corresponding right coset. Every coset of H contains exactly |H| elements, and any two distinct cosets are disjoint, so that the cosets of H partition G. From this follows Lagrange's theorem, which states that if G is a finite group and H is a subgroup of G, then the order of H divides the order of G, the quotient |G|/|H| being called the index of H in G. A subgroup H is said to be normal in G, written H ⊴ G, if aH = Ha for every a ∈ G; in that case the set of cosets forms a group G/H under the operation (aH)(bH) = (ab)H, called the factor or quotient group. Every subgroup of an abelian group is normal.",
+      "remember": "Cosets tile the group with equal-sized pieces ⇒ |H| divides |G|. Normal means left coset = right coset.",
+      "why": "Lagrange instantly tells you which subgroup sizes are even possible, saving huge time in problems, and normal subgroups are what make factor groups and the homomorphism theorems work.",
+      "practice": "Find all left cosets of H = {0, 2, 4} in (Z₆, +₆). How many are there? Verify Lagrange's theorem and state the index."
+    },
+    {
+      "title": "Permutation Groups",
+      "teacher": "Take three books on a shelf and rearrange them. Every possible rearrangement is a permutation, and all the rearrangements together form a group. This is the friendliest example of a group where order genuinely matters — swapping first and then rotating is not the same as rotating and then swapping.",
+      "explain": "A <strong>permutation</strong> of a set is a one-one, onto function from the set to itself — in plain words, a rearrangement. The set of all permutations of n symbols, under the operation 'do one, then the other' (composition), forms a group called the <strong>symmetric group Sₙ</strong>, with <strong>n! elements</strong>. For n ≥ 3 it is non-abelian.",
+      "keyPoints": [
+        "A permutation is a bijective function from a set onto itself.",
+        "<strong>Sₙ</strong> = the group of all permutations of n symbols, under composition.",
+        "<strong>|Sₙ| = n!</strong> So |S₃| = 6, |S₄| = 24.",
+        "The identity permutation leaves every symbol where it is.",
+        "The inverse of a permutation simply reverses every arrow.",
+        "Sₙ is <strong>non-abelian for n ≥ 3</strong> — this is the standard example of a non-abelian group.",
+        "A <strong>cycle</strong> like (1 2 3) means 1→2, 2→3, 3→1.",
+        "A <strong>transposition</strong> is a cycle of length 2, i.e. a single swap, like (1 2).",
+        "Permutations that need an even number of swaps are <strong>even</strong>; the even ones form the <strong>alternating group Aₙ</strong>, with n!/2 elements.",
+        "<strong>Cayley's theorem:</strong> every finite group is isomorphic to some group of permutations."
+      ],
+      "subtopics": [
+        {
+          "title": "Two ways to write a permutation",
+          "text": "The <strong>two-row form</strong> lists the inputs on top and their images below: writing 1 2 3 above 2 3 1 means 1→2, 2→3, 3→1. The shorter <strong>cycle form</strong> writes the same thing as (1 2 3). Any symbol that does not move is simply left out of the cycle notation."
+        },
+        {
+          "title": "Composition — which one acts first?",
+          "text": "By the usual convention f ∘ g means 'apply <strong>g first</strong>, then f' — exactly the same right-to-left rule you learnt for composition of functions in Unit 1. Many textbooks differ here, so in the exam state clearly which convention you are using and stay consistent throughout the answer."
+        },
+        {
+          "title": "The elements of S₃",
+          "text": "S₃ has 3! = 6 elements: the identity e, the three transpositions (1 2), (1 3), (2 3), and the two 3-cycles (1 2 3) and (1 3 2). The subgroup A₃ = {e, (1 2 3), (1 3 2)} has order 3, which divides 6 as Lagrange requires, and since its index is 2 it is a normal subgroup of S₃."
+        }
+      ],
+      "realLife": "Shuffling a deck of cards is a permutation. Riffle-shuffle then cut is not the same final deck as cut then riffle-shuffle — which is precisely what 'non-abelian' means in ordinary language.",
+      "worked": "<strong>Show that S₃ is non-abelian.</strong><br>Let f = (1 2), meaning 1→2, 2→1, 3→3.<br>Let g = (1 3), meaning 1→3, 3→1, 2→2.<br>Convention: f ∘ g means apply <strong>g first</strong>, then f.<br><br><strong>Compute f ∘ g:</strong><br>1 --g--&gt; 3 --f--&gt; 3, so 1 → 3<br>2 --g--&gt; 2 --f--&gt; 1, so 2 → 1<br>3 --g--&gt; 1 --f--&gt; 2, so 3 → 2<br>Result: 1→3, 3→2, 2→1, which is the cycle <strong>(1 3 2)</strong>.<br><br><strong>Compute g ∘ f:</strong><br>1 --f--&gt; 2 --g--&gt; 2, so 1 → 2<br>2 --f--&gt; 1 --g--&gt; 3, so 2 → 3<br>3 --f--&gt; 3 --g--&gt; 1, so 3 → 1<br>Result: 1→2, 2→3, 3→1, which is the cycle <strong>(1 2 3)</strong>.<br><br>(1 3 2) ≠ (1 2 3), so <strong>f ∘ g ≠ g ∘ f</strong>. Hence S₃ is a group but <strong>not abelian</strong>. ∎",
+      "mistake": "Students write |S₃| = 3. It is 3! = <strong>6</strong> — you are counting the arrangements of the symbols, not the symbols themselves. Also, do not assume permutation multiplication is commutative; that is exactly what this example disproves.",
+      "examAnswer": "A permutation of a non-empty set S is a one-one and onto mapping from S onto itself. The set of all permutations of n distinct symbols forms a group under the operation of composition of mappings, called the symmetric group of degree n and denoted Sₙ. Its order is n!, the identity element is the identity permutation which leaves every symbol unchanged, and the inverse of a permutation is the permutation obtained by reversing each mapping. For n ≥ 3 the group Sₙ is non-abelian; for instance in S₃, (1 2) ∘ (1 3) = (1 3 2) whereas (1 3) ∘ (1 2) = (1 2 3). A subgroup of a symmetric group is called a permutation group, and by Cayley's theorem every finite group is isomorphic to some permutation group.",
+      "remember": "Sₙ has n! elements, and from n = 3 onwards it is non-abelian. Shuffle then cut ≠ cut then shuffle.",
+      "why": "Permutation groups are the standard source of non-abelian examples in exams, and they describe shuffling, sorting, symmetry and error-correcting codes in computing.",
+      "practice": "Write all 6 elements of S₃ in cycle notation. Then compute (1 2 3) ∘ (1 2) and (1 2) ∘ (1 2 3), and say whether they are equal."
+    },
+    {
+      "title": "Homomorphism and Isomorphism of Groups",
+      "teacher": "Two groups can look totally different on the outside but behave exactly the same on the inside — like the same song sung in two languages. A homomorphism is a translation that respects the operation. An isomorphism is a perfect translation, with nothing lost.",
+      "explain": "A map f : G → G′ between two groups is a <strong>homomorphism</strong> if it preserves the operation: <strong>f(a * b) = f(a) ∘ f(b)</strong> for all a, b ∈ G. If f is also <strong>one-one and onto</strong>, it is an <strong>isomorphism</strong>, and we write G ≅ G′ — the two groups are structurally identical.",
+      "keyPoints": [
+        "<strong>Homomorphism:</strong> f(a * b) = f(a) ∘ f(b) — the structure is preserved.",
+        "<strong>Isomorphism:</strong> a homomorphism that is also one-one (injective) and onto (surjective).",
+        "G ≅ G′ means the two groups differ only in the names of their elements.",
+        "Every homomorphism sends identity to identity: f(e) = e′.",
+        "Every homomorphism sends inverses to inverses: f(a⁻¹) = f(a)⁻¹.",
+        "<strong>Kernel:</strong> ker f = {a ∈ G : f(a) = e′} — everything that gets flattened to the identity.",
+        "The kernel is always a <strong>normal subgroup</strong> of G; the image is always a subgroup of G′.",
+        "f is one-one (and so an isomorphism onto its image) <strong>iff ker f = {e}</strong>.",
+        "<strong>Endomorphism</strong> = homomorphism from G to itself; <strong>automorphism</strong> = isomorphism from G to itself.",
+        "Isomorphic groups have the same order, the same abelian/non-abelian nature, and matching element orders."
+      ],
+      "subtopics": [
+        {
+          "title": "The one condition that defines a homomorphism",
+          "text": "Everything else follows from f(a * b) = f(a) ∘ f(b). For example, f(e) = f(e * e) = f(e) ∘ f(e); cancelling f(e) on one side gives f(e) = e′. So you never need to <em>assume</em> that identity maps to identity — it is automatic."
+        },
+        {
+          "title": "The kernel measures how much information is lost",
+          "text": "If the kernel is just {e}, no two distinct elements collide, so the map is one-one and nothing is lost. If the kernel is large, many elements are crushed onto the identity. This is why 'ker f = {e} ⇔ f is one-one' is such a useful test, and it is a very common short-answer question."
+        },
+        {
+          "title": "How to prove two groups are NOT isomorphic",
+          "text": "Find a structural property that one has and the other lacks. Different orders is the quickest. Otherwise: one abelian and the other not; different numbers of elements of order 2; one cyclic and the other not. For example Z₄ and the Klein four-group both have order 4, but Z₄ is cyclic and the Klein group is not, so they cannot be isomorphic."
+        }
+      ],
+      "realLife": "A translated textbook is an isomorphism — the Hindi edition and the English edition are different symbols but exactly the same book, chapter for chapter. A summary is only a homomorphism: the structure survives, but detail is lost and you cannot rebuild the original from it.",
+      "worked": "<strong>Example 1 — a homomorphism that is not an isomorphism.</strong><br>Define f : (Z, +) → (Z₅, +₅) by f(n) = n mod 5.<br><strong>Check:</strong> f(7 + 4) = f(11) = 11 mod 5 = <strong>1</strong>.<br>And f(7) +₅ f(4) = 2 +₅ 4 = 6 mod 5 = <strong>1</strong>. Same answer ✔<br>So f is a homomorphism. It is <strong>onto</strong> (every element of Z₅ is hit) but <strong>not one-one</strong>, since f(0) = f(5) = f(10) = 0.<br><strong>Kernel</strong> = {…, −5, 0, 5, 10, …} = all multiples of 5, which is bigger than {0}. Confirms it is not one-one.<br><br><strong>Example 2 — an isomorphism.</strong><br>Define f : (Z, +) → (2Z, +) by f(n) = 2n, where 2Z is the set of even integers.<br><strong>Homomorphism?</strong> f(a + b) = 2(a + b) = 2a + 2b = f(a) + f(b) ✔<br><strong>One-one?</strong> If 2a = 2b then a = b ✔<br><strong>Onto?</strong> Any even number can be written 2k = f(k) ✔<br>So f is an isomorphism and <strong>(Z, +) ≅ (2Z, +)</strong>. Kernel = {0}, as expected.",
+      "table": {
+        "headers": [
+          "",
+          "Homomorphism",
+          "Isomorphism"
+        ],
+        "rows": [
+          [
+            "Preserves the operation",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "One-one (injective)",
+            "Not required",
+            "Required"
+          ],
+          [
+            "Onto (surjective)",
+            "Not required",
+            "Required"
+          ],
+          [
+            "Kernel",
+            "Any normal subgroup",
+            "Exactly {e}"
+          ],
+          [
+            "Information lost?",
+            "Possibly",
+            "None"
+          ],
+          [
+            "Example",
+            "f(n) = n mod 5, Z → Z₅",
+            "f(n) = 2n, Z → 2Z"
+          ]
+        ]
+      },
+      "mistake": "Every isomorphism is a homomorphism, but most homomorphisms are NOT isomorphisms. Also, do not forget to actually verify f(a * b) = f(a) ∘ f(b) with the correct operation on each side — the left side uses G's operation, the right side uses G′'s operation, and they are often different symbols.",
+      "examAnswer": "Let (G, *) and (G′, ∘) be two groups. A mapping f : G → G′ is called a homomorphism if f(a * b) = f(a) ∘ f(b) for all a, b ∈ G, that is, if it preserves the group operation. Every homomorphism satisfies f(e) = e′ and f(a⁻¹) = [f(a)]⁻¹. The set ker f = {a ∈ G : f(a) = e′} is called the kernel of f and is always a normal subgroup of G, while the image of f is a subgroup of G′. A homomorphism which is both one-one and onto is called an isomorphism, and two groups connected by an isomorphism are said to be isomorphic, written G ≅ G′. A homomorphism is one-one if and only if its kernel consists of the identity element alone.",
+      "remember": "Homomorphism preserves the operation. Isomorphism preserves it AND is one-one and onto. Kernel = {e} ⇔ one-one.",
+      "why": "Isomorphism lets you study one hard group by working in an easier group that behaves identically, and homomorphisms are how encoders, hash functions and modular reductions are described formally.",
+      "practice": "Show that f : (Z, +) → (Z₆, +₆) given by f(n) = n mod 6 is a homomorphism. Find its kernel and say whether it is an isomorphism."
+    },
+    {
+      "title": "Introduction to Rings and Fields",
+      "teacher": "So far every structure had just ONE operation. But real numbers have two — you can add AND multiply. Rings and fields are what you get when you put two operations on the same set. Good news: you already know all the ingredients.",
+      "explain": "A <strong>ring</strong> (R, +, ·) is a set with two operations where (R, +) is an <strong>abelian group</strong>, multiplication is <strong>closed and associative</strong> (a semigroup), and the two are linked by the <strong>distributive laws</strong>. A <strong>field</strong> is a ring where multiplication is also commutative, there is a unity 1, and <strong>every non-zero element has a multiplicative inverse</strong>.",
+      "keyPoints": [
+        "<strong>Ring:</strong> (R, +) is an abelian group, (R, ·) is a semigroup, and · distributes over +.",
+        "<strong>Distributive laws:</strong> a·(b + c) = a·b + a·c and (b + c)·a = b·a + c·a.",
+        "<strong>Ring with unity:</strong> there is an element 1 with a·1 = 1·a = a.",
+        "<strong>Commutative ring:</strong> a·b = b·a for all a, b.",
+        "<strong>Integral domain:</strong> a commutative ring with unity and no zero divisors (a·b = 0 ⇒ a = 0 or b = 0).",
+        "<strong>Field:</strong> a commutative ring with unity in which every non-zero element has a multiplicative inverse.",
+        "Equivalently, in a field (F, +) is an abelian group and (F − {0}, ·) is also an abelian group.",
+        "(Z, +, ×) is an integral domain but NOT a field — 2 has no integer inverse.",
+        "(Q, +, ×), (R, +, ×) and (C, +, ×) are fields.",
+        "(Zₚ, +ₚ, ×ₚ) is a field exactly when p is <strong>prime</strong>. Z₅ is a field; Z₆ is not.",
+        "Every field is an integral domain, and every integral domain is a ring. The reverse is not true."
+      ],
+      "subtopics": [
+        {
+          "title": "Reading the definition as a checklist",
+          "text": "For a ring, check three blocks. Block 1: is (R, +) an abelian group — closure, associativity, zero, negatives, commutativity? Block 2: is multiplication closed and associative? Block 3: do both distributive laws hold? Notice that multiplication does <em>not</em> need an identity or inverses in a plain ring — that is what separates a ring from a field."
+        },
+        {
+          "title": "Zero divisors and why Z₆ fails",
+          "text": "In Z₆ we have 2 ×₆ 3 = 6 mod 6 = 0, yet neither 2 nor 3 is zero. Such elements are called <strong>zero divisors</strong>, and their presence stops Z₆ from being an integral domain or a field. In Z₅, because 5 is prime, no two non-zero elements can multiply to 0, and in fact every non-zero element has an inverse: 1×1 = 1, 2×3 = 6 = 1, and 4×4 = 16 = 1 (mod 5)."
+        },
+        {
+          "title": "Field = you can divide",
+          "text": "The single practical difference is division. In a field you may divide by any non-zero element, because its inverse exists. In Z you cannot — 1/2 is not an integer. So Z is a ring and an integral domain but not a field, while Q, R and C are fields. That one sentence answers most short questions on this topic."
+        }
+      ],
+      "realLife": "Your calculator in 'integer only' mode is a ring — you can add, subtract and multiply whole numbers, but 7 ÷ 2 is not allowed. Switch it to decimal mode and you now have a field, because division by any non-zero number works.",
+      "worked": "<strong>Show that (Z₅, +₅, ×₅) is a field.</strong><br>Z₅ = {0, 1, 2, 3, 4}.<br><br><strong>Step 1 — is (Z₅, +₅) an abelian group?</strong> Yes, proved earlier: identity 0, inverses 0↔0, 1↔4, 2↔3, and the table is symmetric. ✔<br><br><strong>Step 2 — multiplication table (mod 5):</strong><br><code>×₅ | 0  1  2  3  4</code><br><code>---+---------------</code><br><code> 0 | 0  0  0  0  0</code><br><code> 1 | 0  1  2  3  4</code><br><code> 2 | 0  2  4  1  3</code><br><code> 3 | 0  3  1  4  2</code><br><code> 4 | 0  4  3  2  1</code><br>Closed ✔, associative ✔, commutative (table is symmetric) ✔, unity = <strong>1</strong> ✔.<br><br><strong>Step 3 — multiplicative inverses of the non-zero elements.</strong> Look for 1 in each row:<br>1 ×₅ 1 = 1 → inverse of 1 is <strong>1</strong><br>2 ×₅ 3 = 6 mod 5 = 1 → inverse of 2 is <strong>3</strong><br>3 ×₅ 2 = 1 → inverse of 3 is <strong>2</strong><br>4 ×₅ 4 = 16 mod 5 = 1 → inverse of 4 is <strong>4</strong><br>Every non-zero element has an inverse ✔<br><br><strong>Step 4 — distributive law, one check:</strong> 2 ×₅ (3 +₅ 4) = 2 ×₅ 2 = 4, and (2×₅3) +₅ (2×₅4) = 1 +₅ 3 = 4. Equal ✔<br><br><strong>Conclusion:</strong> (Z₅, +₅, ×₅) is a <strong>field</strong>.<br><em>Compare Z₆:</em> 2 ×₆ 3 = 0 with neither factor zero, so Z₆ has zero divisors and is only a ring, not a field.",
+      "table": {
+        "headers": [
+          "",
+          "Ring",
+          "Integral domain",
+          "Field"
+        ],
+        "rows": [
+          [
+            "(R, +) abelian group",
+            "Yes",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Multiplication associative",
+            "Yes",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Distributive laws",
+            "Yes",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Multiplication commutative",
+            "Not required",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Unity element 1",
+            "Not required",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "No zero divisors",
+            "Not required",
+            "Yes",
+            "Yes"
+          ],
+          [
+            "Inverse of every non-zero element",
+            "No",
+            "No",
+            "Yes"
+          ],
+          [
+            "Example",
+            "Z₆, 2×2 matrices",
+            "(Z, +, ×)",
+            "Q, R, C, Z₅"
+          ]
+        ]
+      },
+      "mistake": "In a ring, multiplication does NOT need an identity, commutativity or inverses — only closure, associativity and distributivity. Students wrongly demand that (R, ·) be a group; if it were (apart from 0) you would already have a field.",
+      "examAnswer": "A non-empty set R together with two binary operations, addition and multiplication, is called a ring if (R, +) is an abelian group, multiplication is closed and associative on R, and multiplication distributes over addition, that is a·(b + c) = a·b + a·c and (b + c)·a = b·a + c·a for all a, b, c ∈ R. A ring possessing a multiplicative identity is called a ring with unity, and one in which multiplication is commutative is called a commutative ring. A commutative ring with unity and without zero divisors is called an integral domain. A field is a commutative ring with unity in which every non-zero element possesses a multiplicative inverse; equivalently, (F, +) and (F − {0}, ·) are both abelian groups. Thus (Z, +, ×) is an integral domain but not a field, whereas (Q, +, ×) and (Z₅, +₅, ×₅) are fields.",
+      "remember": "Ring = add like a group, multiply like a semigroup, joined by distribution. Field = a ring where you can also DIVIDE.",
+      "why": "Finite fields such as Zₚ are the mathematical machinery behind RSA and AES encryption, error-correcting codes and hashing — every secure transaction on your phone uses them.",
+      "practice": "Is (Z₆, +₆, ×₆) a field? Justify your answer by finding a zero divisor, and state which ring property fails."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Which property is NOT required for a structure to be a semigroup?",
+      "options": [
+        "A binary operation on the set",
+        "Closure",
+        "An identity element",
+        "Associativity"
+      ],
+      "answer": 2,
+      "why": "A semigroup needs only closure and associativity. An identity element is the extra property that turns a semigroup into a monoid."
+    },
+    {
+      "q": "A monoid is a semigroup that additionally has…",
+      "options": [
+        "An identity element",
+        "An inverse for every element",
+        "Commutativity",
+        "Infinitely many elements"
+      ],
+      "answer": 0,
+      "why": "Monoid = semigroup + identity. Adding inverses on top of that would make it a group; adding commutativity as well would make it abelian."
+    },
+    {
+      "q": "The structure (Z, ×) — the integers under ordinary multiplication — is…",
+      "options": [
+        "A group",
+        "An abelian group",
+        "A monoid but not a group",
+        "Not even a semigroup"
+      ],
+      "answer": 2,
+      "why": "It is closed and associative with identity 1, so it is a monoid. But 2 has no integer inverse (1/2 ∉ Z), so it is not a group."
+    },
+    {
+      "q": "In the group (Z₅, +₅), the inverse of the element 2 is…",
+      "options": [
+        "2",
+        "5",
+        "3",
+        "0"
+      ],
+      "answer": 2,
+      "why": "The identity is 0, and 2 +₅ 3 = 5 mod 5 = 0. So the inverse of 2 is 3."
+    },
+    {
+      "q": "Lagrange's theorem states that…",
+      "options": [
+        "The order of G divides the order of every subgroup H",
+        "The order of any subgroup H divides the order of the finite group G",
+        "Every group has a subgroup of every possible size",
+        "|H| is always exactly half of |G|"
+      ],
+      "answer": 1,
+      "why": "Cosets of H partition G into equal-sized pieces of size |H|, so |H| must divide |G|. Note the direction — |H| divides |G|, not the other way round."
+    },
+    {
+      "q": "The symmetric group S₃ (all permutations of 3 symbols) has how many elements?",
+      "options": [
+        "3",
+        "6",
+        "9",
+        "27"
+      ],
+      "answer": 1,
+      "why": "|Sₙ| = n!, so |S₃| = 3! = 6. You are counting the rearrangements, not the symbols."
+    },
+    {
+      "q": "A subgroup H of G is called a normal subgroup when…",
+      "options": [
+        "H contains every element of G",
+        "aH = Ha for every a ∈ G",
+        "H is the smallest possible subgroup",
+        "H has prime order"
+      ],
+      "answer": 1,
+      "why": "Normal means the left coset and the right coset are the same SET for every a. This is what makes the factor group G/H well defined."
+    },
+    {
+      "q": "A mapping f from group (G, *) to group (G′, ∘) is a homomorphism if…",
+      "options": [
+        "f is one-one and onto",
+        "f(a * b) = f(a) ∘ f(b) for all a, b ∈ G",
+        "f(a) = a for every a ∈ G",
+        "f maps G onto a ring"
+      ],
+      "answer": 1,
+      "why": "A homomorphism only has to preserve the operation. If it is additionally one-one and onto, it becomes an isomorphism."
+    },
+    {
+      "q": "Which statement is true for a field?",
+      "options": [
+        "Only addition has inverses",
+        "Multiplication need not be commutative",
+        "There is no identity element",
+        "Every non-zero element has a multiplicative inverse"
+      ],
+      "answer": 3,
+      "why": "That is exactly what separates a field from a ring — you can divide by any non-zero element. This is why Z is not a field but Q and Z₅ are."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Define semigroup, monoid, group and abelian group. Show clearly which property is added at each step, and give one example of each.",
+      "hint": "Draw the ladder first, then hang one example on each rung: (N,+), (Z,×), S₃, (Z,+)."
+    },
+    {
+      "q": "Prove that (Z₅, +₅) is an abelian group. Write the full addition table and verify each axiom one by one.",
+      "hint": "Closure from the table, associativity with one example, identity 0, inverses by locating 0 in each row, commutativity from the symmetry of the table."
+    },
+    {
+      "q": "Prove that in any group the identity element is unique and the inverse of each element is unique. Also state and prove the left cancellation law."
+    },
+    {
+      "q": "Find all the left cosets of H = {0, 3} in the group (Z₆, +₆). Verify Lagrange's theorem, state the index, and explain why H is a normal subgroup."
+    },
+    {
+      "q": "Explain the difference between a homomorphism and an isomorphism of groups with one example of each. Then define a ring and a field, and explain why (Z, +, ×) is a ring but not a field."
+    }
+  ]
+};

@@ -1,0 +1,463 @@
+/* Programming & Problem Solving in C (MCA 109) — Unit 5. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.c = UNITS.c || [];
+UNITS.c[4] = {
+  "num": 5,
+  "title": "File Handling and the C Preprocessor",
+  "problem": "Every program you have written so far forgets everything the moment it closes. Type 60 students' marks, close the program, and the data is gone — because RAM is temporary. Also, the same constant value gets copy-pasted in twenty places and becomes impossible to change.",
+  "solution": "Files let a program save data on disk so it survives after the program ends. The preprocessor edits your source code before compilation, so one #define fixes a value everywhere, and conditional compilation lets one file behave differently on different machines.",
+  "objectives": [
+    "Explain why files are needed, and declare and use a FILE pointer",
+    "Choose the correct fopen() mode, and say exactly which one destroys an existing file",
+    "Read and write files using the character, string, formatted and block function families",
+    "Detect the end of a file correctly using EOF",
+    "Move around inside a file using fseek(), ftell() and rewind()",
+    "Distinguish a text file from a binary file",
+    "Use the printf and scanf families, including sprintf() and sscanf()",
+    "Write object-like and function-like macros, and avoid the classic bracket bug",
+    "Apply conditional compilation directives and write a correct include guard",
+    "Write a function that accepts a variable number of arguments using stdarg.h"
+  ],
+  "topics": [
+    {
+      "title": "Why Files? The FILE Pointer",
+      "teacher": "Think about writing notes on your hand versus writing them in a notebook. Wash your hands and the notes vanish — that is RAM. The notebook stays on your shelf for years — that is a file. Every program that must remember something needs a notebook.",
+      "explain": "A program's variables live in <strong>RAM, which is volatile</strong> — everything disappears when the program ends or the power goes. A <strong>file</strong> is a named collection of data stored permanently on disk, so the data survives. In C you never touch the file directly; you work through a <strong>FILE pointer</strong>, a pointer to a structure (defined in <code>&lt;stdio.h&gt;</code>) that the system uses to keep track of that open file.",
+      "keyPoints": [
+        "RAM is <strong>volatile</strong> — data is lost when the program ends. A file is <strong>permanent</strong>.",
+        "Files also let you handle data bigger than memory, and share data between programs.",
+        "Declare a file handle as <code>FILE *fp;</code> — <code>FILE</code> is a structure defined in <code>&lt;stdio.h&gt;</code>.",
+        "Four steps always: <strong>declare → open → read/write → close</strong>.",
+        "<code>fp = fopen(\"marks.txt\", \"r\");</code> opens a file and returns a FILE pointer.",
+        "<code>fopen()</code> returns <code>NULL</code> if it fails — <strong>always check this</strong>.",
+        "<code>fclose(fp);</code> flushes the buffer to disk and releases the file.",
+        "Three streams open automatically: <code>stdin</code>, <code>stdout</code>, <code>stderr</code>."
+      ],
+      "subtopics": [
+        {
+          "title": "What the FILE pointer really holds",
+          "text": "<code>FILE</code> is a structure the library uses to store information about an open file — its buffer, the current read/write position, and error and end-of-file flags. You never look inside it and never change its members by hand. You just keep the pointer and pass it to every file function, exactly like a token number at a bank counter."
+        },
+        {
+          "title": "Why fclose() is not optional",
+          "text": "Writing to a file usually goes into a <strong>buffer</strong> in memory first, and is written to disk only when the buffer fills up. <code>fclose()</code> forces that buffer out (flushes it) and frees the file handle. If your program ends without fclose, the last lines you 'wrote' may never actually reach the disk. Also, an operating system allows only a limited number of files open at once."
+        },
+        {
+          "title": "Always check for NULL",
+          "text": "<code>fopen()</code> fails for many ordinary reasons — the file does not exist in mode \"r\", the folder is read-only, or the disk is full. It reports this by returning <code>NULL</code>. Using a NULL file pointer crashes the program, so every single fopen must be followed by <code>if (fp == NULL) { ... }</code>."
+        }
+      ],
+      "realLife": "Filling an attendance register in class. The teacher's memory is RAM — she will forget by evening. The register is the file — it can be opened again next month, and by a different teacher.",
+      "code": "#include <stdio.h>\n\nint main() {\n    FILE *fp;                              // 1. declare the file pointer\n\n    fp = fopen(\"notes.txt\", \"w\");          // 2. open\n    if (fp == NULL) {                      //    ALWAYS check\n        printf(\"Sorry, the file could not be opened.\\n\");\n        return 1;\n    }\n\n    fprintf(fp, \"MCA 109 - C Programming\\n\");   // 3. write\n\n    fclose(fp);                            // 4. close (flushes to disk)\n    printf(\"Saved successfully.\\n\");\n    return 0;\n}",
+      "codeNote": "The four fixed steps of every file program: declare, open, use, close — with a NULL check right after opening.",
+      "mistake": "Skipping the <code>if (fp == NULL)</code> check. If the file is missing, fp is NULL, and the very next fprintf or fscanf crashes the program. This check is worth marks in the exam too — examiners look for it.",
+      "examAnswer": "Data stored in variables resides in RAM, which is volatile, so all such data is lost when the program terminates. A file is a named collection of data stored permanently on a secondary storage device, which allows data to be retained beyond program execution, to exceed the size of main memory, and to be shared between programs. In C, file handling is performed through a file pointer declared as FILE *fp, where FILE is a structure defined in stdio.h that maintains information about the open file such as its buffer, current position and status flags. A file is processed in four steps: declaring the file pointer, opening the file with fopen(), performing read or write operations, and closing the file with fclose(), which flushes the buffer to disk.",
+      "remember": "RAM forgets, files remember. Declare, open, use, close — and always check for NULL.",
+      "why": "Any useful program — a result system, a billing system, a game that saves progress — must store data permanently, and in C that means files.",
+      "practice": "Name three real situations where a program must use a file instead of only variables, and explain what would break without it."
+    },
+    {
+      "title": "fopen() Modes and Closing a File",
+      "teacher": "One single letter in fopen decides whether your file is read, added to, or completely wiped clean. Students have lost a whole day's work by typing 'w' instead of 'a'. Please read this table twice.",
+      "explain": "<code>fopen(filename, mode)</code> takes a <strong>mode string</strong> that says what you intend to do. The three basic modes are <code>\"r\"</code> read, <code>\"w\"</code> write and <code>\"a\"</code> append; adding a <code>+</code> makes each one both readable and writable. <strong>The mode <code>\"w\"</code> erases the entire contents of an existing file the moment it is opened</strong> — even if you never write anything.",
+      "keyPoints": [
+        "<code>\"r\"</code> — read only. The file <strong>must already exist</strong>, else fopen returns NULL.",
+        "<code>\"w\"</code> — write. Creates the file; <strong>if it exists, all old contents are destroyed</strong>.",
+        "<code>\"a\"</code> — append. Creates if needed; writing always happens at the <strong>end</strong>, old data is safe.",
+        "<code>\"r+\"</code> — read and write. File must exist; contents are <strong>not</strong> erased.",
+        "<code>\"w+\"</code> — read and write, but still <strong>erases</strong> an existing file.",
+        "<code>\"a+\"</code> — read and append. Reading can be anywhere, writing is always at the end.",
+        "Add <code>b</code> for binary: <code>\"rb\"</code>, <code>\"wb\"</code>, <code>\"ab\"</code>, <code>\"rb+\"</code>.",
+        "<code>fclose(fp)</code> returns 0 on success and <code>EOF</code> on failure."
+      ],
+      "subtopics": [
+        {
+          "title": "The dangerous letter: w",
+          "text": "Opening in <code>\"w\"</code> mode <strong>truncates</strong> the file to zero length immediately. Your old data is gone before a single line is written, and there is no undo. If you want to keep what is already there and add new records, the mode you want is <code>\"a\"</code>. If you only want to read, never open with \"w\" at all."
+        },
+        {
+          "title": "What the + adds",
+          "text": "A <code>+</code> means 'and the other operation too'. <code>\"r+\"</code> is read plus write on an existing file without erasing it — useful for updating a record in place. <code>\"w+\"</code> still truncates, and <code>\"a+\"</code> lets you read anywhere but forces every write to the end, whatever position you seek to."
+        },
+        {
+          "title": "Choosing the mode in an exam answer",
+          "text": "The examiner's favourite question is 'which mode would you use to add a new record to an existing file?' The answer is <code>\"a\"</code> — because <code>\"w\"</code> would destroy the existing records and <code>\"r\"</code> cannot write at all. Say the reason, not just the letter."
+        }
+      ],
+      "realLife": "Three ways to treat your class notebook. <strong>r</strong> = only read it. <strong>a</strong> = turn to the last page and continue writing. <strong>w</strong> = tear out every written page and start from a blank notebook. Choosing 'w' by accident is exactly that painful.",
+      "table": {
+        "headers": ["Mode", "Meaning", "If file does NOT exist", "If file EXISTS"],
+        "rows": [
+          ["\"r\"", "Read only", "fopen returns NULL", "Opens it, nothing is changed"],
+          ["\"w\"", "Write only", "Creates a new file", "ERASES all old contents"],
+          ["\"a\"", "Append only", "Creates a new file", "Keeps old data, writes at the end"],
+          ["\"r+\"", "Read and write", "fopen returns NULL", "Opens it, contents are kept"],
+          ["\"w+\"", "Read and write", "Creates a new file", "ERASES all old contents"],
+          ["\"a+\"", "Read and append", "Creates a new file", "Keeps old data, writes at the end"]
+        ]
+      },
+      "code": "#include <stdio.h>\n\nint main() {\n    FILE *fp;\n\n    // \"a\" adds to the file and keeps whatever was already there\n    fp = fopen(\"marks.txt\", \"a\");\n    if (fp == NULL) {\n        printf(\"Could not open the file.\\n\");\n        return 1;\n    }\n    fprintf(fp, \"Neha 92\\n\");      // goes to the END of the file\n    fclose(fp);\n\n    // DANGER: this same line with \"w\" would wipe marks.txt clean\n    // fp = fopen(\"marks.txt\", \"w\");   // all old records destroyed!\n\n    fp = fopen(\"marks.txt\", \"r\");     // \"r\" - file must already exist\n    if (fp == NULL) {\n        printf(\"File not found.\\n\");\n        return 1;\n    }\n    fclose(fp);\n    return 0;\n}",
+      "codeNote": "Use \"a\" to add a record safely; \"w\" on the same file would delete every record already stored.",
+      "mistake": "Using <code>\"w\"</code> when you meant <code>\"a\"</code>. <code>\"w\"</code> truncates the file to empty the instant it is opened — before you write anything — and the old data cannot be recovered.",
+      "examAnswer": "The function fopen() opens a file and returns a FILE pointer, or NULL if the operation fails. Its second argument is a mode string specifying the intended operation. The mode \"r\" opens an existing file for reading and fails if the file does not exist; \"w\" opens a file for writing, creating it if necessary and destroying the entire contents of an existing file; and \"a\" opens a file for appending, so that all writing occurs at the end and existing data is preserved. The modes \"r+\", \"w+\" and \"a+\" permit both reading and writing, with \"r+\" retaining existing contents, \"w+\" truncating the file and \"a+\" restricting writing to the end. Appending the letter b, as in \"rb\" or \"wb\", opens the file in binary mode. The function fclose() closes the file and flushes the output buffer to disk.",
+      "remember": "r = read it. a = add to it. w = wipe it. The + just adds the other operation.",
+      "why": "Picking the wrong mode is the most expensive beginner mistake in file handling — it silently destroys data — and mode tables appear in the paper almost every year.",
+      "practice": "Which mode would you choose to (a) display an existing result file, (b) add one new student to it, (c) start a completely fresh file? Justify each."
+    },
+    {
+      "title": "Reading and Writing Files: The Four Function Families",
+      "teacher": "C gives you four different ways to put data into a file and take it out again — one character at a time, one line at a time, in a formatted way, or in whole blocks. Learn what each family is best at, and file handling becomes easy.",
+      "explain": "The file functions come in matched pairs, one to write and one to read. <strong>Character</strong>: <code>fputc()</code> / <code>fgetc()</code>. <strong>String</strong>: <code>fputs()</code> / <code>fgets()</code>. <strong>Formatted</strong>: <code>fprintf()</code> / <code>fscanf()</code>. <strong>Block (binary)</strong>: <code>fwrite()</code> / <code>fread()</code>. Reading stops when you reach the end of the file, which is reported as the special value <strong><code>EOF</code></strong>.",
+      "keyPoints": [
+        "<code>fputc(ch, fp)</code> writes one character; <code>fgetc(fp)</code> reads one and returns <code>EOF</code> at the end.",
+        "<code>fputs(str, fp)</code> writes a string; <code>fgets(str, n, fp)</code> reads at most n-1 characters or up to a newline.",
+        "<code>fprintf(fp, \"...\", ...)</code> and <code>fscanf(fp, \"...\", ...)</code> work exactly like printf/scanf, with a file as the first argument.",
+        "<code>fwrite(&amp;s, sizeof(s), 1, fp)</code> and <code>fread(&amp;s, sizeof(s), 1, fp)</code> move whole blocks — ideal for structures.",
+        "<code>EOF</code> is a macro in <code>&lt;stdio.h&gt;</code> whose value is <strong>-1</strong>.",
+        "<code>fgetc()</code> returns an <strong>int</strong>, not a char, so that EOF (-1) can be told apart from real data.",
+        "<code>fscanf()</code> returns <strong>how many items it successfully read</strong> — use that to end the loop.",
+        "<code>feof(fp)</code> becomes true only <strong>after</strong> a read has already failed at the end."
+      ],
+      "subtopics": [
+        {
+          "title": "Which family to use when",
+          "text": "Use <strong>fgetc/fputc</strong> to copy or examine a file character by character, for example counting vowels. Use <strong>fgets/fputs</strong> for plain lines of text. Use <strong>fprintf/fscanf</strong> when the data has fields, like a name and a mark on each line. Use <strong>fwrite/fread</strong> when storing complete structures, because a whole record moves in one call and no conversion to text happens."
+        },
+        {
+          "title": "EOF and why fgetc returns an int",
+          "text": "<code>EOF</code> is a marker meaning 'no more data', and its value is -1. If <code>fgetc()</code> returned a <code>char</code>, a legitimate byte could look identical to -1 and the loop would stop in the middle of the file. Returning an <code>int</code> keeps EOF outside the range of any real character, so <code>while ((ch = fgetc(fp)) != EOF)</code> is always safe."
+        },
+        {
+          "title": "The right loop condition",
+          "text": "Do not write <code>while (!feof(fp))</code> — <code>feof()</code> becomes true only after a read has <em>already</em> failed, so that loop processes the last item twice. Test the read itself instead: <code>while ((ch = fgetc(fp)) != EOF)</code>, or <code>while (fscanf(fp, \"%s %d\", name, &amp;m) == 2)</code>, or <code>while (fgets(line, 100, fp) != NULL)</code>."
+        }
+      ],
+      "realLife": "Copying notes from a friend. Letter by letter (fgetc), line by line (fgets), or photocopying a whole page at once (fread). Same notes, four different speeds — you pick based on what you need to do with them.",
+      "worked": "<strong>A complete write-then-read program, step by step.</strong><br><br><strong>Step 1 — open for writing.</strong> <code>fopen(\"marks.txt\", \"w\")</code> creates marks.txt (and would erase it if it already existed).<br><strong>Step 2 — check.</strong> If fp is NULL, print a message and stop.<br><strong>Step 3 — write two records</strong> with fprintf, exactly like printf but with fp as the first argument.<br><strong>Step 4 — fclose.</strong> The buffer is flushed and the data actually reaches the disk.<br><br>marks.txt on disk now contains:<br><code>Asha 88</code><br><code>Ravi 76</code><br><br><strong>Step 5 — reopen in \"r\" mode</strong> and check for NULL again.<br><strong>Step 6 — loop.</strong> <code>fscanf(fp, \"%s %d\", name, &amp;marks)</code> reads one name and one number and <strong>returns 2</strong> when both succeeded. At the end of the file it returns EOF, so the condition <code>== 2</code> becomes false and the loop stops cleanly.<br><br>Screen output:<br><code>Asha scored 88</code><br><code>Ravi scored 76</code><br><br><strong>Step 7 — fclose again.</strong> Total = 2 opens, 2 NULL checks, 2 closes. That balance is what the examiner looks for.",
+      "code": "#include <stdio.h>\n\nint main() {\n    FILE *fp;\n    char name[20];\n    int  marks;\n\n    /* ---------- STEP 1 : WRITE ---------- */\n    fp = fopen(\"marks.txt\", \"w\");     // creates (or erases) the file\n    if (fp == NULL) {\n        printf(\"File could not be opened.\\n\");\n        return 1;\n    }\n    fprintf(fp, \"Asha 88\\n\");\n    fprintf(fp, \"Ravi 76\\n\");\n    fclose(fp);                        // buffer flushed to disk\n\n    /* ---------- STEP 2 : READ IT BACK ---------- */\n    fp = fopen(\"marks.txt\", \"r\");     // the file must exist now\n    if (fp == NULL) {\n        printf(\"File not found.\\n\");\n        return 1;\n    }\n    while (fscanf(fp, \"%s %d\", name, &marks) == 2) {\n        printf(\"%s scored %d\\n\", name, marks);\n    }\n    fclose(fp);\n    return 0;\n}",
+      "codeNote": "fscanf returns the number of items it read, so == 2 is a clean, safe way to stop exactly at the end of the file.",
+      "mistake": "Writing <code>char ch; while ((ch = fgetc(fp)) != EOF)</code>. <code>fgetc()</code> returns an <strong>int</strong>; storing it in a char can make a real byte look like EOF, or make EOF unreachable. Declare <code>int ch;</code>.",
+      "examAnswer": "C provides four families of file input and output functions, each consisting of a matching read and write pair. The character functions fputc() and fgetc() transfer a single character at a time. The string functions fputs() and fgets() transfer a line of text, with fgets() reading at most n-1 characters or up to a newline. The formatted functions fprintf() and fscanf() behave like printf() and scanf() except that the first argument is a file pointer, and are used for field-oriented data. The block functions fwrite() and fread() transfer a specified number of fixed-size blocks and are used mainly for writing and reading complete structures in binary form. The end of a file is indicated by the macro EOF, defined in stdio.h with the value -1; fgetc() therefore returns an int so that EOF can be distinguished from a valid character.",
+      "remember": "c for character, s for string, printf/scanf for fields, read/write for blocks. EOF = -1.",
+      "why": "Practically every file question in the paper asks you to write a program that saves records and reads them back — this is that program.",
+      "practice": "Write a program that copies the contents of one text file into another, character by character, using fgetc and fputc with a proper EOF loop."
+    },
+    {
+      "title": "Random Access: fseek(), ftell(), rewind() and File Types",
+      "teacher": "Reading a file from the start every time is like rewinding a whole cassette to hear the last song. What if you could jump straight to any position? That is random access — and it is just three small functions.",
+      "explain": "Every open file has a <strong>file position indicator</strong> that marks where the next read or write will happen. <code>fseek()</code> moves it to any position, <code>ftell()</code> tells you where it currently is (in bytes from the start), and <code>rewind()</code> sends it back to the beginning. Files also come in two kinds: <strong>text files</strong>, which store human-readable characters, and <strong>binary files</strong>, which store the exact bytes from memory.",
+      "keyPoints": [
+        "<code>fseek(fp, offset, origin)</code> — offset is in <strong>bytes</strong> and may be negative.",
+        "origin is one of <code>SEEK_SET</code> (start), <code>SEEK_CUR</code> (current), <code>SEEK_END</code> (end).",
+        "<code>fseek</code> returns <strong>0 on success</strong> and non-zero on failure.",
+        "<code>ftell(fp)</code> returns a <code>long</code> — the current position in bytes from the start.",
+        "<code>rewind(fp)</code> = <code>fseek(fp, 0, SEEK_SET)</code> plus it clears the error flags. It returns nothing.",
+        "File size trick: <code>fseek(fp, 0, SEEK_END); size = ftell(fp);</code>",
+        "<strong>Text file</strong>: readable characters, newline may be translated, size is larger.",
+        "<strong>Binary file</strong>: exact memory bytes, no translation, compact and faster, but not readable in Notepad."
+      ],
+      "subtopics": [
+        {
+          "title": "Sequential vs random access",
+          "text": "<strong>Sequential access</strong> reads a file from the beginning, item after item — simple, and all you need for a text report. <strong>Random access</strong> jumps directly to a chosen byte position, which matters when a file has thousands of fixed-size records and you want record number 500 without reading the first 499."
+        },
+        {
+          "title": "Finding a record with fseek",
+          "text": "If every record is one <code>struct Student</code>, then record number n starts at byte <code>n * sizeof(struct Student)</code>, counting from 0. So <code>fseek(fp, 3 * sizeof(struct Student), SEEK_SET);</code> followed by a single <code>fread</code> fetches the fourth record instantly. This works only because every record is exactly the same size — which is why binary files are used for it."
+        },
+        {
+          "title": "Text file or binary file?",
+          "text": "In a text file the number 12345 is stored as the five characters '1','2','3','4','5'. In a binary file the same value is stored as the 4 raw bytes of an int. Binary is smaller, faster and loses no precision for floats, but you cannot open it in Notepad and it is not portable between machines. Text is readable and portable, but bigger and slower."
+        }
+      ],
+      "realLife": "A textbook. Reading cover to cover is sequential. Using the index to jump straight to page 212 is random access — fseek is that index, and ftell is the page number printed at the bottom.",
+      "table": {
+        "headers": ["", "Text file", "Binary file"],
+        "rows": [
+          ["Stored as", "Readable characters", "Exact bytes from memory"],
+          ["Mode string", "\"r\", \"w\", \"a\"", "\"rb\", \"wb\", \"ab\""],
+          ["Number 12345 takes", "5 bytes (five characters)", "4 bytes (one int)"],
+          ["Newline handling", "May be translated by the system", "No translation at all"],
+          ["Openable in Notepad", "Yes", "No — looks like garbage"],
+          ["Best for", "Reports, logs, readable data", "Structures, images, fast record access"]
+        ]
+      },
+      "code": "#include <stdio.h>\n\nint main() {\n    FILE *fp = fopen(\"marks.txt\", \"r\");\n    if (fp == NULL) { printf(\"File not found.\\n\"); return 1; }\n\n    // 1. Find the size of the file\n    fseek(fp, 0, SEEK_END);            // jump to the very end\n    long size = ftell(fp);             // position = number of bytes\n    printf(\"File size = %ld bytes\\n\", size);\n\n    // 2. Go back to the start and read the first character\n    rewind(fp);                        // same as fseek(fp, 0, SEEK_SET)\n    printf(\"First char : %c\\n\", fgetc(fp));\n    printf(\"Now at byte: %ld\\n\", ftell(fp));   // 1\n\n    // 3. Jump straight to byte 5\n    fseek(fp, 5, SEEK_SET);\n    printf(\"Char at 5  : %c\\n\", fgetc(fp));\n\n    fclose(fp);\n    return 0;\n}",
+      "codeNote": "fseek to SEEK_END plus ftell is the standard way to find a file's size without reading it.",
+      "mistake": "Thinking <code>rewind()</code> and <code>fseek(fp,0,SEEK_SET)</code> are completely identical. They move to the same place, but rewind also <strong>clears the error and EOF flags</strong> and returns no value, while fseek returns 0 or non-zero to report success.",
+      "examAnswer": "Random access to a file is provided by three functions declared in stdio.h. The function fseek(fp, offset, origin) repositions the file position indicator by the given number of bytes measured from an origin, which may be SEEK_SET for the beginning of the file, SEEK_CUR for the current position or SEEK_END for the end, and it returns zero on success. The function ftell(fp) returns the current position of the indicator as a long value giving the number of bytes from the beginning of the file, and rewind(fp) resets the indicator to the beginning and clears the error flags. Files are of two types: text files, which store data as readable characters and may translate newline characters, and binary files, which store data exactly as it is represented in memory and are therefore more compact and better suited to reading and writing complete structures.",
+      "remember": "fseek moves, ftell reports, rewind resets. SEEK_END + ftell = file size.",
+      "why": "Random access is what makes a real record-keeping program practical — you update one student's marks without rewriting the whole file.",
+      "practice": "A file stores 100 struct Employee records. Write the exact fseek call that positions you at the 25th record, and explain your calculation."
+    },
+    {
+      "title": "The printf and scanf Family",
+      "teacher": "You have used printf since day one. But there is a whole family of them — one that prints to a file, one that prints into a string. Once you see the pattern in the names, you never have to memorise them again.",
+      "explain": "The formatted input/output family shares one idea: a <strong>format string</strong> containing format specifiers such as <code>%d</code> and <code>%f</code>, followed by the values. <code>printf</code>/<code>scanf</code> work with the screen and keyboard, <code>fprintf</code>/<code>fscanf</code> with a <strong>file</strong>, and <code>sprintf</code>/<code>sscanf</code> with a <strong>string in memory</strong>. The leading letter tells you the destination: nothing = console, <code>f</code> = file, <code>s</code> = string.",
+      "keyPoints": [
+        "<code>printf(\"...\", ...)</code> writes to the screen; <code>scanf(\"...\", ...)</code> reads from the keyboard.",
+        "<code>fprintf(fp, ...)</code> / <code>fscanf(fp, ...)</code> — same thing, but a file is the first argument.",
+        "<code>sprintf(str, ...)</code> builds a formatted string in memory instead of printing it.",
+        "<code>sscanf(str, ...)</code> pulls values out of an existing string.",
+        "Specifiers: <code>%d</code> int, <code>%f</code> float, <code>%lf</code> double, <code>%c</code> char, <code>%s</code> string, <code>%u</code> unsigned, <code>%p</code> pointer, <code>%%</code> a literal percent sign.",
+        "<code>scanf</code> needs the <strong>address</strong>: <code>scanf(\"%d\", &amp;n);</code> — but <strong>not</strong> for a string, since an array name is already an address.",
+        "Width and precision: <code>%5d</code> right-aligns in 5 columns, <code>%.2f</code> shows 2 decimal places.",
+        "<code>printf</code> returns the number of characters printed; <code>scanf</code> returns the number of items successfully read."
+      ],
+      "subtopics": [
+        {
+          "title": "The naming pattern",
+          "text": "Read the first letter as the destination. <code>printf</code> → console. <code>fprintf</code> → <strong>f</strong>ile. <code>sprintf</code> → <strong>s</strong>tring. The same applies on the input side with scanf, fscanf and sscanf. Everything after that first letter — the format string and the arguments — behaves identically, so learning one teaches you all six."
+        },
+        {
+          "title": "Why scanf needs the & sign",
+          "text": "<code>scanf</code> must <em>change</em> your variable, and C passes arguments by value, so it needs the variable's address: <code>scanf(\"%d\", &amp;n);</code>. For a character array you do <strong>not</strong> write &amp; — <code>scanf(\"%s\", name);</code> — because an array name already evaluates to the address of its first element. Forgetting the &amp; on a plain variable is the single most common runtime crash in beginner C."
+        },
+        {
+          "title": "The scanf whitespace trap",
+          "text": "<code>%s</code> stops reading at the first space, so 'Asha Gupta' is read as just 'Asha'. Also, after reading a number, the Enter key stays in the buffer and a following <code>%c</code> silently grabs it. The fix is to write a space before the specifier — <code>scanf(\" %c\", &amp;ch);</code> — which tells scanf to skip leftover whitespace first."
+        }
+      ],
+      "realLife": "One printing machine with three output trays: print to the screen, print onto a page in a file, or print onto a sticker you keep in your pocket (a string). Same ink, same format, different destination.",
+      "code": "#include <stdio.h>\n\nint main() {\n    int   roll  = 21;\n    float marks = 87.5;\n    char  line[50];\n    int   a;\n    float b;\n\n    // console\n    printf(\"%-6d|%8.2f|\\n\", roll, marks);   // width + precision\n\n    // into a STRING in memory\n    sprintf(line, \"Roll %d scored %.2f\", roll, marks);\n    printf(\"%s\\n\", line);                   // Roll 21 scored 87.50\n\n    // out of a STRING in memory\n    sscanf(\"45 60.5\", \"%d %f\", &a, &b);\n    printf(\"%d %.1f\\n\", a, b);              // 45 60.5\n\n    // the & rule\n    int n;\n    char name[20];\n    // scanf(\"%d\", &n);      // & is needed for a plain variable\n    // scanf(\"%s\", name);    // NO & - an array name is already an address\n    (void)n; (void)name;\n    return 0;\n}",
+      "codeNote": "sprintf prints INTO a string and sscanf reads OUT of one — the same format rules, only the destination changes.",
+      "mistake": "Writing <code>scanf(\"%d\", n);</code> without the <code>&amp;</code>. scanf then treats the value of n as an address and writes there, which usually crashes the program. Rule: <code>&amp;</code> for plain variables, no <code>&amp;</code> for arrays and strings.",
+      "examAnswer": "The printf and scanf family are the formatted input and output functions of C, all of which use a format string containing conversion specifiers such as %d, %f, %c and %s. The functions printf() and scanf() operate on the standard output and standard input respectively, fprintf() and fscanf() perform the same formatted operations on a file identified by a file pointer given as the first argument, and sprintf() and sscanf() operate on a character array in memory rather than on a stream. The scanf family requires the address of each variable to be supplied using the & operator, except for arrays, whose name already denotes the address of the first element. printf() returns the number of characters written, while scanf() returns the number of input items successfully assigned.",
+      "remember": "No letter = screen, f = file, s = string. &amp; for variables, no &amp; for arrays.",
+      "why": "Formatted input and output is how every C program talks to the user and to files; sprintf is also the standard way to build a message or a filename at run time.",
+      "practice": "Use sprintf to build the string \"Student 21 got 87.50 marks\" and then use sscanf to extract the number 21 back out of it."
+    },
+    {
+      "title": "The C Preprocessor: #include, #define and #undef",
+      "teacher": "Here is something most students never realise: before the compiler ever sees your program, another program has already rewritten it. It obeys the lines starting with a hash. Let's meet this silent editor.",
+      "explain": "The <strong>preprocessor</strong> is a program that runs <strong>before compilation</strong>. It obeys every line that begins with <code>#</code> — these are <strong>directives</strong>, not C statements, so they take <strong>no semicolon</strong>. It does pure <strong>text substitution</strong>: <code>#include</code> pastes in the contents of a header file, <code>#define</code> replaces a name with its text everywhere, and <code>#undef</code> cancels a definition.",
+      "keyPoints": [
+        "The preprocessor runs <strong>before</strong> the compiler; the compiler never sees the <code>#</code> lines.",
+        "Directives start with <code>#</code> and take <strong>no semicolon</strong> at the end.",
+        "<code>#include &lt;stdio.h&gt;</code> searches the system folders; <code>#include \"my.h\"</code> searches your folder first.",
+        "<strong>Object-like macro</strong>: <code>#define PI 3.14159</code> — a simple name replaced by text.",
+        "<strong>Function-like macro</strong>: <code>#define SQUARE(x) ((x)*(x))</code> — takes arguments.",
+        "A macro is <strong>text replacement, not a function call</strong> — no type checking, no return value.",
+        "<code>#undef PI</code> removes a definition so the name can be reused.",
+        "Convention: write macro names in CAPITALS so they are visible in the code."
+      ],
+      "subtopics": [
+        {
+          "title": "The four stages before your program runs",
+          "text": "<strong>(1) Preprocessing</strong> — the <code>#</code> lines are carried out, producing an expanded source file. <strong>(2) Compilation</strong> — that expanded file becomes assembly and then object code. <strong>(3) Linking</strong> — your object code is joined with library code such as printf. <strong>(4) Loading</strong> — the final executable is placed in memory and run. Every one of those stages can produce its own kind of error."
+        },
+        {
+          "title": "Macro vs function",
+          "text": "A <strong>macro</strong> is expanded in place, so it is faster (no call overhead) but the code is duplicated everywhere and there is no type checking — errors show up in the expanded text and are confusing. A <strong>function</strong> is called at run time, is type checked and exists once in memory. Use macros for short constants and tiny expressions; use functions for real logic."
+        },
+        {
+          "title": "The classic bracket bug",
+          "text": "<code>#define SQUARE(x) x*x</code> looks fine, but <code>SQUARE(2+3)</code> is replaced by the text <code>2+3*2+3</code>, which is 2 + 6 + 3 = <strong>11</strong>, not 25. The preprocessor pastes text; it does not understand arithmetic. Always wrap both the parameters and the whole body in brackets: <code>#define SQUARE(x) ((x)*(x))</code>."
+        }
+      ],
+      "realLife": "A proof-reader who goes through your handwritten assignment before the examiner and replaces every 'CM' with 'centimetre'. She does not understand the physics — she only swaps the words. That is exactly how literal the preprocessor is.",
+      "worked": "<strong>Why SQUARE(2+3) gives 11 instead of 25.</strong><br><br><strong>Wrong macro:</strong> <code>#define SQUARE(x) x*x</code><br>Source line: <code>int r = SQUARE(2+3);</code><br><strong>Step 1</strong> — the preprocessor puts the text <code>2+3</code> wherever x appears:<br><code>int r = 2+3*2+3;</code><br><strong>Step 2</strong> — now the compiler applies normal precedence: <code>*</code> before <code>+</code><br><code>= 2 + (3*2) + 3</code><br><code>= 2 + 6 + 3</code><br><strong>= 11</strong>&nbsp; (wrong!)<br><br><strong>Correct macro:</strong> <code>#define SQUARE(x) ((x)*(x))</code><br><strong>Step 1</strong> — substitution:<br><code>int r = ((2+3)*(2+3));</code><br><strong>Step 2</strong> — brackets force the addition first:<br><code>= (5 * 5)</code><br><strong>= 25</strong>&nbsp; (correct)<br><br><strong>Lesson:</strong> the preprocessor pastes TEXT, not values. Bracket every parameter and bracket the whole body.",
+      "code": "#include <stdio.h>\n\n#define PI 3.14159                 // object-like macro\n#define MAX 100                    // no semicolon, no data type\n\n#define BAD_SQ(x)  x*x             // WRONG - no brackets\n#define SQUARE(x) ((x)*(x))        // CORRECT - everything bracketed\n#define BIGGER(a,b) ((a) > (b) ? (a) : (b))\n\nint main() {\n    printf(\"Area   = %.2f\\n\", PI * 2 * 2);     // 12.57\n\n    printf(\"BAD_SQ(2+3) = %d\\n\", BAD_SQ(2+3)); // 11  <- the bug\n    printf(\"SQUARE(2+3) = %d\\n\", SQUARE(2+3)); // 25  <- correct\n    printf(\"BIGGER(4,9) = %d\\n\", BIGGER(4,9)); // 9\n\n#undef MAX                         // cancel the definition\n#define MAX 500                    // now it can be redefined safely\n    printf(\"MAX = %d\\n\", MAX);                 // 500\n    return 0;\n}",
+      "codeNote": "BAD_SQ(2+3) expands to 2+3*2+3 = 11; SQUARE(2+3) expands to ((2+3)*(2+3)) = 25.",
+      "mistake": "Putting a semicolon on a directive: <code>#define MAX 100;</code>. The semicolon becomes part of the replacement text, so <code>int a[MAX];</code> expands to <code>int a[100;];</code> and gives a strange error far away from the real cause.",
+      "examAnswer": "The C preprocessor is a program that processes the source code before compilation begins. It acts upon all lines beginning with the symbol #, which are called preprocessor directives and are not terminated by a semicolon. The directive #include inserts the contents of a specified header file into the source code, using angle brackets for system headers and double quotes for user-defined headers. The directive #define creates a macro, which may be object-like, such as #define PI 3.14159, or function-like, such as #define SQUARE(x) ((x)*(x)). Because a macro is expanded by textual substitution and not evaluated as a function, its parameters and body must be fully parenthesised; otherwise an expression such as SQUARE(2+3) defined as x*x expands to 2+3*2+3 and incorrectly yields 11 instead of 25. The directive #undef cancels a previously defined macro.",
+      "remember": "The preprocessor runs FIRST and only swaps text. No semicolon on a #line. Bracket every macro parameter.",
+      "why": "Macros appear in every real C header file, and 'what is the output of SQUARE(2+3)' is one of the most commonly asked output questions in this unit.",
+      "practice": "Given #define CUBE(x) x*x*x, what does CUBE(1+2) actually expand to and what value does it print? Now write the corrected macro."
+    },
+    {
+      "title": "Conditional Compilation and Include Guards",
+      "teacher": "Imagine one answer sheet that automatically shows the Hindi version to one examiner and the English version to another — without rewriting it. Conditional compilation does that for your source code, choosing which lines even reach the compiler.",
+      "explain": "<strong>Conditional compilation</strong> lets you include or exclude parts of your source code depending on a condition tested at preprocessing time. The directives are <code>#if</code>, <code>#else</code>, <code>#elif</code>, <code>#endif</code>, <code>#ifdef</code> and <code>#ifndef</code>. The lines that fail the test are <strong>deleted before the compiler ever sees them</strong>, so they cost nothing at run time. Its most important everyday use is the <strong>include guard</strong>, which stops a header file from being included twice.",
+      "keyPoints": [
+        "<code>#if</code> tests a constant expression; <code>#elif</code> is 'else if'; <code>#else</code> is the fallback.",
+        "<strong>Every <code>#if</code>, <code>#ifdef</code> or <code>#ifndef</code> must be closed with <code>#endif</code></strong> — there are no braces.",
+        "<code>#ifdef NAME</code> — true if NAME has been defined (whatever its value).",
+        "<code>#ifndef NAME</code> — true if NAME has <strong>not</strong> been defined.",
+        "<code>#if defined(NAME)</code> is the same as <code>#ifdef NAME</code>, but can be combined with <code>&amp;&amp;</code> and <code>||</code>.",
+        "The rejected code is <strong>removed before compilation</strong> — it does not even need to be valid C.",
+        "Uses: debug messages on/off, different code for Windows and Linux, turning features on or off.",
+        "<strong>Include guard</strong>: <code>#ifndef X_H</code> / <code>#define X_H</code> / ... / <code>#endif</code> prevents double inclusion."
+      ],
+      "subtopics": [
+        {
+          "title": "Why include guards are needed",
+          "text": "If <code>main.c</code> includes both <code>student.h</code> and <code>result.h</code>, and <code>result.h</code> also includes <code>student.h</code>, then the structure declaration arrives twice and the compiler reports 'redefinition'. An include guard fixes it: the first time, <code>X_H</code> is undefined so the body is included and <code>X_H</code> is defined; the second time <code>#ifndef</code> is false and the whole body is skipped."
+        },
+        {
+          "title": "Debug switches",
+          "text": "Wrapping your tracing messages in <code>#ifdef DEBUG ... #endif</code> means you keep them in the source for ever, but they vanish completely from the final program when you remove the <code>#define DEBUG</code> line. Since the code is deleted before compilation, there is <strong>zero</strong> speed cost — unlike an <code>if</code> statement, which is still tested every time it runs."
+        },
+        {
+          "title": "#if versus if",
+          "text": "They look similar but happen at different times. <code>#if</code> is decided by the <strong>preprocessor</strong>, before compiling, using only constants and macros; the losing branch is thrown away and never becomes part of the program. A normal <code>if</code> is decided by the <strong>CPU while the program runs</strong>, and both branches are compiled into the executable."
+        }
+      ],
+      "realLife": "A question paper printed with the instruction 'Attempt section A if you are from the CS branch, otherwise section B'. Conditional compilation goes one step further — the printer simply does not print the section you are not supposed to attempt.",
+      "code": "#include <stdio.h>\n\n#define DEBUG\n#define VERSION 2\n\nint main() {\n#ifdef DEBUG                       // true because DEBUG is defined\n    printf(\"Debug mode is ON\\n\");\n#endif\n\n#if VERSION == 1\n    printf(\"Version 1\\n\");\n#elif VERSION == 2\n    printf(\"Version 2\\n\");        // this line is chosen\n#else\n    printf(\"Unknown version\\n\");\n#endif\n\n#ifndef MAX                        // true - MAX is not defined yet\n#define MAX 100\n#endif\n    printf(\"MAX = %d\\n\", MAX);    // 100\n    return 0;\n}\n\n/* A standard include guard, used at the top of every header file:\n\n   #ifndef STUDENT_H\n   #define STUDENT_H\n   struct Student { int roll; char name[20]; };\n   #endif\n*/",
+      "codeNote": "Output is exactly three lines: Debug mode is ON / Version 2 / MAX = 100 — the other branches never reach the compiler.",
+      "mistake": "Forgetting <code>#endif</code>. Unlike <code>if</code>, a preprocessor conditional has no closing brace, so the preprocessor keeps swallowing the rest of your file and you get a confusing error at the very last line.",
+      "examAnswer": "Conditional compilation allows selected portions of the source code to be included in or excluded from compilation, based on conditions evaluated by the preprocessor. The directive #if tests a constant expression, #elif provides an alternative test, #else supplies a default, and every such conditional block must be terminated by #endif. The directive #ifdef is true if the given macro has been defined, and #ifndef is true if it has not. Because the rejected code is removed before the compiler processes the file, it contributes nothing to the size or speed of the executable. The most important application is the include guard, written as #ifndef HEADER_H, #define HEADER_H, the contents of the header, and #endif, which prevents a header file from being included more than once and thereby avoids redefinition errors.",
+      "remember": "#ifdef = 'is it defined?'. #ifndef = 'is it NOT defined?'. Every one needs an #endif.",
+      "why": "Include guards appear at the top of literally every header file you will ever read, and conditional compilation is how one source file supports many machines.",
+      "practice": "Write an include guard for a header named marks.h containing a structure Marks. Then explain in two lines what goes wrong without it."
+    },
+    {
+      "title": "Variable Argument List Functions (stdarg.h)",
+      "teacher": "Have you noticed something odd about printf? It takes one argument sometimes and six other times, and never complains. How is that even possible in C, where every function declares its parameters? Here is the secret.",
+      "explain": "A <strong>variadic function</strong> accepts a variable number of arguments. It is declared with at least one fixed parameter followed by three dots — the <strong>ellipsis</strong> <code>...</code> — as in <code>int addAll(int count, ...)</code>. The extra arguments are read using four tools from <code>&lt;stdarg.h&gt;</code>: the type <code>va_list</code> and the macros <code>va_start</code>, <code>va_arg</code> and <code>va_end</code>.",
+      "keyPoints": [
+        "Needs <code>#include &lt;stdarg.h&gt;</code>.",
+        "There must be <strong>at least one fixed parameter</strong> before the <code>...</code>.",
+        "The <code>...</code> must always be the <strong>last</strong> parameter.",
+        "<code>va_list ap;</code> — declares the pointer that walks through the extra arguments.",
+        "<code>va_start(ap, last)</code> — start, naming the <strong>last fixed</strong> parameter.",
+        "<code>va_arg(ap, type)</code> — fetch the next argument; you must state its type yourself.",
+        "<code>va_end(ap)</code> — clean up before returning. Never skip it.",
+        "C cannot count the extra arguments, so you must pass a count (like printf's format string does)."
+      ],
+      "subtopics": [
+        {
+          "title": "The four steps, always in this order",
+          "text": "<strong>(1)</strong> Declare <code>va_list ap;</code>. <strong>(2)</strong> Call <code>va_start(ap, count)</code>, naming the last fixed parameter so the macro knows where the extras begin. <strong>(3)</strong> Call <code>va_arg(ap, int)</code> once for every extra argument, in order. <strong>(4)</strong> Call <code>va_end(ap)</code> before returning. Missing step 4 is undefined behaviour."
+        },
+        {
+          "title": "How the function knows when to stop",
+          "text": "C gives the function <strong>no way</strong> to count the extra arguments, so you must tell it. Two standard tricks: pass a count as the first fixed parameter, as <code>addAll(3, 10, 20, 30)</code> does; or use a sentinel value such as <code>-1</code> or <code>NULL</code> to mark the end. <code>printf</code> uses a third method — it counts the <code>%</code> specifiers in the format string."
+        },
+        {
+          "title": "The danger of no type checking",
+          "text": "<code>va_arg(ap, int)</code> simply trusts you. If the caller actually passed a double and you ask for an int, you get garbage and possibly a crash — the compiler cannot warn you, because it does not know what was passed. This is exactly why <code>printf(\"%d\", 3.5)</code> prints nonsense instead of giving a compile error."
+        }
+      ],
+      "realLife": "A shared auto-rickshaw. It does not have a fixed number of seats declared in advance — the driver takes as many passengers as turn up, and the first passenger tells him how many are coming so he knows when to leave.",
+      "code": "#include <stdio.h>\n#include <stdarg.h>              // needed for va_list and friends\n\nint addAll(int count, ...) {      // 'count' is fixed, ... means more follow\n    va_list ap;                   // 1. declare\n    int sum = 0, i;\n\n    va_start(ap, count);          // 2. start, naming the LAST fixed parameter\n    for (i = 0; i < count; i++)\n        sum += va_arg(ap, int);   // 3. fetch the next argument as an int\n    va_end(ap);                   // 4. clean up\n\n    return sum;\n}\n\nint main() {\n    printf(\"%d\\n\", addAll(3, 10, 20, 30));       // 60\n    printf(\"%d\\n\", addAll(5, 1, 2, 3, 4, 5));    // 15\n    printf(\"%d\\n\", addAll(0));                   // 0\n    return 0;\n}",
+      "codeNote": "The first argument tells the function how many numbers follow — without it, C has no way to know where to stop.",
+      "mistake": "Writing <code>int addAll(...)</code> with no fixed parameter at all. C requires at least one named parameter before the ellipsis, because <code>va_start</code> needs a starting landmark. The function also has no way of knowing how many arguments arrived.",
+      "examAnswer": "A variable argument list function, or variadic function, is a function that can accept a varying number of arguments. It is declared with one or more fixed parameters followed by an ellipsis, for example int addAll(int count, ...), where the ellipsis must be the final parameter and at least one fixed parameter is mandatory. The additional arguments are accessed using the facilities declared in stdarg.h: an object of type va_list is declared, va_start(ap, last) initialises it using the name of the last fixed parameter, va_arg(ap, type) retrieves each subsequent argument according to the type specified, and va_end(ap) performs the required clean-up before the function returns. Since the language provides no mechanism for counting the arguments actually passed, the number must be conveyed by a fixed parameter or by a terminating sentinel value, as printf() does through its format string.",
+      "remember": "list, start, arg, end — in that order. Always one fixed parameter before the three dots.",
+      "why": "This explains how printf and scanf themselves work, which is a favourite viva question, and it lets you write flexible utility functions of your own.",
+      "practice": "Write a variadic function largest(int count, ...) that returns the biggest of however many integers are passed to it."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Why do programs need files instead of only variables?",
+      "options": [
+        "Files make the program run faster",
+        "RAM is volatile, so data is lost when the program ends",
+        "Variables cannot store numbers",
+        "Files use less memory than variables"
+      ],
+      "answer": 1,
+      "why": "Variables live in RAM, which is temporary. A file stores data on disk so it survives after the program closes."
+    },
+    {
+      "q": "Which fopen mode DESTROYS the contents of an existing file?",
+      "options": [
+        "\"r\"",
+        "\"a\"",
+        "\"w\"",
+        "\"r+\""
+      ],
+      "answer": 2,
+      "why": "\"w\" truncates the file to zero length the moment it is opened, even before anything is written. Use \"a\" to add data safely."
+    },
+    {
+      "q": "What is the value of the macro EOF?",
+      "options": [
+        "0",
+        "1",
+        "-1",
+        "NULL"
+      ],
+      "answer": 2,
+      "why": "EOF is defined in stdio.h with the value -1. That is also why fgetc() returns an int, so EOF cannot be confused with a real character."
+    },
+    {
+      "q": "Which pair of statements finds the size of an open file?",
+      "options": [
+        "rewind(fp); size = ftell(fp);",
+        "fseek(fp, 0, SEEK_END); size = ftell(fp);",
+        "fseek(fp, 0, SEEK_SET); size = fgetc(fp);",
+        "size = fclose(fp);"
+      ],
+      "answer": 1,
+      "why": "Jump to the end with SEEK_END, then ftell reports the position in bytes from the start — which is the file size."
+    },
+    {
+      "q": "When does the C preprocessor run?",
+      "options": [
+        "After the program is linked",
+        "Before compilation",
+        "While the program is running",
+        "Only when an error occurs"
+      ],
+      "answer": 1,
+      "why": "The preprocessor runs first and performs text substitution. The compiler never sees the lines beginning with #."
+    },
+    {
+      "q": "With #define SQUARE(x) x*x, what does SQUARE(2+3) print?",
+      "options": [
+        "25",
+        "11",
+        "10",
+        "Compiler error"
+      ],
+      "answer": 1,
+      "why": "It expands to the text 2+3*2+3. By precedence that is 2 + 6 + 3 = 11. The fix is ((x)*(x)), which gives 25."
+    },
+    {
+      "q": "Which directive is used to write an include guard?",
+      "options": [
+        "#ifdef",
+        "#ifndef",
+        "#elif",
+        "#undef"
+      ],
+      "answer": 1,
+      "why": "An include guard starts with #ifndef HEADER_H, then #define HEADER_H, and ends with #endif — so the body is included only the first time."
+    },
+    {
+      "q": "In a variadic function, va_start(ap, count) requires that count is…",
+      "options": [
+        "the first extra argument",
+        "the last fixed parameter before the ellipsis",
+        "always an integer equal to 0",
+        "a global variable"
+      ],
+      "answer": 1,
+      "why": "va_start needs the name of the LAST FIXED parameter so it knows where the variable arguments begin. That is why at least one fixed parameter is compulsory."
+    },
+    {
+      "q": "Which is the correct and safe way to read a text file to its end?",
+      "options": [
+        "while (!feof(fp)) { ch = fgetc(fp); ... }",
+        "int ch; while ((ch = fgetc(fp)) != EOF) { ... }",
+        "char ch; while ((ch = fgetc(fp)) != EOF) { ... }",
+        "for (i = 0; i < 100; i++) fgetc(fp);"
+      ],
+      "answer": 1,
+      "why": "Test the read itself, and store the result in an int. feof() turns true only AFTER a read has already failed, so it processes the last item twice."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Why is file handling necessary in C? Explain the FILE pointer and the four steps of working with a file, with a small program."
+    },
+    {
+      "q": "Write a program that stores the name and marks of three students in a file and then reads the file back and displays the records. Explain the purpose of each fopen mode you used.",
+      "hint": "Write with fprintf in \"w\" mode, close, reopen in \"r\" mode, and loop while fscanf returns 2."
+    },
+    {
+      "q": "Explain fseek(), ftell() and rewind() with their syntax, and show how you would find the size of a file and then reach its 10th byte."
+    },
+    {
+      "q": "What is the C preprocessor? Differentiate between object-like and function-like macros, and explain with full working why #define SQUARE(x) x*x gives a wrong answer for SQUARE(2+3).",
+      "hint": "Expand the text first, then apply operator precedence: 2+3*2+3."
+    },
+    {
+      "q": "Explain conditional compilation directives with an example, and write a variadic function using stdarg.h that returns the sum of any number of integers."
+    }
+  ]
+};

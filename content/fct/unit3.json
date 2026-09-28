@@ -1,0 +1,523 @@
+/* Fundamentals of Computer Technologies (MCA 111) — Unit 3. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.fct = UNITS.fct || [];
+UNITS.fct[2] = {
+  "num": 3,
+  "title": "Software Systems: Compilers, Assemblers & Loaders",
+  "problem": "You write <code>position = initial + rate * 60</code> in English-looking code. But the machine only understands 0s and 1s. Who does the translating — and how does a program turn your sentence into machine instructions without ever making a mistake?",
+  "solution": "This unit introduces the software that builds other software. You'll follow one statement all the way through the six phases of a compiler, see how an assembler handles a name it has not met yet, learn what a macro really does, and finally watch the linker and loader put your program into memory and start it running.",
+  "objectives": [
+    "Distinguish system software from application software and place each in the software hierarchy",
+    "Explain what a translator is and name the three kinds",
+    "List the six phases of a compiler in order and state the output of each",
+    "Explain the role of the symbol table and error handler across all phases",
+    "Group the phases into the analysis front end and the synthesis back end",
+    "Compare compiler, interpreter and assembler in a table",
+    "Explain bootstrapping, porting and the purpose of a cross compiler",
+    "Identify the elements of an assembly language statement",
+    "Explain forward references and why a two-pass assembler is needed",
+    "Describe what a macro processor does, and how a macro differs from a function",
+    "Distinguish the jobs of a linker and a loader"
+  ],
+  "topics": [
+    {
+      "title": "Introduction to Software and the Software Hierarchy",
+      "teacher": "Hardware is the part you can drop on your foot. Software is everything else. But 'software' is not one flat thing — it is a stack of layers, and each layer only talks to the one below it. Let's build that stack from the ground up.",
+      "explain": "<strong>Software</strong> is a set of instructions (programs) that tells the hardware what to do. It is organised as a <strong>hierarchy</strong>: the hardware sits at the bottom, <strong>system software</strong> sits directly on top of it and manages it, <strong>software tools and utilities</strong> sit above that, and <strong>application software</strong> sits at the top where the user works.",
+      "keyPoints": [
+        "<strong>Software</strong> = programs + associated data and documentation. Hardware is physical; software is not.",
+        "<strong>System software</strong> manages and controls the hardware — operating system, device drivers, BIOS.",
+        "<strong>Application software</strong> does a job for the <em>user</em> — MS Word, a browser, a payroll program, a game.",
+        "<strong>Software tools</strong> (also called utility or development software) help build and maintain other programs.",
+        "Examples of tools: <strong>editors, compilers, assemblers, interpreters, linkers, loaders, debuggers, macro processors</strong>.",
+        "The hierarchy from bottom to top: <strong>Hardware → System software → Software tools → Application software → User</strong>.",
+        "Each layer uses the services of the layer below and hides its complexity from the layer above.",
+        "Application software cannot run without system software; system software is useless without hardware.",
+        "Software is also classed by licence: <strong>proprietary</strong>, <strong>open source</strong>, <strong>freeware</strong>, <strong>shareware</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "System software versus application software",
+          "text": "System software serves the <strong>machine</strong>: it starts the computer, manages memory, files and devices, and provides a platform for everything else. Application software serves the <strong>user</strong>: it solves a real-world problem such as writing a letter or booking a ticket. A simple test — if removing it would stop the computer from working at all, it is system software."
+        },
+        {
+          "title": "Where software tools fit",
+          "text": "Software tools are a special group that sits between the two. They are not what the end user wants, and they are not what runs the machine — they exist to <strong>produce other software</strong>. A compiler, an assembler, a linker, a loader and a debugger are all tools. This entire unit is a study of that one layer."
+        },
+        {
+          "title": "Why the layering matters",
+          "text": "Because of layering, an application programmer never has to know how a hard disk moves its head. She calls a file-open service, the operating system handles the rest. This is called <strong>abstraction</strong>, and it is the only reason large software can be built at all — each team only needs to understand its own layer."
+        }
+      ],
+      "realLife": "Think of your college. Students are the applications — they do the actual work. The office staff and electricians are the system software — they keep the building running. The workshop and the lab equipment are the tools — they exist so that other things can be built. Remove the electricians and nothing works at all.",
+      "table": {
+        "headers": ["", "System Software", "Application Software"],
+        "rows": [
+          ["Serves", "The computer itself", "The end user"],
+          ["Purpose", "Manage and control hardware", "Solve a user's real problem"],
+          ["Runs", "From the moment the machine starts", "Only when the user opens it"],
+          ["Written in", "Usually low-level / C", "Usually high-level languages"],
+          ["Examples", "Operating system, drivers, BIOS, compiler", "MS Word, browser, payroll, games"],
+          ["Can you remove it?", "No — the machine stops working", "Yes — the machine still works"]
+        ]
+      },
+      "mistake": "A compiler is <strong>system software (a software tool)</strong>, not application software — even though a programmer opens it like an app. The test is who it serves: a compiler serves the process of building programs, not an end user solving a business problem.",
+      "examAnswer": "Software is the collection of programs, data and documentation that instructs computer hardware to perform useful work. It is broadly classified into system software and application software. System software controls and manages the hardware and provides a platform on which other programs execute; examples include the operating system, device drivers and the BIOS. Application software is written to solve a specific problem for the end user, such as word processing or accounting. Between these lies a group of software tools, including editors, compilers, assemblers, interpreters, linkers, loaders and debuggers, whose purpose is to assist in the development of other software. These categories form the software hierarchy, in which each layer uses the services provided by the layer below it and presents a simpler interface to the layer above.",
+      "remember": "Hardware at the bottom, User at the top. System software serves the MACHINE, application software serves the USER, tools BUILD software.",
+      "why": "Every question in the rest of this unit — compiler, assembler, linker, loader — is about one particular layer of this hierarchy. Knowing where each tool sits makes the whole unit hold together.",
+      "practice": "Classify these as system software, software tool or application software: Windows, Photoshop, a C compiler, a printer driver, a linker, VLC media player."
+    },
+    {
+      "title": "Translators: Compiler, Interpreter and Assembler",
+      "teacher": "You speak Hindi and English. The computer speaks only binary. Somebody has to translate — and there are three different translators, each with a different style. One translates the whole book before you read it, one translates sentence by sentence as you go, and one does a straight word-for-word swap. Let's meet all three.",
+      "explain": "A <strong>translator</strong> is a program that converts a program written in one language into another language, usually from a language humans can read into machine code the CPU can run. The three translators are the <strong>compiler</strong> (whole high-level program at once), the <strong>interpreter</strong> (high-level, one statement at a time) and the <strong>assembler</strong> (assembly language to machine code).",
+      "keyPoints": [
+        "<strong>Source program</strong> = what you write. <strong>Object/target program</strong> = what the translator produces.",
+        "<strong>Compiler</strong> — translates the <strong>entire</strong> high-level program in one go, produces an object file, reports all errors together.",
+        "<strong>Interpreter</strong> — translates and <strong>executes one statement at a time</strong>, produces no object file, stops at the first error.",
+        "<strong>Assembler</strong> — translates <strong>assembly language</strong> (mnemonics) into machine code, roughly one instruction to one instruction.",
+        "Compiled programs run <strong>faster</strong> (translation happens once); interpreted programs are <strong>easier to debug</strong>.",
+        "An interpreter re-translates a loop body every single time it goes round — that is why it is slower.",
+        "Examples: C and C++ are compiled; Python and BASIC are interpreted; Java uses both (compile to bytecode, then interpret / JIT).",
+        "A <strong>preprocessor</strong> runs before the compiler and handles things like <code>#include</code> and macros.",
+        "All three are <strong>software tools</strong> — they produce programs, they are not the final program."
+      ],
+      "subtopics": [
+        {
+          "title": "The benefits of an interpreter",
+          "text": "An interpreter reports an error the moment it reaches the bad line, with the line right in front of you, which makes debugging much easier for a beginner. It needs no separate compile step, so you can test a change instantly. The same interpreted source runs on any machine that has the interpreter, giving <strong>portability</strong>. It also uses less memory, since no large object file is generated, and it allows interactive line-by-line working."
+        },
+        {
+          "title": "The cost of an interpreter",
+          "text": "Speed. Because translation happens again on every run — and again on every pass through a loop — an interpreted program is typically much slower than a compiled one. The source code must also be present on the user's machine, so it cannot easily be kept secret, and the interpreter itself must be installed."
+        },
+        {
+          "title": "Why an assembler is the simplest translator",
+          "text": "Assembly language is a symbolic form of machine language, so the mapping is almost one-to-one: <code>ADD</code> becomes a particular opcode, <code>AREG</code> becomes a register number. The assembler does not have to understand expressions, types or control structures the way a compiler does. Its real work is bookkeeping — remembering what address each label stands for."
+        }
+      ],
+      "realLife": "A compiler is like getting an entire English novel translated into Hindi and printed — slow to prepare, but afterwards anyone can read it quickly, again and again. An interpreter is like a live translator standing beside you at a meeting — instant to start, but she has to do the work all over again for the next meeting.",
+      "table": {
+        "headers": ["", "Compiler", "Interpreter", "Assembler"],
+        "rows": [
+          ["Input language", "High-level language", "High-level language", "Assembly language"],
+          ["Translates", "Whole program at once", "One statement at a time", "Whole program at once"],
+          ["Object code produced?", "Yes, an object file", "No", "Yes, an object file"],
+          ["Execution speed", "Fast", "Slow", "Fast"],
+          ["Error reporting", "All errors listed after scanning", "Stops at the first error", "All errors listed"],
+          ["Memory needed", "More", "Less", "Less"],
+          ["Debugging", "Harder", "Easier", "Moderate"],
+          ["Re-translation", "Once only", "Every time it runs", "Once only"],
+          ["Examples", "C, C++, Pascal", "Python, BASIC, older JavaScript", "MASM, NASM, TASM"]
+        ]
+      },
+      "mistake": "Do not say an interpreter 'does not translate'. It absolutely does translate — it simply translates and executes one statement at a time instead of producing a complete object file first. The difference is <em>when</em> and <em>how much</em>, not <em>whether</em>.",
+      "examAnswer": "A translator is a system program that converts a program written in one language, called the source program, into an equivalent program in another language, called the target or object program. There are three principal types of translator. A compiler translates an entire high-level language program into machine or object code in one operation, reports all detected errors together, and produces an object file which may be executed repeatedly without retranslation. An interpreter translates and executes the source program one statement at a time, produces no object file, and halts when it encounters an error, which makes debugging simpler but execution considerably slower. An assembler translates a program written in assembly language, which uses symbolic mnemonics, into machine code, with an essentially one-to-one correspondence between assembly statements and machine instructions.",
+      "remember": "Compiler = whole book at once. Interpreter = line by line, live. Assembler = word-for-word swap.",
+      "why": "Choosing a compiled or interpreted language is a real engineering decision. It is why system tools are written in C and why data-analysis scripts are written in Python.",
+      "practice": "Write five clear differences between a compiler and an interpreter in a table. Then give two situations where you would deliberately prefer an interpreter."
+    },
+    {
+      "title": "Phases of a Compiler",
+      "teacher": "A compiler does not do its job in one giant leap. It works like an assembly line — six small stations, each doing one simple thing and handing the result to the next. This is the most important diagram in the whole unit, so let's walk the line together, station by station.",
+      "explain": "A compiler translates a source program through <strong>six phases</strong>, each taking the output of the previous one. They are <strong>lexical analysis, syntax analysis, semantic analysis, intermediate code generation, code optimisation</strong> and <strong>code generation</strong>. Two components — the <strong>symbol table manager</strong> and the <strong>error handler</strong> — are not phases at all; they work <em>alongside every phase</em>.",
+      "keyPoints": [
+        "<strong>1. Lexical Analysis (Scanner)</strong> — reads characters and groups them into <strong>tokens</strong>; removes spaces and comments.",
+        "<strong>2. Syntax Analysis (Parser)</strong> — checks the tokens against the grammar and builds a <strong>parse tree / syntax tree</strong>.",
+        "<strong>3. Semantic Analysis</strong> — checks <strong>meaning</strong>: types, declarations and scope; inserts type conversions.",
+        "<strong>4. Intermediate Code Generation</strong> — produces machine-independent code, usually <strong>three-address code</strong>.",
+        "<strong>5. Code Optimisation</strong> — improves the intermediate code so it runs faster or is smaller. This phase is <strong>optional</strong>.",
+        "<strong>6. Code Generation</strong> — produces the final target/assembly code and allocates registers.",
+        "<strong>Symbol table</strong> — a data structure storing every identifier's name, type, scope and address; used by <strong>all</strong> phases.",
+        "<strong>Error handler</strong> — reports errors and tries to recover so compilation can continue; also used by all phases.",
+        "Typical errors by phase: lexical = illegal character · syntax = missing semicolon · semantic = type mismatch."
+      ],
+      "subtopics": [
+        {
+          "title": "Lexical analysis — turning characters into tokens",
+          "text": "The scanner reads the source one character at a time and groups characters into <strong>lexemes</strong>, each of which becomes a <strong>token</strong> such as identifier, keyword, constant, operator or punctuation. It throws away whitespace and comments, and enters every new identifier into the symbol table. It catches only the simplest errors, such as a character that cannot start any valid token."
+        },
+        {
+          "title": "Syntax analysis — is the sentence well formed?",
+          "text": "The parser takes the stream of tokens and checks whether they form a valid sentence according to the grammar of the language, building a <strong>parse tree</strong> as it goes. It catches structural errors — a missing semicolon, an unbalanced bracket, <code>if</code> without a condition. It does <em>not</em> care what the names mean; that comes next."
+        },
+        {
+          "title": "Semantic analysis — does the sentence make sense?",
+          "text": "Grammar alone is not enough. <code>x = y + 1</code> is grammatically perfect even if <code>y</code> was never declared, or is a string. Semantic analysis uses the symbol table to check that every identifier is declared, that types are compatible, that a function is called with the right number of arguments, and it inserts automatic type conversions where the language allows them."
+        },
+        {
+          "title": "Why intermediate code at all?",
+          "text": "It would seem faster to go straight from the parse tree to machine code. But an intermediate form makes the compiler <strong>portable</strong>: the same front end can serve many machines, and the same optimiser works for all of them. For M languages and N machines you then need M front ends plus N back ends, instead of M × N whole compilers."
+        }
+      ],
+      "realLife": "Think of a school essay being checked. Lexical analysis = are these real words? Syntax analysis = are the sentences grammatically correct? Semantic analysis = do the sentences actually make sense? Optimisation = can this be said more briefly? Each check is separate, and each one comes in a fixed order.",
+      "worked": "<strong>Tracing the statement <code>position = initial + rate * 60</code> through all six phases.</strong><br>(Assume <code>position</code>, <code>initial</code> and <code>rate</code> are declared as floating-point variables.)<br><br><strong>PHASE 1 — Lexical Analysis.</strong> The characters are grouped into tokens, and the three identifiers go into the symbol table as entries 1, 2 and 3:<br><code>&lt;id, 1&gt; &lt;=&gt; &lt;id, 2&gt; &lt;+&gt; &lt;id, 3&gt; &lt;*&gt; &lt;number, 60&gt;</code><br>Spaces are discarded. There are 8 tokens.<br><br><strong>PHASE 2 — Syntax Analysis.</strong> The parser checks the tokens against the grammar and builds a syntax tree. Because <code>*</code> binds tighter than <code>+</code>, the multiplication sits deeper in the tree:<br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp; \\</code><br><code>&nbsp;&nbsp;&nbsp;&lt;id,1&gt;&nbsp;&nbsp;&nbsp;+</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp; \\</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;id,2&gt;&nbsp;&nbsp;&nbsp;*</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp; \\</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;id,3&gt;&nbsp;&nbsp; 60</code><br><br><strong>PHASE 3 — Semantic Analysis.</strong> The types are checked using the symbol table. <code>rate</code> is a float but <code>60</code> is an integer, so the compiler inserts a conversion node so both operands match:<br>the leaf <code>60</code> becomes <code>inttofloat(60)</code><br>If instead <code>rate</code> had been declared as an array, this is the phase that would report the error.<br><br><strong>PHASE 4 — Intermediate Code Generation</strong> (three-address code — at most one operator per line):<br><code>t1 = inttofloat(60)</code><br><code>t2 = id3 * t1</code><br><code>t3 = id2 + t2</code><br><code>id1 = t3</code><br><br><strong>PHASE 5 — Code Optimisation.</strong> <code>inttofloat(60)</code> is a constant, so it can be worked out at compile time instead of at run time (<em>constant folding</em>), and <code>t3</code> is copied straight into <code>id1</code> so it can be eliminated (<em>copy propagation</em>). Four lines become two:<br><code>t1 = id3 * 60.0</code><br><code>id1 = id2 + t1</code><br><br><strong>PHASE 6 — Code Generation.</strong> Registers are allocated and target assembly is emitted (F = floating-point, # = a literal value):<br><code>LDF&nbsp;&nbsp; R2, id3</code><br><code>MULF&nbsp; R2, R2, #60.0</code><br><code>LDF&nbsp;&nbsp; R1, id2</code><br><code>ADDF&nbsp; R1, R1, R2</code><br><code>STF&nbsp;&nbsp; id1, R1</code><br><br><strong>Running throughout:</strong> the <strong>symbol table</strong> held the entries for <code>position</code>, <code>initial</code> and <code>rate</code> with their types — phase 1 created them and phase 3 read them back. The <strong>error handler</strong> stood ready at every phase.",
+      "mistake": "Students routinely swap phases 2 and 3. Remember the order by meaning: <strong>syntax</strong> comes before <strong>semantics</strong>, exactly as 'is it grammatical?' comes before 'does it make sense?'. Also, code optimisation is the <strong>optional</strong> phase — a compiler is still a valid compiler without it.",
+      "examAnswer": "A compiler translates a source program into a target program through a sequence of six phases. Lexical analysis reads the source characters and groups them into tokens, discarding whitespace and comments. Syntax analysis takes the token stream and verifies that it conforms to the grammar of the language, producing a parse tree. Semantic analysis checks the meaning of the program using the symbol table, verifying declarations and type compatibility and inserting any required type conversions. Intermediate code generation produces a machine-independent representation, commonly three-address code. Code optimisation, which is an optional phase, transforms this intermediate code so that it executes more efficiently or occupies less space. Finally, code generation produces the target machine or assembly code and performs register allocation. In addition, the symbol table manager and the error handler are not phases but supporting components that interact with every phase of compilation.",
+      "remember": "Lexical → Syntax → Semantic → Intermediate → Optimise → Generate. 'Letters, Sentences, Sense, Sketch, Shorten, Ship.'",
+      "why": "This is the single most-asked question in this unit, usually worth 7 marks with a diagram. It also explains exactly why your compiler gives the error messages it does, and at which stage.",
+      "practice": "Trace the statement <code>total = price * qty + tax</code> through all six phases, showing the tokens, the syntax tree and the three-address code."
+    },
+    {
+      "title": "Grouping of Phases: Analysis and Synthesis",
+      "teacher": "Six phases is a lot to carry around. Good news — they naturally fall into just two halves. One half understands what you wrote; the other half builds what the machine will run. Once you see the split, a lot of real-world compiler design suddenly makes sense.",
+      "explain": "The six phases are grouped into two parts. The <strong>analysis phase (front end)</strong> breaks the source program apart and works out its meaning; the <strong>synthesis phase (back end)</strong> constructs the target program from that meaning. The front end depends on the <strong>source language</strong>, the back end depends on the <strong>target machine</strong>.",
+      "keyPoints": [
+        "<strong>Analysis phase = Front End</strong>: lexical analysis, syntax analysis, semantic analysis and intermediate code generation.",
+        "<strong>Synthesis phase = Back End</strong>: code optimisation and code generation.",
+        "The front end is <strong>machine independent</strong> — it does not know or care which CPU will run the result.",
+        "The back end is <strong>language independent</strong> — it does not know which source language the code came from.",
+        "The <strong>intermediate code</strong> is the meeting point between the two halves.",
+        "Front end output = intermediate representation + a filled symbol table.",
+        "Grouping the phases lets a compiler be split across <strong>passes</strong> — a <strong>pass</strong> reads the whole program once.",
+        "Several phases can be combined into one pass to save time, or split across passes to save memory.",
+        "Benefit: to support M languages on N machines you need only <strong>M front ends + N back ends</strong>, not M × N compilers."
+      ],
+      "subtopics": [
+        {
+          "title": "Phases versus passes — they are NOT the same word",
+          "text": "A <strong>phase</strong> is a logical stage of compilation, defined by the job it does. A <strong>pass</strong> is a physical reading of the whole program from start to end. One pass may carry out several phases at once. A single-pass compiler performs all six phases in one sweep; a multi-pass compiler makes several sweeps, which needs less memory but takes longer."
+        },
+        {
+          "title": "Why the split saves enormous effort",
+          "text": "Suppose a company supports 4 languages on 5 processors. Building a separate compiler for every pair means 20 complete compilers. With the front end / back end split, they build 4 front ends and 5 back ends — just 9 pieces — and connect any front end to any back end through the common intermediate code. This is exactly how real compiler suites such as GCC and LLVM are organised."
+        },
+        {
+          "title": "Retargeting versus supporting a new language",
+          "text": "To make an existing compiler produce code for a <strong>new processor</strong>, you write a new back end and keep the front end — this is called <strong>retargeting</strong>. To support a <strong>new source language</strong> on machines you already handle, you write a new front end and keep all the back ends. Each job touches only half the compiler."
+        }
+      ],
+      "realLife": "Think of translating a Hindi book into French. The first half of the job is reading and fully understanding the Hindi — that is the front end. The second half is writing good French — that is the back end. If you later want a German version too, you do not re-read the Hindi from scratch; you keep your understanding and only change the writing half.",
+      "table": {
+        "headers": ["", "Analysis (Front End)", "Synthesis (Back End)"],
+        "rows": [
+          ["Phases included", "Lexical, Syntax, Semantic, Intermediate code generation", "Code optimisation, Code generation"],
+          ["Job", "Understand the source program", "Build the target program"],
+          ["Depends on", "The source language", "The target machine"],
+          ["Independent of", "The target machine", "The source language"],
+          ["Main output", "Intermediate code + symbol table", "Target machine / assembly code"],
+          ["Changed when", "A new source language is supported", "A new processor is supported"]
+        ]
+      },
+      "mistake": "Intermediate code generation belongs to the <strong>front end (analysis)</strong>, not the back end. Students see the word 'generation' and assume it goes with code generation. It does not — it is the last step of analysis and the handover point to synthesis.",
+      "examAnswer": "The six phases of a compiler are conventionally grouped into two parts, namely the analysis phase and the synthesis phase, also called the front end and the back end. The analysis phase comprises lexical analysis, syntax analysis, semantic analysis and intermediate code generation; it decomposes the source program, determines its meaning, records information in the symbol table and produces an intermediate representation. The synthesis phase comprises code optimisation and code generation, and constructs the target program from the intermediate representation. The front end depends upon the source language but is independent of the target machine, while the back end depends upon the target machine but is independent of the source language. This separation is of great practical value, since supporting M source languages on N target machines requires only M front ends and N back ends rather than M multiplied by N complete compilers. A phase should be distinguished from a pass, a pass being one complete reading of the source program, during which several phases may be carried out.",
+      "remember": "Front end = ANALYSE (understand the source). Back end = SYNTHESISE (build the target). Intermediate code is the handshake between them.",
+      "why": "This is why GCC can compile C, C++ and Fortran for dozens of processors without anyone writing dozens of separate compilers. It is the single most important design idea in compiler construction.",
+      "practice": "Draw the six phases of a compiler and mark clearly which belong to the front end and which to the back end. Then explain the difference between a phase and a pass in two lines."
+    },
+    {
+      "title": "Types of Compilers, Bootstrapping and Porting",
+      "teacher": "Now a genuine puzzle — a real chicken-and-egg problem. A C compiler is itself written in C. But to compile it, you need a C compiler. So where did the very first one come from? The answer is called bootstrapping, and it is one of the cleverest tricks in computing.",
+      "explain": "Compilers come in several varieties depending on how many passes they make, what they optimise and which machine they target. <strong>Bootstrapping</strong> is the technique of writing a compiler for a language <em>in that same language</em>, starting from a small subset. <strong>Porting</strong> is moving an existing compiler to a new machine by rewriting only its back end.",
+      "keyPoints": [
+        "<strong>Single-pass compiler</strong> — reads the source once; fast, but limited (hard to optimise or handle forward references).",
+        "<strong>Multi-pass compiler</strong> — reads the source several times; slower but allows better optimisation and needs less memory at once.",
+        "<strong>Optimising compiler</strong> — spends extra effort making the target code faster or smaller.",
+        "<strong>Cross compiler</strong> — <strong>runs on one machine but produces code for a different machine</strong>. Essential for embedded systems and phones.",
+        "<strong>Incremental compiler</strong> — recompiles only the parts that changed. <strong>JIT compiler</strong> — compiles at run time (used in Java and .NET).",
+        "<strong>Source-to-source compiler (transpiler)</strong> — translates one high-level language into another, not into machine code.",
+        "<strong>Bootstrapping</strong> — writing a compiler for language L in language L itself; also called a <strong>self-hosting</strong> compiler.",
+        "Bootstrapping starts by writing a compiler for a <strong>small subset</strong> of L in some other existing language, then using it to compile the full compiler.",
+        "<strong>Porting (retargeting)</strong> — moving a compiler to a new machine by rewriting the <strong>back end only</strong>, keeping the front end."
+      ],
+      "subtopics": [
+        {
+          "title": "Bootstrapping, step by step",
+          "text": "Step 1: choose a small subset S of the language L. Step 2: write a compiler for S using some language that already has a compiler on your machine — this is the tiny starter compiler. Step 3: now write a full compiler for L, but write it using only the features of subset S. Step 4: compile that full compiler using the starter compiler. You now have a working compiler for the whole of L, and from this point onward L compiles itself."
+        },
+        {
+          "title": "Why a cross compiler is needed",
+          "text": "A washing-machine controller or a tiny embedded chip may have no keyboard, no screen and only a few kilobytes of memory — it simply cannot run a compiler. So you compile the program on a powerful desktop and produce code for the small chip instead. The same applies when bringing up a brand new processor for which no compiler exists yet."
+        },
+        {
+          "title": "Porting versus bootstrapping — do not confuse them",
+          "text": "<strong>Bootstrapping</strong> answers 'how do I get a compiler for this language to exist at all?'. <strong>Porting</strong> answers 'how do I move a compiler I already have onto a new machine?'. Porting is usually done by rewriting the back end, and a cross compiler is often used to produce the first version that runs on the new machine."
+        },
+        {
+          "title": "T-diagrams",
+          "text": "Compiler writers draw a compiler as a T shape showing three things: the <strong>source</strong> language it accepts, the <strong>target</strong> language it produces, and the <strong>implementation</strong> language it is itself written in. Fitting T-diagrams together is the standard way of showing that a bootstrapping or porting plan actually works."
+        }
+      ],
+      "realLife": "Bootstrapping is like the phrase 'pulling yourself up by your own bootstraps'. It is also why the <code>boot</code> in 'boot the computer' exists — a tiny bootstrap loader in ROM loads a slightly bigger loader, which loads the whole operating system. Small thing lifts bigger thing, step by step.",
+      "table": {
+        "headers": ["Type of compiler", "What makes it different", "Typical use"],
+        "rows": [
+          ["Single-pass", "Reads the source once", "Simple languages such as Pascal"],
+          ["Multi-pass", "Reads the source several times", "Most real compilers, better optimisation"],
+          ["Optimising", "Works hard to improve the target code", "Performance-critical software"],
+          ["Cross compiler", "Runs on machine A, generates code for machine B", "Embedded systems, phones, new CPUs"],
+          ["Incremental", "Recompiles only what changed", "IDEs, fast development cycles"],
+          ["JIT", "Compiles during execution", "Java JVM, .NET CLR"],
+          ["Source-to-source", "High-level language into another high-level language", "TypeScript to JavaScript"]
+        ]
+      },
+      "worked": "<strong>Bootstrapping a compiler for a new language 'L' on a machine that already has a C compiler.</strong><br><br><strong>Step 1.</strong> Pick a small subset of L — call it S. S has only the essentials: variables, assignment, <code>if</code> and <code>while</code>. No fancy features.<br><br><strong>Step 2.</strong> Write a compiler for S <em>in C</em>. Call it <code>C1</code>.<br>Compile <code>C1</code> with the existing C compiler → you now have a <strong>working, running compiler for S</strong>.<br><br><strong>Step 3.</strong> Now write a compiler for the <strong>full</strong> language L — but write it using only the features of S. Call this source <code>C2</code>.<br><br><strong>Step 4.</strong> Feed <code>C2</code> into <code>C1</code>. Since <code>C2</code> is written only in S, and <code>C1</code> understands S, this works. The output is a <strong>running compiler for the full language L</strong>.<br><br><strong>Step 5 (the elegant part).</strong> Now rewrite the compiler using the full power of L, and compile <em>that</em> with the compiler from Step 4. From here on, L compiles itself and C is never needed again. The language has become <strong>self-hosting</strong>.<br><br><strong>And now porting, using the same compiler.</strong><br>Suppose the compiler currently produces code for an Intel processor and you want it to produce code for an ARM processor.<br>Keep: the <strong>entire front end</strong> — lexical, syntax, semantic analysis and intermediate code generation. Nothing about the language has changed.<br>Rewrite: the <strong>back end</strong> only — code generation for ARM instructions and ARM registers.<br>Run the new compiler <em>on the Intel machine</em> to produce ARM code — at this moment it is acting as a <strong>cross compiler</strong>. Then use it to compile itself, producing an ARM-native compiler that runs on the ARM machine. The port is complete.",
+      "mistake": "A cross compiler is defined by <em>where its output runs</em>, not by what language it accepts. A compiler on your laptop that produces code for an Android phone is a cross compiler even though it is an ordinary C compiler in every other respect.",
+      "examAnswer": "Compilers may be classified as single-pass or multi-pass according to the number of times the source program is read, as optimising compilers when they perform extensive improvement of the target code, as incremental compilers when they recompile only modified portions, and as just-in-time compilers when translation occurs during execution. A cross compiler is a compiler that executes on one machine but generates object code for a different machine, and is essential for developing software for embedded systems and for newly designed processors. Bootstrapping is the technique of writing a compiler for a language in that same language: a compiler for a small subset of the language is first written in an existing language, and this is then used to compile a fuller compiler written in that subset, until the language is able to compile itself and becomes self-hosting. Porting, or retargeting, is the process of adapting an existing compiler to generate code for a new machine, which is accomplished by rewriting only the back end while retaining the machine-independent front end.",
+      "remember": "Bootstrapping = the language compiles itself, starting from a small subset. Porting = keep the front end, rewrite the back end. Cross compiler = built here, runs there.",
+      "why": "Every Android app on your phone was built by a cross compiler running on a laptop. And every modern language — C, Go, Rust — is self-hosted through bootstrapping.",
+      "practice": "Explain bootstrapping in your own words in five steps. Then explain what exactly you would change in a compiler to port it from an Intel machine to an ARM machine, and what you would keep unchanged."
+    },
+    {
+      "title": "Assembly Language: Elements and the Assembler's Job",
+      "teacher": "Machine code is pure numbers — <code>00010100</code> means 'add'. Nobody can write software like that for long. So somebody had a simple, brilliant idea: give every instruction a short name a human can remember, and let a program do the number-lookup. That program is the assembler, and those short names are mnemonics.",
+      "explain": "<strong>Assembly language</strong> is a low-level language in which each machine instruction is written as a short symbolic name called a <strong>mnemonic</strong>, with symbolic names for memory locations instead of raw addresses. An <strong>assembler</strong> translates it into machine code. The mapping is essentially <strong>one statement to one machine instruction</strong>.",
+      "keyPoints": [
+        "An assembly statement has four fields: <strong>[Label] [Mnemonic opcode] [Operands] [;Comment]</strong>. Label and comment are optional.",
+        "<strong>Mnemonic</strong> — a short symbolic name for an operation, e.g. <code>MOVER</code>, <code>ADD</code>, <code>STOP</code>.",
+        "<strong>Label</strong> — a symbolic name for the address of that statement, so you can refer to it without knowing the number.",
+        "<strong>Operands</strong> — what the instruction acts on: a register (<code>AREG</code>), a symbol (<code>ALPHA</code>), or a literal (<code>='5'</code>).",
+        "Three kinds of statement: <strong>imperative</strong> (a real executable instruction), <strong>declarative</strong> (reserve or initialise storage — <code>DS</code>, <code>DC</code>), and <strong>assembler directives</strong>.",
+        "<strong>Directives (pseudo-ops)</strong> instruct the assembler itself and generate no machine code: <code>START</code>, <code>END</code>, <code>ORIGIN</code>, <code>EQU</code>, <code>LTORG</code>.",
+        "The assembler maintains a <strong>Location Counter (LC)</strong> which tracks the address of the statement being processed.",
+        "Assembler tables: <strong>Mnemonic Table (MOT)</strong>, <strong>Symbol Table (ST)</strong>, <strong>Literal Table (LT)</strong> and <strong>Pool Table</strong>.",
+        "Assembly is <strong>machine dependent</strong> — assembly written for an Intel CPU will not run on an ARM CPU."
+      ],
+      "subtopics": [
+        {
+          "title": "The four fields of a statement",
+          "text": "In <code>LOOP  ADD  AREG, ONE   ; increment counter</code> — <strong>LOOP</strong> is the label (a name for this address), <strong>ADD</strong> is the mnemonic opcode, <strong>AREG, ONE</strong> are the operands, and everything after the semicolon is a comment ignored by the assembler. Only the mnemonic is compulsory in an executable statement."
+        },
+        {
+          "title": "Declarative statements: DC and DS",
+          "text": "<code>DC</code> means Declare Constant — it reserves storage <em>and</em> puts a value in it, as in <code>ONE DC '1'</code>. <code>DS</code> means Declare Storage — it only reserves space, leaving it empty, as in <code>RESULT DS 1</code>. Both occupy memory in the final program, so both advance the location counter."
+        },
+        {
+          "title": "Assembler directives generate no code",
+          "text": "<code>START 100</code> tells the assembler to begin placing the program at address 100 — it does not become an instruction. <code>END</code> marks the end of the source. <code>ORIGIN</code> moves the location counter. <code>EQU</code> gives a symbol a value without reserving storage. <code>LTORG</code> tells the assembler where to place the literals collected so far."
+        },
+        {
+          "title": "The two big jobs of any assembler",
+          "text": "First, replace every mnemonic with its numeric opcode — a simple lookup in a fixed table. Second, replace every symbol with its address — and this is the hard part, because a symbol may be used before it is defined. Solving that second problem is what makes assembler design interesting, and it is the subject of the next topic."
+        }
+      ],
+      "realLife": "Mnemonics are exactly like saved contacts on your phone. The phone really dials 9425XXXXXX, but you tap 'Mummy'. You remember the name; the phone does the number lookup. The assembler is that contact list for machine instructions.",
+      "worked": "<strong>A small assembly program, fully labelled.</strong><br><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;START&nbsp; 100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; directive - begin at address 100</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MOVER&nbsp; AREG, ALPHA&nbsp;; imperative - load ALPHA into register A</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ADD&nbsp;&nbsp;&nbsp; AREG, ONE&nbsp;&nbsp;&nbsp;; imperative - add ONE to it</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MOVEM&nbsp; AREG, BETA&nbsp;&nbsp;; imperative - store the result in BETA</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STOP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; imperative - halt</code><br><code>ALPHA&nbsp;&nbsp; DC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'5'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; declarative - one word holding 5</code><br><code>BETA&nbsp;&nbsp;&nbsp; DS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; declarative - reserve one empty word</code><br><code>ONE&nbsp;&nbsp;&nbsp;&nbsp; DC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'1'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; declarative - one word holding 1</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; directive - end of source</code><br><br><strong>Picking the program apart:</strong><br><strong>Labels:</strong> ALPHA, BETA, ONE &nbsp;(names for addresses)<br><strong>Mnemonics:</strong> MOVER, ADD, MOVEM, STOP &nbsp;(operations)<br><strong>Operands:</strong> AREG is a register; ALPHA, ONE, BETA are symbols<br><strong>Directives:</strong> START and END &nbsp;(no machine code produced)<br><strong>Declaratives:</strong> DC and DS &nbsp;(reserve memory, produce no executable instruction)<br><strong>Comments:</strong> everything after each semicolon — ignored completely<br><br><strong>Notice the problem hiding in line 2.</strong> The instruction <code>MOVER AREG, ALPHA</code> needs the address of ALPHA. But ALPHA is not defined until line 6, much further down. When the assembler reaches line 2 on a first reading, it simply does not know the answer yet. This is called a <strong>forward reference</strong>, and it is exactly why assemblers need two passes.",
+      "mistake": "Students often say that <code>START</code> and <code>END</code> are instructions. They are <strong>directives</strong> — they command the assembler at assembly time and produce no machine code at all. Likewise <code>DS</code> and <code>DC</code> are declaratives: they reserve memory but are not executed.",
+      "examAnswer": "Assembly language is a low-level programming language in which machine instructions are represented by symbolic mnemonic operation codes and memory locations are referred to by symbolic names, so that there is essentially a one-to-one correspondence between assembly statements and machine instructions. An assembly language statement consists of four fields, namely an optional label, a mnemonic operation code, one or more operands and an optional comment. Assembly statements are of three kinds: imperative statements, which correspond to executable machine instructions; declarative statements such as DS and DC, which reserve or initialise storage; and assembler directives such as START, END, ORIGIN and EQU, which direct the assembler itself and generate no machine code. An assembler translates such a program into machine code, maintaining a location counter together with a mnemonic table, a symbol table and a literal table. Assembly language is machine dependent, since its mnemonics correspond directly to the instruction set of a particular processor.",
+      "remember": "Label, Mnemonic, Operand, Comment. Directives command the ASSEMBLER; imperatives command the MACHINE.",
+      "why": "Assembly is still written today for device drivers, boot code and performance-critical routines. More importantly, it is the level at which you can finally see exactly what the hardware is doing.",
+      "practice": "Write a short assembly program that adds two numbers X and Y and stores the answer in Z. Then label every statement as imperative, declarative or directive."
+    },
+    {
+      "title": "Assembler Design: Single-Pass and Two-Pass",
+      "teacher": "Here is the puzzle from the last topic. Line 2 of your program says 'load ALPHA' — but ALPHA is not defined until line 6. The assembler has not read that far yet. So what address should it write? This one small problem is the reason assemblers are designed the way they are.",
+      "explain": "A <strong>forward reference</strong> is a use of a symbol before it has been defined. A <strong>two-pass assembler</strong> solves it by reading the source twice: <strong>Pass 1</strong> defines all symbols and builds the symbol table, and <strong>Pass 2</strong> generates the object code with every address now known. A <strong>single-pass assembler</strong> reads the source once and fixes forward references afterwards by a technique called <strong>backpatching</strong>.",
+      "keyPoints": [
+        "<strong>Forward reference</strong> = a symbol is used before it is defined. This is the central problem of assembler design.",
+        "<strong>Pass 1 jobs:</strong> process the location counter, enter every label and its address in the <strong>symbol table</strong>, build the literal table, process directives.",
+        "<strong>Pass 1 does NOT generate object code</strong> — it only collects information.",
+        "<strong>Pass 2 jobs:</strong> read the source again, look up each symbol's address in the symbol table, convert mnemonics to opcodes, and <strong>generate the object code</strong>.",
+        "By the time Pass 2 starts, <strong>every</strong> symbol is already known, so a forward reference is no longer a problem.",
+        "<strong>Single-pass assembler</strong> — generates code immediately, leaves forward-referenced addresses blank, and records them in a <strong>Table of Incomplete Instructions (TII)</strong>.",
+        "When the symbol is finally defined, the single-pass assembler goes back and fills in the blanks — this is <strong>backpatching</strong>.",
+        "Single pass is <strong>faster</strong> and reads the source only once; two pass is <strong>simpler, cleaner and more flexible</strong>.",
+        "Most real assemblers are <strong>two-pass</strong>, because the design is far easier to get right and to extend."
+      ],
+      "subtopics": [
+        {
+          "title": "The Location Counter — the heart of Pass 1",
+          "text": "The LC is set by the <code>START</code> directive and holds the address that the current statement will occupy. After processing each statement, the assembler advances the LC by the number of words that statement will take. Whenever a label appears, the current value of the LC is exactly that label's address, and the pair (label, LC value) goes straight into the symbol table."
+        },
+        {
+          "title": "Why Pass 2 is the easy pass",
+          "text": "Pass 2 does no discovery at all. Every symbol already has an address, every literal already has a place. Pass 2 simply walks the source again, replacing each mnemonic with a number from the mnemonic table and each symbol with a number from the symbol table, and writes out the object program. All the thinking was done in Pass 1."
+        },
+        {
+          "title": "Backpatching in a single-pass assembler",
+          "text": "When a single-pass assembler meets an undefined symbol, it writes the instruction with a blank address field and adds an entry to the Table of Incomplete Instructions saying 'the address of symbol X is still needed at location 100'. Later, when X is defined, the assembler returns to location 100 and patches the correct address in. It works, but the bookkeeping is fiddly and error-prone."
+        },
+        {
+          "title": "Choosing between the two",
+          "text": "Single pass is preferred when speed matters and the language is simple — for instance, a small loader or an assembler embedded in a system with tight time limits. Two pass is preferred almost everywhere else, because separating 'find out the addresses' from 'write the code' produces a design that is much easier to understand, test and extend."
+        }
+      ],
+      "realLife": "Imagine addressing wedding invitation envelopes while the guest list is still being finalised. Two-pass: wait until the full list is ready, then write every envelope once, correctly. Single-pass: start writing immediately, leave the unknown addresses blank, and go back to fill them in later. Both work — but one causes far fewer mistakes.",
+      "worked": "<strong>Two-pass assembly of the program from the previous topic.</strong><br><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;START&nbsp; 100</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MOVER&nbsp; AREG, ALPHA</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ADD&nbsp;&nbsp;&nbsp; AREG, ONE</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MOVEM&nbsp; AREG, BETA</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STOP</code><br><code>ALPHA&nbsp;&nbsp; DC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'5'</code><br><code>BETA&nbsp;&nbsp;&nbsp; DS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</code><br><code>ONE&nbsp;&nbsp;&nbsp;&nbsp; DC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'1'</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;END</code><br><br><strong>PASS 1 — walk through with the Location Counter.</strong> <code>START 100</code> sets LC = 100. Each statement below occupies one word, so the LC advances by 1 each time.<br><code>LC=100&nbsp; MOVER AREG, ALPHA&nbsp;&nbsp; (ALPHA unknown - never mind, Pass 1 does not generate code)</code><br><code>LC=101&nbsp; ADD&nbsp;&nbsp; AREG, ONE</code><br><code>LC=102&nbsp; MOVEM AREG, BETA</code><br><code>LC=103&nbsp; STOP</code><br><code>LC=104&nbsp; ALPHA DC '5'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(label ALPHA seen - record address 104)</code><br><code>LC=105&nbsp; BETA&nbsp; DS 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(label BETA&nbsp; seen - record address 105)</code><br><code>LC=106&nbsp; ONE&nbsp;&nbsp; DC '1'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(label ONE&nbsp;&nbsp; seen - record address 106)</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END</code><br><br><strong>Symbol table at the end of Pass 1:</strong><br><code>SYMBOL&nbsp; | ADDRESS</code><br><code>--------+---------</code><br><code>ALPHA&nbsp;&nbsp; |&nbsp; 104</code><br><code>BETA&nbsp;&nbsp;&nbsp; |&nbsp; 105</code><br><code>ONE&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp; 106</code><br><br><strong>PASS 2 — now generate the object code.</strong> Read the source a second time. This time <em>every</em> symbol has a known address, so the forward reference to ALPHA on the very first instruction is no longer a problem — the table already says 104.<br><code>Address | Instruction&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Operand address</code><br><code>--------+--------------------+----------------</code><br><code>&nbsp; 100&nbsp;&nbsp; | MOVER AREG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp; 104&nbsp; (ALPHA)</code><br><code>&nbsp; 101&nbsp;&nbsp; | ADD&nbsp;&nbsp; AREG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp; 106&nbsp; (ONE)</code><br><code>&nbsp; 102&nbsp;&nbsp; | MOVEM AREG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp; 105&nbsp; (BETA)</code><br><code>&nbsp; 103&nbsp;&nbsp; | STOP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; -</code><br><code>&nbsp; 104&nbsp;&nbsp; | (constant 5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; -</code><br><code>&nbsp; 105&nbsp;&nbsp; | (reserved, empty)&nbsp; |&nbsp;&nbsp; -</code><br><code>&nbsp; 106&nbsp;&nbsp; | (constant 1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; -</code><br><br><strong>The same program in a SINGLE-PASS assembler.</strong><br>At LC=100 the assembler meets ALPHA, which is undefined. It writes the instruction with a <strong>blank</strong> operand field and records in the Table of Incomplete Instructions: <code>(100, ALPHA)</code>. It does the same at 101 for ONE and at 102 for BETA.<br>When it later reaches <code>ALPHA DC '5'</code> at LC=104, it looks in the TII, finds the pending entry for location 100, and <strong>backpatches</strong> 104 into it. Same for ONE and BETA.<br>Final result: identical object code, reached by a more complicated route.",
+      "mistake": "Pass 1 does <strong>not</strong> produce any object code. Its only job is to work out addresses and build the tables. Writing 'Pass 1 generates machine code' in the exam loses the marks for the whole question, because it shows the purpose of the two-pass design was not understood.",
+      "examAnswer": "A forward reference occurs when a symbol is used in an assembly language program before it has been defined, so that its address is not yet known when the statement is first encountered. A two-pass assembler resolves this by reading the source program twice. During the first pass, the assembler processes the location counter, records every label together with its address in the symbol table, constructs the literal table and processes assembler directives, but it generates no object code. During the second pass, the assembler reads the source again, replaces each mnemonic with its machine operation code and each symbol with the address obtained from the symbol table, and produces the object program; since all symbols are defined by this stage, forward references present no difficulty. A single-pass assembler instead generates code immediately, leaving the operand field of a forward-referencing instruction blank and recording it in a table of incomplete instructions, and fills in the correct addresses later by a process known as backpatching. The two-pass design is more widely used because it is simpler and more easily extended, whereas the single-pass design is faster but more complex to implement.",
+      "remember": "Pass 1 = find the ADDRESSES (build the symbol table, no code). Pass 2 = write the CODE. Two passes exist because of forward references.",
+      "why": "This is a guaranteed exam question, and the symbol table idea reappears everywhere — compilers, linkers and debuggers all keep one for exactly the same reason.",
+      "practice": "Take the program in the worked example, change START to 200, and rebuild the symbol table and the Pass 2 object code table. Then explain in three lines how a single-pass assembler would handle the reference to ALPHA."
+    },
+    {
+      "title": "Macro Processor",
+      "teacher": "Suppose the same three instructions appear forty times in your program. Copying them by hand is painful and one typo ruins everything. A macro lets you write them once, give them a name, and then just use the name. But careful — a macro is NOT a function, and the difference matters.",
+      "explain": "A <strong>macro</strong> is a named block of instructions defined once and then used many times by writing its name. The <strong>macro processor</strong> replaces every macro call with a full copy of the macro body — a process called <strong>macro expansion</strong> — <em>before</em> the assembler or compiler sees the program.",
+      "keyPoints": [
+        "<strong>Macro definition</strong> — written between <code>MACRO</code> and <code>MEND</code>, with a name and optional <strong>formal parameters</strong>.",
+        "<strong>Macro call</strong> — writing the macro name in the program, with <strong>actual parameters</strong>.",
+        "<strong>Macro expansion</strong> — the macro processor replaces the call with the body, substituting the actual parameters for the formal ones.",
+        "Expansion happens at <strong>assembly/compile time</strong>, <strong>before</strong> translation — not at run time.",
+        "The four jobs of a macro processor: <strong>recognise definitions, save them, recognise calls, expand calls</strong>.",
+        "Macro tables used: <strong>MNT</strong> (Macro Name Table), <strong>MDT</strong> (Macro Definition Table) and the <strong>Argument List Array (ALA)</strong>.",
+        "<strong>Nested macros</strong> — a macro may call another macro, or even define one.",
+        "<strong>Conditional expansion</strong> — directives like <code>AIF</code> and <code>AGO</code> let different code be generated depending on the arguments.",
+        "Macros make the program <strong>faster</strong> (no call overhead) but <strong>larger</strong> (the code is duplicated every time)."
+      ],
+      "subtopics": [
+        {
+          "title": "Macro versus function — the key difference",
+          "text": "A <strong>macro</strong> is expanded at assembly time, so the code is physically copied in at every call site. There is no jump, no return, no stack work — but the program grows with every use. A <strong>function</strong> exists once in memory; each call jumps to it and returns. That keeps the program small but costs time on every call. So macros trade <em>space</em> for <em>speed</em>, and functions trade <em>speed</em> for <em>space</em>."
+        },
+        {
+          "title": "Formal and actual parameters",
+          "text": "In the definition, parameters are placeholders — the <strong>formal</strong> parameters, often written with an ampersand such as <code>&amp;ARG</code>. In the call, real values are supplied — the <strong>actual</strong> parameters. During expansion the macro processor substitutes each actual parameter wherever its formal parameter appears in the body. This is a pure textual substitution, with no type checking at all."
+        },
+        {
+          "title": "Where the macro processor sits",
+          "text": "It runs <strong>before</strong> the assembler. The macro processor takes the source containing macro definitions and calls, and produces an expanded source in which no macros remain — only ordinary statements. The assembler then processes that expanded source, entirely unaware that macros ever existed. In C, <code>#define</code> is handled the same way by the <strong>preprocessor</strong>."
+        }
+      ],
+      "realLife": "A macro is like a WhatsApp saved reply. You store 'Thank you for your message, I will get back to you shortly' once, then insert it with two taps. The full text still gets typed into every chat — it is copied, not linked. A function would be more like sending someone a link to read the message somewhere else.",
+      "table": {
+        "headers": ["", "Macro", "Function / Subroutine"],
+        "rows": [
+          ["Expanded / called when?", "At assembly or compile time", "At run time"],
+          ["Code in memory", "One copy per call site (duplicated)", "One copy only"],
+          ["Program size", "Larger", "Smaller"],
+          ["Execution speed", "Faster — no call overhead", "Slower — jump, stack, return"],
+          ["Jump / return used?", "No", "Yes"],
+          ["Parameter handling", "Textual substitution, no type checking", "Passed properly, type checked"],
+          ["Best for", "Very short, frequently used sequences", "Longer, reusable blocks of logic"]
+        ]
+      },
+      "worked": "<strong>Defining and expanding a macro.</strong><br><br><strong>Step 1 — the macro definition.</strong> Note the formal parameter <code>&amp;ARG</code>:<br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MACRO</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INCR&nbsp;&nbsp; &amp;ARG</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOVER&nbsp; AREG, &amp;ARG</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADD&nbsp;&nbsp;&nbsp; AREG, ONE</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOVEM&nbsp; AREG, &amp;ARG</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MEND</code><br>This block generates <strong>no code at all</strong> by itself. It is only stored away, in the MNT and MDT.<br><br><strong>Step 2 — the program, using two macro calls:</strong><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; START&nbsp; 100</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INCR&nbsp;&nbsp; DATA1</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INCR&nbsp;&nbsp; DATA2</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STOP</code><br>Only 4 lines written by the programmer.<br><br><strong>Step 3 — after macro expansion</strong> (this is what the assembler actually receives). Each call is replaced by a full copy of the body, with <code>&amp;ARG</code> substituted:<br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; START&nbsp; 100</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOVER&nbsp; AREG, DATA1</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADD&nbsp;&nbsp;&nbsp; AREG, ONE</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOVEM&nbsp; AREG, DATA1</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOVER&nbsp; AREG, DATA2</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADD&nbsp;&nbsp;&nbsp; AREG, ONE</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MOVEM&nbsp; AREG, DATA2</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STOP</code><br><br><strong>What to notice.</strong> The programmer wrote 4 lines; the assembler received 8. The three-instruction body appears <strong>twice</strong> — once for each call. There is no jump and no return anywhere, so it runs at full speed, but the code is duplicated. Call the macro fifty times and those three instructions appear fifty times. That is the space-for-speed trade, made visible.",
+      "mistake": "A macro is not a function. It does <strong>not</strong> jump anywhere and it does <strong>not</strong> return. Its body is physically copied into the program at every call, which is why heavy macro use makes the executable bigger. Also, macro expansion happens before assembly, not during execution.",
+      "examAnswer": "A macro is a named sequence of instructions which is defined once and may then be used repeatedly simply by writing its name. A macro definition is enclosed between the MACRO and MEND directives and may include formal parameters, while a macro call supplies the corresponding actual parameters. A macro processor is a system program that performs four functions: recognising macro definitions, saving them in the macro name table and macro definition table, recognising macro calls, and expanding those calls by substituting the actual parameters for the formal parameters in a copy of the macro body. Macro expansion takes place before assembly or compilation, so the translator receives a program containing no macros. A macro differs from a function in that the macro body is physically copied into the program at each point of call, which avoids the overhead of a jump and return and therefore executes faster, but increases the size of the program, whereas a function exists as a single copy in memory and is invoked at run time.",
+      "remember": "Macro = COPY-PASTE at assembly time. Function = JUMP-AND-RETURN at run time. Macro saves time, function saves space.",
+      "why": "The same idea is the <code>#define</code> you already use in C. Understanding that a macro is textual substitution explains a whole family of confusing C bugs.",
+      "practice": "Write a macro called ADDTWO that adds two symbolic values and stores the result in a third. Show the macro definition, two calls with different arguments, and the fully expanded code. Then list four differences between a macro and a function."
+    },
+    {
+      "title": "Linkers and Loaders",
+      "teacher": "Your program is compiled — so why can't it run yet? Because real programs are written in pieces, and those pieces have never met each other. Someone has to introduce them, and then someone has to carry the finished thing into memory. Those two someones are the linker and the loader.",
+      "explain": "A <strong>linker</strong> combines several object modules and library routines into one executable program, resolving every <strong>external reference</strong> — a name used in one module but defined in another. A <strong>loader</strong> then brings that executable into main memory, adjusts addresses to where it actually landed, and starts it running.",
+      "keyPoints": [
+        "<strong>Object module</strong> = the output of one compilation. It is not yet runnable on its own.",
+        "<strong>External reference</strong> — a symbol used in one module but defined in another (or in a library).",
+        "<strong>Linker jobs:</strong> combine the modules, <strong>resolve external references</strong> (symbol resolution), and adjust addresses (<strong>relocation</strong>).",
+        "Linker <strong>input</strong> = object modules + libraries. Linker <strong>output</strong> = one executable file.",
+        "<strong>Static linking</strong> — library code is copied into the executable. Bigger file, but self-contained.",
+        "<strong>Dynamic linking</strong> — the library is linked at load or run time (a <code>.dll</code> or <code>.so</code>). Smaller files, shared by many programs.",
+        "<strong>Loader jobs:</strong> <strong>allocation</strong> (reserve memory), <strong>linking</strong>, <strong>relocation</strong> (fix addresses for the real load address) and <strong>loading</strong> (copy in and start).",
+        "Types of loader: <strong>absolute, bootstrap, relocating</strong> and <strong>direct-linking</strong>.",
+        "Order of events: <strong>Compiler/Assembler → Linker → Loader → running program</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "What symbol resolution really means",
+          "text": "Suppose <code>main.c</code> calls <code>printf</code>. The compiler produces an object file in which the call has an empty address and a note saying 'I need a symbol called printf'. The linker searches the other object modules and the standard library, finds the definition, and writes its address into the call. If it cannot find it, you get the familiar error 'undefined reference to printf' — and that message comes from the <strong>linker</strong>, not the compiler."
+        },
+        {
+          "title": "Relocation — why addresses have to be adjusted",
+          "text": "Each module is compiled as though it started at address 0. When the linker joins four such modules, only one can actually begin at 0; the others must be shifted, and every address inside them adjusted by the same amount. The loader may shift the whole program again, depending on where free memory happens to be. That adjustment is relocation."
+        },
+        {
+          "title": "The four functions of a loader",
+          "text": "<strong>Allocation</strong> — reserve enough memory for the program. <strong>Linking</strong> — resolve any remaining symbol references, particularly for dynamic libraries. <strong>Relocation</strong> — adjust addresses to match the actual load location. <strong>Loading</strong> — physically copy the program into memory and transfer control to its first instruction. A common mnemonic is <strong>A-L-R-L</strong>."
+        },
+        {
+          "title": "Types of loader",
+          "text": "An <strong>absolute loader</strong> simply places the program at the fixed address it was built for, doing no relocation — simple but inflexible. A <strong>relocating loader</strong> can place the program anywhere and adjust addresses accordingly. A <strong>direct-linking loader</strong> performs linking and loading together. A <strong>bootstrap loader</strong> is the tiny program in ROM that loads the operating system when the machine is switched on."
+        }
+      ],
+      "realLife": "Think of a project report written by four classmates in four separate files. The <strong>linker</strong> is whoever merges the four files, fixes all the cross-references ('as described in Section 3') and renumbers every page. The <strong>loader</strong> is whoever then opens the finished report on the projector so everyone can actually read it.",
+      "table": {
+        "headers": ["", "Linker", "Loader"],
+        "rows": [
+          ["Input", "Object modules and libraries", "The executable file"],
+          ["Output", "A single executable file", "The program running in memory"],
+          ["Main job", "Resolve external references, combine modules", "Allocate memory, relocate, load and start"],
+          ["When it runs", "After compiling/assembling, before execution", "At the moment the program is executed"],
+          ["Runs how often", "Once, at build time", "Every time the program is started"],
+          ["Typical error", "'undefined reference to ...'", "'not enough memory to load program'"]
+        ]
+      },
+      "worked": "<strong>Following a program from source code to execution.</strong><br><br>A program is written in two files:<br><code>main.c&nbsp;&nbsp; -&gt; contains main(), and CALLS a function total()</code><br><code>calc.c&nbsp;&nbsp; -&gt; DEFINES the function total()</code><br><br><strong>Step 1 — Compile each file separately.</strong><br><code>main.c&nbsp; --compiler--&gt;&nbsp; main.o</code><br><code>calc.c&nbsp; --compiler--&gt;&nbsp; calc.o</code><br>Inside <code>main.o</code> the call to total() has <strong>no address</strong> — just a note: 'external reference: total, needed at offset 24'. Neither <code>.o</code> file can run on its own.<br><br><strong>Step 2 — The linker combines them.</strong><br><code>main.o + calc.o + standard library&nbsp; --linker--&gt;&nbsp; program.exe</code><br>The linker: (a) places main.o at offset 0 and calc.o after it, (b) looks up 'total' and finds it defined in calc.o, (c) writes that address into the pending call in main.o, and (d) relocates every address in calc.o by the amount it was shifted.<br>If 'total' had been spelled wrongly, the linker would stop here with <em>undefined reference to total</em>.<br><br><strong>Step 3 — The loader runs it.</strong> You double-click <code>program.exe</code>.<br><code>ALLOCATION&nbsp;- the loader asks the OS for, say, 8 KB of memory; the OS gives address 5000</code><br><code>LINKING&nbsp;&nbsp;&nbsp; - any dynamic library references are resolved now</code><br><code>RELOCATION - the program was built for address 0, so 5000 is added to every address</code><br><code>LOADING&nbsp;&nbsp;&nbsp; - the code is copied into memory and control jumps to the first instruction</code><br><br><strong>The whole chain:</strong><br><code>source .c -&gt; [COMPILER] -&gt; .o objects -&gt; [LINKER] -&gt; .exe -&gt; [LOADER] -&gt; running in memory</code><br><br><strong>The one-line test to tell them apart:</strong> the <strong>linker</strong> runs once when you build the program; the <strong>loader</strong> runs every single time you start it.",
+      "mistake": "The linker does <strong>not</strong> put the program into memory, and the loader does <strong>not</strong> combine object files. Students frequently swap the two. Remember: linker = build time, once; loader = run time, every time you open the program.",
+      "examAnswer": "A linker is a system program that accepts one or more object modules produced by a compiler or assembler, together with any required library routines, and combines them into a single executable program. Its principal functions are symbol resolution, in which external references, that is symbols used in one module but defined in another, are matched with their definitions, and relocation, in which the addresses within each module are adjusted to account for its position in the combined program. Linking may be static, in which library code is incorporated into the executable file, or dynamic, in which libraries are linked at load time or run time and may be shared between programs. A loader is a system program that brings the executable into main memory and prepares it for execution, performing four functions: allocation of memory, linking of any remaining references, relocation of addresses to the actual load address, and loading of the program followed by the transfer of control to it. Loaders may be absolute, relocating, direct-linking or bootstrap loaders. The linker executes once when the program is built, whereas the loader executes each time the program is run.",
+      "remember": "Linker JOINS the pieces (once, at build time). Loader LIFTS it into memory (every time you run it). Loader jobs: Allocate, Link, Relocate, Load.",
+      "why": "'Undefined reference' is the single most common error a C student hits, and knowing it comes from the linker — not the compiler — tells you instantly to look for a missing file or library, not a syntax error.",
+      "practice": "Draw the complete chain from a C source file to a running program, naming every tool and every intermediate file. Then write four differences between a linker and a loader."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Which phase of the compiler groups characters of the source program into tokens?",
+      "options": ["Syntax analysis", "Lexical analysis", "Semantic analysis", "Code generation"],
+      "answer": 1,
+      "why": "Lexical analysis, done by the scanner, reads characters one by one, groups them into lexemes and produces tokens, discarding whitespace and comments along the way."
+    },
+    {
+      "q": "A program uses a variable that was never declared. Which phase detects this?",
+      "options": ["Lexical analysis", "Syntax analysis", "Semantic analysis", "Code optimisation"],
+      "answer": 2,
+      "why": "Syntax analysis only checks the grammar, and the statement is grammatically perfect. Semantic analysis checks meaning against the symbol table, so it catches undeclared variables and type mismatches."
+    },
+    {
+      "q": "Why does an assembler need two passes?",
+      "options": ["To run faster", "To handle forward references", "To save memory", "To produce a symbol table"],
+      "answer": 1,
+      "why": "A symbol may be used before it is defined, so its address is unknown on the first reading. Pass 1 finds every address, and Pass 2 can then generate code with all addresses known."
+    },
+    {
+      "q": "Which translator converts and executes the program one statement at a time?",
+      "options": ["Compiler", "Interpreter", "Assembler", "Linker"],
+      "answer": 1,
+      "why": "An interpreter translates and executes statement by statement and produces no object file, which makes debugging easier but execution slower, since a loop body is retranslated on every pass."
+    },
+    {
+      "q": "A compiler that runs on one machine but produces code for a different machine is called…",
+      "options": ["A bootstrapping compiler", "A cross compiler", "An incremental compiler", "A macro processor"],
+      "answer": 1,
+      "why": "A cross compiler is defined by where its output runs. It is essential for embedded systems and phones, whose processors are too small to run a compiler themselves."
+    },
+    {
+      "q": "Which program brings the executable into main memory and starts it running?",
+      "options": ["Linker", "Loader", "Compiler", "Assembler"],
+      "answer": 1,
+      "why": "The loader performs allocation, linking, relocation and loading. The linker only combines object modules into one executable file — it never puts anything into memory."
+    },
+    {
+      "q": "The symbol table in a compiler is used by…",
+      "options": ["Only lexical analysis", "Only code generation", "Almost all the phases", "Only the linker"],
+      "answer": 2,
+      "why": "The symbol table is not a phase but a supporting structure. Lexical analysis creates entries, semantic analysis reads types from it, and code generation reads addresses from it."
+    },
+    {
+      "q": "The front end (analysis phase) of a compiler consists of…",
+      "options": ["Code optimisation and code generation", "Lexical, syntax and semantic analysis plus intermediate code generation", "Only lexical analysis", "The linker and the loader"],
+      "answer": 1,
+      "why": "The front end analyses and understands the source, ending with intermediate code generation. Only code optimisation and code generation belong to the back end."
+    },
+    {
+      "q": "A macro is expanded…",
+      "options": ["At run time, by jumping to it", "Before assembly, by copying its body into the program", "By the loader when the program starts", "By the operating system"],
+      "answer": 1,
+      "why": "Macro expansion is textual substitution done by the macro processor before the assembler sees the code. There is no jump and no return — that is what distinguishes a macro from a function."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Explain the six phases of a compiler with a neat diagram. Trace the statement <code>x = a + b * 5</code> through every phase, showing what each phase produces.",
+      "hint": "Show the tokens, the syntax tree, the type conversion inserted by semantic analysis, the three-address code, the optimised code and the final assembly. Do not forget to draw the symbol table and error handler alongside all six phases."
+    },
+    {
+      "q": "Compare a compiler, an interpreter and an assembler in a table with at least six points of difference. Then state three benefits of using an interpreter and explain why interpreted programs run more slowly.",
+      "hint": "Think about when translation happens, whether an object file is produced, how errors are reported, and what happens to a loop body on each iteration."
+    },
+    {
+      "q": "What is a forward reference? Explain the working of a two-pass assembler using a suitable example, clearly showing the symbol table produced at the end of Pass 1 and the object code produced by Pass 2.",
+      "hint": "Use START to set the location counter, then advance it one word per statement. State explicitly that Pass 1 generates no object code."
+    },
+    {
+      "q": "Explain bootstrapping and porting with reference to compiler design. Why is a cross compiler needed, and what part of a compiler must be rewritten when it is ported to a new processor?",
+      "hint": "Bootstrapping starts from a small subset of the language. Porting keeps the front end and rewrites the back end. Link both ideas back to the analysis/synthesis grouping."
+    },
+    {
+      "q": "Differentiate between a macro and a function, and between a linker and a loader. Illustrate your answer with an example of a macro definition, its call and its fully expanded form.",
+      "hint": "For the macro, show that the body is duplicated at every call site with no jump or return. For the linker and loader, remember that one runs once at build time and the other every time the program is started."
+    }
+  ]
+};

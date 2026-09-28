@@ -1,0 +1,890 @@
+/* Fundamentals of Computer Technologies (MCA 111) — Unit 4. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.fct = UNITS.fct || [];
+UNITS.fct[3] = {
+  "num": 4,
+  "title": "Data Communication and Computer Networks",
+  "problem": "You send a photo from Bhopal and your friend in Chennai sees it in two seconds. But the photo is only 0s and 1s — how do those bits actually leave your phone, cross a thousand kilometres of wire, air and glass, and arrive in the correct order without a single bit going missing?",
+  "solution": "This unit follows one message from sender to receiver. You'll learn the five parts every communication needs, how bits are put on a wire, how many conversations share one cable, how computers are wired together, the seven-layer OSI model that organises the whole job, what the wires and waves are actually made of, and the three ways a network finds a path.",
+  "objectives": [
+    "Name the five components of a data communication system and state the job of each",
+    "Compare serial and parallel transmission, and asynchronous with synchronous transmission",
+    "Distinguish simplex, half-duplex and full-duplex with everyday examples",
+    "Explain FDM, TDM and WDM and say where each one is used",
+    "Describe unipolar, polar and bipolar line encoding",
+    "Draw and compare the bus, star, ring, mesh and hybrid topologies with their advantages and disadvantages",
+    "Classify a network as LAN, MAN or WAN, and explain intranet versus internet",
+    "List the seven OSI layers in order and state the function of each",
+    "Compare guided and unguided transmission media",
+    "Compare circuit, packet and message switching, and virtual circuit with datagram"
+  ],
+  "topics": [
+    {
+      "title": "Data Communication: Components and Data Representation",
+      "teacher": "Before any technology, ask yourself a simple question — what does it take for two people to talk? Someone to speak, someone to listen, something to say, air to carry the sound, and a shared language. A computer network needs exactly those same five things. Nothing more.",
+      "explain": "<strong>Data communication</strong> means the exchange of data between two devices through some transmission medium. For it to work, five components must be present: <strong>message, sender, receiver, transmission medium and protocol</strong>. If even one is missing, no communication happens.",
+      "keyPoints": [
+        "<strong>Message</strong> — the actual information being sent (text, number, image, audio, video).",
+        "<strong>Sender</strong> — the device that sends the message (computer, phone, camera).",
+        "<strong>Receiver</strong> — the device that receives it.",
+        "<strong>Transmission medium</strong> — the physical path the message travels on (cable, fibre, air).",
+        "<strong>Protocol</strong> — the set of agreed rules that both sides follow.",
+        "Five forms of data: <strong>text, numbers, images, audio, video</strong>.",
+        "Text is stored using codes such as <strong>ASCII</strong> and <strong>Unicode</strong>.",
+        "Everything, in the end, becomes a pattern of <strong>bits (0 and 1)</strong>.",
+        "Three measures of a good system: <strong>delivery, accuracy, timeliness</strong> (and low jitter)."
+      ],
+      "subtopics": [
+        {
+          "title": "Why protocol is the component students forget",
+          "text": "A protocol is simply an agreement. It fixes <em>what</em> is said, <em>how</em> it is said and <em>when</em> it is said. Two computers connected by a perfect cable still cannot communicate if one speaks HTTP and the other expects FTP — exactly like two people connected by a perfect phone line, one speaking only Hindi and the other only Tamil."
+        },
+        {
+          "title": "How different data is represented",
+          "text": "<strong>Text</strong> becomes bit patterns through a code set such as ASCII (7 bits, 128 symbols) or Unicode (which covers Devanagari, Tamil and every other script). <strong>Numbers</strong> are converted directly to binary so arithmetic is possible. <strong>Images</strong> are a grid of pixels, each pixel stored as a colour value. <strong>Audio and video</strong> are continuous signals sampled and stored as long streams of bits."
+        },
+        {
+          "title": "What makes the delivery 'good'",
+          "text": "<strong>Delivery</strong> — the data must reach the correct destination and only that destination. <strong>Accuracy</strong> — it must arrive unchanged; altered data is useless. <strong>Timeliness</strong> — it must arrive on time; a video frame that is late is as bad as one that is lost. <strong>Jitter</strong> is uneven delay between packets, which makes a video call look jerky."
+        }
+      ],
+      "realLife": "Sending a WhatsApp message to your mother: the message is the text, the sender is your phone, the receiver is her phone, the medium is mobile radio waves plus fibre cables, and the protocol is the set of WhatsApp/Internet rules both phones agree on. Remove any one and the message never arrives.",
+      "table": {
+        "headers": [
+          "Component",
+          "What It Is",
+          "Everyday Example"
+        ],
+        "rows": [
+          [
+            "Message",
+            "The information to be sent",
+            "The words you type"
+          ],
+          [
+            "Sender",
+            "Device that sends",
+            "Your phone"
+          ],
+          [
+            "Receiver",
+            "Device that receives",
+            "Your friend's phone"
+          ],
+          [
+            "Medium",
+            "Physical path",
+            "Cable, fibre, air"
+          ],
+          [
+            "Protocol",
+            "Rules both sides follow",
+            "A shared language"
+          ]
+        ]
+      },
+      "mistake": "Students list only four components and forget the <strong>protocol</strong>. Remember that hardware alone is not enough — without agreed rules the two devices cannot understand each other at all.",
+      "examAnswer": "Data communication is the exchange of data between two devices through some form of transmission medium. A data communication system has five components. The message is the information to be communicated and may be text, numbers, images, audio or video. The sender is the device that sends the message and the receiver is the device that receives it. The transmission medium is the physical path along which the message travels, such as twisted-pair cable, coaxial cable, optical fibre or radio waves. The protocol is the set of rules that governs the communication and must be agreed upon by both devices. The effectiveness of such a system depends on delivery, accuracy, timeliness and jitter.",
+      "remember": "M-S-R-M-P: Message, Sender, Receiver, Medium, Protocol.",
+      "why": "Every later topic in this unit is really about one of these five components — the medium, the rules, or the form of the message. Fix this list in your mind first.",
+      "practice": "List the five components of data communication and identify each one for a normal telephone call."
+    },
+    {
+      "title": "Transmission: Serial vs Parallel and the Three Modes",
+      "teacher": "Two small questions decide how any data moves. First: do the bits walk in single file down one wire, or march side by side on eight wires? Second: can both sides talk at once, or must they take turns like a walkie-talkie? Answer those two and you have this whole topic.",
+      "explain": "In <strong>parallel transmission</strong> several bits travel together on separate wires; in <strong>serial transmission</strong> bits travel one after another on a single wire. Serial is further divided into <strong>asynchronous</strong> and <strong>synchronous</strong>. Separately, the <strong>transmission mode</strong> describes the direction of flow: <strong>simplex</strong> (one way), <strong>half-duplex</strong> (both ways, one at a time) and <strong>full-duplex</strong> (both ways at once).",
+      "keyPoints": [
+        "<strong>Parallel</strong> — n bits travel together on n wires; fast, but needs many wires and works only over short distances.",
+        "<strong>Serial</strong> — bits travel one behind the other on one wire; cheap, and used for all long-distance links (USB, Ethernet).",
+        "Parallel fails over distance because of <strong>skew</strong> (bits drift out of step) and <strong>crosstalk</strong> between wires.",
+        "<strong>Asynchronous serial</strong> — each character is framed by a <strong>start bit</strong> and <strong>stop bit(s)</strong>; gaps between characters may be unequal. Simple, but about 20% overhead.",
+        "<strong>Synchronous serial</strong> — a continuous bit stream with no start/stop bits; both sides share a clock. Faster and far more efficient.",
+        "<strong>Simplex</strong> — one direction only. Keyboard → CPU, radio and TV broadcast.",
+        "<strong>Half-duplex</strong> — both directions but not together; the whole channel goes to whoever is sending. Classic example: <strong>walkie-talkie</strong>.",
+        "<strong>Full-duplex</strong> — both directions at the same moment. Classic example: <strong>telephone call</strong>; also modern Ethernet.",
+        "Full-duplex is achieved either by two separate paths or by splitting the link's capacity into two."
+      ],
+      "subtopics": [
+        {
+          "title": "Why serial beat parallel in the real world",
+          "text": "Parallel looks faster — eight bits at once instead of one. But on a long cable the eight wires are never perfectly identical, so the bits drift out of step (<strong>skew</strong>) and interfere with one another (<strong>crosstalk</strong>). Over any real distance this badly limits the speed, because the whole link must slow down to the slowest wire. That is why the old parallel printer port disappeared and USB — <em>Universal Serial Bus</em> — took over. Parallel survives only inside the computer, on the buses, where distances are a few centimetres."
+        },
+        {
+          "title": "Asynchronous vs synchronous serial",
+          "text": "In <strong>asynchronous</strong> transmission data is sent one character at a time, each framed by a <strong>start bit</strong> (0) in front and one or more <strong>stop bits</strong> (1) behind, so the receiver knows exactly where a character begins and ends and the line may stay idle between characters. It is cheap and simple, but the extra bits waste roughly a fifth of the bandwidth. In <strong>synchronous</strong> transmission bits are sent as one continuous stream with no start bits, stop bits or gaps; the receiver groups the bits itself, which is only possible because both sides are kept in step by a <strong>common clock</strong>. There is almost no overhead, so all high-speed links are synchronous."
+        },
+        {
+          "title": "Simplex and half-duplex",
+          "text": "<strong>Simplex</strong> is unidirectional — only one device can ever transmit and the other can only receive, like a keyboard, or All-India Radio broadcasting to lakhs of listeners who cannot reply. <strong>Half-duplex</strong> lets both devices transmit and receive, but never together: the entire capacity of the link is given to whichever side is currently sending, and then the direction reverses. This is exactly why walkie-talkie users say '<em>over</em>' — it is a spoken signal meaning 'I have stopped sending, you may now send'. A one-lane bridge works the same way."
+        },
+        {
+          "title": "Full-duplex — the two-lane road",
+          "text": "Signals flow in both directions at the same moment. This is achieved either by giving each direction its own physical path (two wire pairs, as in modern Ethernet) or by splitting the link's capacity into two frequency bands. A telephone conversation is full-duplex, which is precisely why you can interrupt someone mid-sentence. Full-duplex gives the best performance but needs the most capacity."
+        }
+      ],
+      "realLife": "Inside your laptop, data races between the CPU and RAM in parallel on a wide bus — the distance is tiny, so skew does not matter. The moment it leaves through a USB or network cable it switches to serial. And around your college: the corridor announcement speaker is simplex, the security guard's walkie-talkie is half-duplex, and your phone call home is full-duplex — you and your mother can both speak at once, and often do.",
+      "table": {
+        "headers": [
+          "Mode / Method",
+          "Direction",
+          "At the same time?",
+          "Example"
+        ],
+        "rows": [
+          [
+            "Simplex",
+            "One way only",
+            "N/A — only one sender",
+            "Keyboard → CPU, TV broadcast"
+          ],
+          [
+            "Half-duplex",
+            "Both ways",
+            "No — one at a time",
+            "Walkie-talkie"
+          ],
+          [
+            "Full-duplex",
+            "Both ways",
+            "Yes — simultaneously",
+            "Telephone call"
+          ],
+          [
+            "Serial",
+            "One bit at a time, one wire",
+            "—",
+            "USB, Ethernet, all networks"
+          ],
+          [
+            "Parallel",
+            "n bits together on n wires",
+            "—",
+            "Buses inside the computer"
+          ]
+        ]
+      },
+      "mistake": "Two traps here. First, do not write 'parallel is always faster than serial' — over a long cable parallel is actually <em>slower</em>, because skew forces the link down to the speed of the slowest wire. Second, half-duplex does NOT mean 'half the speed'; it means 'one direction at a time'. And a walkie-talkie is half-duplex, not simplex — both people can speak, just not together.",
+      "examAnswer": "In parallel transmission a group of bits, typically eight, is transmitted simultaneously over separate parallel conductors; it gives high speed over short distances but requires many conductors and suffers from skew and crosstalk, and is therefore used only within a computer system. In serial transmission bits are transmitted one after another over a single line, which greatly reduces cost and makes long-distance communication practical. Serial transmission may be asynchronous, in which each character is delimited by a start bit and one or more stop bits and the interval between characters may vary, or synchronous, in which bits are transmitted as a continuous stream without start and stop bits, sender and receiver being kept in step by a common clock. The transmission mode defines the direction of signal flow between two linked devices. In simplex mode communication is unidirectional, only one device transmitting while the other can only receive, as in a keyboard or a radio broadcast. In half-duplex mode each device can both transmit and receive but not simultaneously, the entire channel capacity being taken over by the transmitting device, a walkie-talkie being the standard example. In full-duplex mode both devices transmit and receive at the same time, the channel capacity being shared or separate paths being provided, as in a telephone conversation.",
+      "remember": "Parallel = many wires, short distance. Serial = one wire, any distance. Simplex = radio; Half-duplex = walkie-talkie ('over'); Full-duplex = phone call.",
+      "why": "This explains why every modern external port is serial, and the simplex/half-duplex/full-duplex trio is a guaranteed short-answer question — with the walkie-talkie and phone-call examples the examiner is looking for.",
+      "practice": "Differentiate asynchronous and synchronous serial transmission. Then classify each of these as simplex, half-duplex or full-duplex: television broadcast, walkie-talkie, mobile phone call, keyboard, printer."
+    },
+    {
+      "title": "Multiplexing: FDM, TDM and WDM",
+      "teacher": "One optical fibre from Bhopal to Delhi costs a fortune to lay. Would you use that whole fibre for one phone call? Of course not. Multiplexing is the clever trick that lets hundreds of conversations share one cable without mixing up — and there are exactly three ways to do it.",
+      "explain": "<strong>Multiplexing</strong> is a technique that allows several signals to share one expensive high-capacity link at the same time. A <strong>multiplexer (MUX)</strong> combines the signals at the sending end and a <strong>demultiplexer (DEMUX)</strong> separates them at the receiving end. The three main types are <strong>FDM, TDM and WDM</strong>.",
+      "keyPoints": [
+        "Purpose: use one costly high-bandwidth link efficiently instead of many small ones.",
+        "<strong>MUX</strong> combines many inputs into one line; <strong>DEMUX</strong> splits them back out.",
+        "<strong>FDM — Frequency Division Multiplexing</strong>: each signal gets a different <em>frequency band</em>.",
+        "FDM is an <strong>analog</strong> technique; bands are separated by unused <strong>guard bands</strong>.",
+        "FDM examples: radio and TV broadcasting, older telephone systems.",
+        "<strong>TDM — Time Division Multiplexing</strong>: each signal gets a different <em>time slot</em>.",
+        "TDM is a <strong>digital</strong> technique; the link is shared in time, not in frequency.",
+        "TDM types: <strong>synchronous</strong> (fixed slot for each, even if idle) and <strong>statistical/asynchronous</strong> (slot given only if there is data).",
+        "<strong>WDM — Wavelength Division Multiplexing</strong>: each signal gets a different <em>wavelength (colour) of light</em>, used on optical fibre.",
+        "WDM is conceptually FDM applied to light."
+      ],
+      "subtopics": [
+        {
+          "title": "FDM — share the frequencies",
+          "text": "The bandwidth of the link is divided into several smaller frequency bands and each signal is modulated onto its own band. Small unused strips called <strong>guard bands</strong> are left between them so neighbouring signals do not interfere. This is exactly how one antenna can receive 92.7 FM and 98.3 FM at the same time — both signals are in the air together, and your tuner simply picks one band."
+        },
+        {
+          "title": "TDM — share the time",
+          "text": "The whole link is given to each signal in turn for a very short time slot, round and round, thousands of times a second. Because the switching is so fast, every user feels they have the line continuously. In <strong>synchronous TDM</strong> each device gets its fixed slot whether or not it has data, so empty slots waste capacity. <strong>Statistical TDM</strong> fixes this by giving a slot only to devices that actually have something to send."
+        },
+        {
+          "title": "WDM — share the colours of light",
+          "text": "Optical fibre has enormous bandwidth — far more than any single signal can use. WDM sends several light beams of different wavelengths (different 'colours') down the same fibre at once. A prism-like device combines them at one end and separates them at the other. It is FDM in idea, but performed with light instead of radio frequency, and it is what makes modern internet backbones possible."
+        }
+      ],
+      "realLife": "A shared auto-rickshaw is TDM in real life — the driver takes each passenger's stop one after another, in turns. An FM radio band is FDM — many stations broadcasting into the same air at the same moment, each on its own frequency, and your tuner picks one.",
+      "table": {
+        "headers": [
+          "",
+          "FDM",
+          "TDM",
+          "WDM"
+        ],
+        "rows": [
+          [
+            "Divides",
+            "Frequency",
+            "Time",
+            "Wavelength of light"
+          ],
+          [
+            "Signal type",
+            "Analog",
+            "Digital",
+            "Optical"
+          ],
+          [
+            "Medium",
+            "Air, coaxial cable",
+            "Any digital link",
+            "Optical fibre only"
+          ],
+          [
+            "Separator",
+            "Guard bands",
+            "Time slots",
+            "Prism / grating"
+          ],
+          [
+            "Example",
+            "FM radio, cable TV",
+            "Telephone trunk (T1), GSM",
+            "Internet backbone fibre"
+          ]
+        ]
+      },
+      "mistake": "Do not say TDM divides the frequency. TDM divides <strong>time</strong> — every signal uses the <em>full</em> bandwidth, but only during its own short slot. FDM is the one that divides frequency.",
+      "examAnswer": "Multiplexing is a technique by which several signals can be transmitted simultaneously over a single high-capacity transmission link, thereby using an expensive medium efficiently. A multiplexer combines the signals at the transmitting end and a demultiplexer separates them at the receiving end. In Frequency Division Multiplexing the available bandwidth is divided into several frequency bands, each signal being modulated onto a separate band and guard bands being provided to prevent interference; it is an analog technique used in radio and television broadcasting. In Time Division Multiplexing the link is shared in time, each signal being allotted a short time slot in turn; it is a digital technique and may be synchronous or statistical. In Wavelength Division Multiplexing several optical signals of different wavelengths are carried simultaneously over a single optical fibre, which is conceptually frequency division multiplexing applied to light.",
+      "remember": "FDM = different frequency. TDM = different time. WDM = different colour of light.",
+      "why": "Without multiplexing every phone call would need its own cable across India. It is the reason communication is affordable at all.",
+      "practice": "Compare FDM and TDM in a table with four points of difference, and state where WDM is used."
+    },
+    {
+      "title": "Line Encoding: Unipolar, Polar and Bipolar",
+      "teacher": "You want to send the bit pattern 1 0 1 1 0 down a copper wire. But a wire does not carry '1' — it carries voltage. So somebody had to decide: what voltage means 1, and what voltage means 0? That decision is called line encoding, and there are three families of answers.",
+      "explain": "<strong>Line encoding</strong> is the process of converting digital data (0s and 1s) into a digital signal — a pattern of voltage levels — so it can travel on a wire. The three main schemes are grouped by the <strong>voltage polarities</strong> they use: <strong>unipolar</strong>, <strong>polar</strong> and <strong>bipolar</strong>.",
+      "keyPoints": [
+        "Line encoding converts <strong>digital data → digital signal</strong> (voltage levels).",
+        "<strong>Unipolar</strong> — uses only <strong>one</strong> polarity: a positive voltage for 1, zero volts for 0.",
+        "Unipolar is simple but wastes power and has a large <strong>DC component</strong>; rarely used today.",
+        "<strong>Polar</strong> — uses <strong>two</strong> polarities: positive for one bit value, negative for the other.",
+        "Polar schemes: <strong>NRZ-L, NRZ-I, RZ, Manchester, Differential Manchester</strong>.",
+        "Polar halves the average power compared with unipolar, because levels are balanced around zero.",
+        "<strong>Bipolar</strong> — uses <strong>three</strong> levels: positive, zero and negative.",
+        "In bipolar <strong>AMI</strong> (Alternate Mark Inversion), 0 is zero volts and each 1 alternates between + and −.",
+        "Bipolar removes the DC component, which is why it is used on long telephone lines. Variants: B8ZS, HDB3.",
+        "A good encoding also helps the receiver recover the <strong>clock</strong> (self-synchronisation) — Manchester does this well."
+      ],
+      "subtopics": [
+        {
+          "title": "Unipolar — the simplest and the weakest",
+          "text": "Only one side of the time axis is used. A positive voltage represents binary 1 and zero voltage represents binary 0 (this is unipolar NRZ). It is very easy to build, but a long run of 1s leaves a steady average voltage — a <strong>DC component</strong> — which many transformers and couplings simply cannot pass. It also uses twice the power of the polar version, so it is now mostly of historical interest."
+        },
+        {
+          "title": "Polar — balanced around zero",
+          "text": "Voltages sit on <em>both</em> sides of the time axis, typically positive for 0 and negative for 1 in NRZ-L. Because the levels are symmetric about zero, the average voltage tends toward zero and power is halved. <strong>Manchester</strong> encoding goes further: every bit has a transition in the middle of its interval, so the receiver can always recover the clock from the signal itself. Classic Ethernet used Manchester encoding for exactly this reason."
+        },
+        {
+          "title": "Bipolar — three levels, no DC",
+          "text": "Bipolar uses three levels: positive, zero and negative. In <strong>AMI</strong>, binary 0 is represented by zero voltage and binary 1 alternately by a positive and then a negative pulse. Since consecutive 1s cancel each other out, the average voltage stays at zero and the DC component disappears — ideal for long-distance telephone lines. Its weakness is a long run of 0s, which gives no transitions at all; <strong>B8ZS</strong> and <strong>HDB3</strong> were invented to substitute special patterns in that case."
+        }
+      ],
+      "realLife": "Think of signalling to a friend across a noisy ground. Unipolar is 'hand up = yes, hand down = no' — but if your hand stays up a long time, your friend loses count. Manchester is 'always wave, up-then-down for yes, down-then-up for no' — the constant movement keeps you both in rhythm. That rhythm is the clock.",
+      "table": {
+        "headers": [
+          "Scheme",
+          "Voltage levels used",
+          "How 0 and 1 are shown",
+          "Note"
+        ],
+        "rows": [
+          [
+            "Unipolar (NRZ)",
+            "One polarity + zero",
+            "1 = positive, 0 = zero volts",
+            "Simple; large DC component"
+          ],
+          [
+            "Polar (NRZ-L)",
+            "Two — positive and negative",
+            "One level for 0, the opposite for 1",
+            "Half the power of unipolar"
+          ],
+          [
+            "Polar (Manchester)",
+            "Two, with mid-bit transition",
+            "Transition direction carries the bit",
+            "Self-clocking; used in classic Ethernet"
+          ],
+          [
+            "Bipolar (AMI)",
+            "Three — positive, zero, negative",
+            "0 = zero volts; 1 alternates + and −",
+            "No DC component; long telephone lines"
+          ]
+        ]
+      },
+      "mistake": "Bipolar does not mean 'two levels' even though 'bi' suggests two. Bipolar uses <strong>three</strong> levels (+, 0, −); it is <em>polar</em> that uses two. Many students swap these two and lose the mark.",
+      "examAnswer": "Line encoding is the process of converting binary data into a digital signal consisting of voltage levels suitable for transmission over a conducting medium. In unipolar encoding only a single polarity is used, a positive voltage representing binary 1 and zero voltage representing binary 0; it is simple but contains a large DC component and is power inefficient. In polar encoding two polarities are used, positive and negative, so that the average signal level approaches zero and the power requirement is halved; important polar schemes include NRZ-L, NRZ-I, RZ, Manchester and Differential Manchester, the last two being self-synchronising because a transition occurs within every bit interval. In bipolar encoding three levels are used, positive, zero and negative; in Alternate Mark Inversion binary 0 is represented by zero voltage while successive 1s alternate between positive and negative pulses, which eliminates the DC component and makes it suitable for long-distance transmission.",
+      "remember": "Unipolar = ONE polarity. Polar = TWO polarities. Bipolar = THREE levels (+, 0, −).",
+      "why": "Encoding decides how far a signal can travel before it becomes unreadable, and whether the receiver can stay in step with the sender.",
+      "practice": "Encode the bit stream 1 0 1 1 0 0 1 using unipolar NRZ and bipolar AMI, describing the voltage level for each bit."
+    },
+    {
+      "title": "Line Configuration and Network Topology",
+      "teacher": "Five friends want to be able to talk to each other. Do you buy one long rope everyone holds? Give each a phone to one central friend? Make a circle? Or connect every pair directly? Each choice costs different money and breaks in a different way. That is topology — and it is one of the most reliably asked questions in the paper.",
+      "explain": "<strong>Line configuration</strong> is how two or more devices attach to a link — either <strong>point-to-point</strong> (the whole link is dedicated to two devices) or <strong>multipoint</strong> (several devices share one link). <strong>Topology</strong> is the physical or logical arrangement of all the devices in a network: <strong>bus, star, ring, mesh</strong> and <strong>hybrid</strong>.",
+      "keyPoints": [
+        "<strong>Point-to-point</strong> — a dedicated link between exactly two devices; full capacity for them.",
+        "<strong>Multipoint (multidrop)</strong> — more than two devices share a single link; capacity is shared.",
+        "<strong>Bus</strong> — all devices tap onto one long backbone cable with terminators at both ends.",
+        "<strong>Star</strong> — every device has its own cable to a central hub or switch.",
+        "<strong>Ring</strong> — each device connects to exactly two neighbours, forming a closed loop; data moves in one direction.",
+        "<strong>Mesh</strong> — every device has a dedicated link to every other device.",
+        "Mesh with n devices needs <strong>n(n−1)/2</strong> links and <strong>n−1</strong> ports on each device.",
+        "<strong>Hybrid</strong> — a combination, e.g. several star networks joined onto one bus backbone.",
+        "Star is the most widely used topology in real offices and colleges today.",
+        "Mesh is the most reliable and the most expensive."
+      ],
+      "subtopics": [
+        {
+          "title": "Point-to-point vs multipoint",
+          "text": "A <strong>point-to-point</strong> link reserves the entire capacity of the medium for two devices — your TV and its remote, or a leased line between two branches of a bank. A <strong>multipoint</strong> link has three or more devices sharing one channel; the capacity is then shared either <em>spatially</em> (several can use it at once) or <em>temporally</em> (they take turns, which needs a rule for who speaks when)."
+        },
+        {
+          "title": "Bus and ring — the shared-path family",
+          "text": "In a <strong>bus</strong>, one backbone cable runs through the whole network and each device taps into it with a drop line. It uses the least cable, but a single break in the backbone kills the entire network, and faults are very hard to locate. In a <strong>ring</strong>, each device repeats and forwards the signal to the next one around a loop. It is easy to install and each device acts as a repeater, but a single failed device breaks the loop — which is why real rings add a second, opposite-direction ring for protection."
+        },
+        {
+          "title": "Star and mesh — the dedicated-link family",
+          "text": "In a <strong>star</strong>, every device has its own cable to a central hub or switch, so one broken cable affects only that one machine and faults are trivial to find. The weakness is obvious: if the central device dies, the whole network dies. In a <strong>mesh</strong>, every pair of devices has its own dedicated link, giving the best reliability, privacy and no traffic congestion — but with 10 devices you already need 45 links and 9 ports per machine, so it is used only for critical backbones."
+        },
+        {
+          "title": "Calculating mesh links",
+          "text": "Each of the n devices needs a link to the other n−1 devices, giving n(n−1) link-ends; since each link is shared by two devices, the number of links is <strong>n(n−1)/2</strong>. For n = 5 that is 5 × 4 / 2 = <strong>10 links</strong>, with 4 I/O ports on each device. This little formula is a frequent one-mark question."
+        }
+      ],
+      "realLife": "Your college computer lab is a star — every PC has its own cable running to one switch in the corner. If your neighbour's cable is unplugged, you keep working. But when the switch fails, the whole lab stops, and everyone looks at the same corner of the room.",
+      "table": {
+        "headers": [
+          "Topology",
+          "Structure",
+          "Advantages",
+          "Disadvantages"
+        ],
+        "rows": [
+          [
+            "Bus",
+            "One backbone cable, devices tap in",
+            "Least cable, cheap, easy to extend",
+            "One cable break stops everything; hard fault finding; collisions"
+          ],
+          [
+            "Star",
+            "All devices wired to a central hub/switch",
+            "Easy to install and troubleshoot; one failed cable affects one node only",
+            "Central device is a single point of failure; more cable than bus"
+          ],
+          [
+            "Ring",
+            "Closed loop, each node linked to two neighbours",
+            "Easy to install; each node acts as repeater; no collisions with token passing",
+            "One node or link failure breaks the ring; adding a node disrupts the loop"
+          ],
+          [
+            "Mesh",
+            "Dedicated link between every pair",
+            "Most reliable, private, no congestion, easy fault identification",
+            "Very expensive; huge cabling and n−1 ports per device"
+          ],
+          [
+            "Hybrid",
+            "Mixture, e.g. star networks on a bus backbone",
+            "Flexible, scalable, combines strengths",
+            "Complex to design and costly to manage"
+          ]
+        ]
+      },
+      "worked": "<strong>How many cables does a mesh of 5 computers need?</strong><br>Formula: number of links = n(n−1)/2<br>Here n = 5<br>= 5 × (5 − 1) / 2<br>= 5 × 4 / 2<br>= 20 / 2<br>= <strong>10 links</strong><br>And each computer needs n − 1 = <strong>4 I/O ports</strong>.<br><br>Now try n = 10: 10 × 9 / 2 = <strong>45 links</strong>. Doubling the computers gave more than four times the cable — this is exactly why full mesh is rare.",
+      "mistake": "Do not confuse topology with line configuration. <strong>Line configuration</strong> is about how devices attach to <em>one link</em> (point-to-point or multipoint). <strong>Topology</strong> is the shape of the <em>whole network</em>. Also: a star does not mean the computers talk to each other directly — every message passes through the central hub or switch.",
+      "examAnswer": "Line configuration refers to the way two or more devices are attached to a communication link. In a point-to-point configuration a dedicated link is provided between two devices and the entire capacity of the channel is reserved for them, whereas in a multipoint or multidrop configuration more than two devices share a single link, the capacity being shared spatially or temporally. Topology refers to the physical or logical arrangement of the devices in a network. In a bus topology all nodes are connected to a single backbone cable; in a star topology every node is connected by a dedicated link to a central hub or switch; in a ring topology each node is connected to two neighbouring nodes forming a closed loop; in a mesh topology every node has a dedicated link to every other node, requiring n(n−1)/2 links for n nodes; and a hybrid topology combines two or more of these. Star topology is the most commonly used in practice because faults are easily isolated, while mesh topology offers the greatest reliability at the greatest cost.",
+      "remember": "Bus = one road. Star = one centre. Ring = one circle. Mesh = everyone to everyone. Mesh links = n(n−1)/2.",
+      "why": "Topology decides the cost of cabling, how the network behaves when something breaks, and how hard it is to find the fault — the three questions any real network administrator faces.",
+      "practice": "Draw all five topologies. Then calculate the number of links needed for a mesh network of 8 devices."
+    },
+    {
+      "title": "Categories of Networks: LAN, MAN, WAN, Intranet and Internet",
+      "teacher": "Your college lab network, the cable-TV network of the whole of Bhopal, and the global internet are all 'networks' — but calling them the same thing is like calling a cycle and an aeroplane both 'vehicles'. The real difference is simply how far they reach, and who owns them.",
+      "explain": "Networks are classified mainly by their <strong>geographical size and ownership</strong>: <strong>LAN</strong> (one building or campus), <strong>MAN</strong> (one city), and <strong>WAN</strong> (a country or the whole world). When two or more networks are joined together, the result is an <strong>internetwork</strong>; the largest one in the world is <strong>the Internet</strong>.",
+      "keyPoints": [
+        "<strong>LAN — Local Area Network</strong>: one room, building or campus, up to a few kilometres.",
+        "LAN is privately owned, very high speed, and has very low error rate. Example: your college lab.",
+        "<strong>MAN — Metropolitan Area Network</strong>: spreads over a city, typically up to 50 km.",
+        "MAN examples: a city cable-TV network, a bank's branches across one city.",
+        "<strong>WAN — Wide Area Network</strong>: a country, continent or the world; uses leased lines and satellites.",
+        "WAN is slower per link and has a higher error rate than LAN, and is usually not owned by one organisation.",
+        "<strong>Internetwork (internet, small i)</strong>: two or more networks joined by routers.",
+        "<strong>The Internet (capital I)</strong>: the single global public internetwork.",
+        "<strong>Intranet</strong>: a private network inside one organisation using the same internet technologies, closed to outsiders.",
+        "<strong>Extranet</strong>: an intranet partly opened to trusted outsiders such as suppliers."
+      ],
+      "subtopics": [
+        {
+          "title": "LAN, MAN and WAN",
+          "text": "A <strong>LAN</strong> covers a limited area, is owned by one organisation, and typically runs at 100 Mbps to several Gbps with almost no errors. A <strong>MAN</strong> covers a city and often belongs to a single service provider, such as the cable operator that supplies broadband to a whole locality. A <strong>WAN</strong> covers an unlimited area and is built from links leased from telecom operators, which is why its speeds are lower and its error rates higher than a LAN's."
+        },
+        {
+          "title": "Internetwork, and 'the Internet'",
+          "text": "When two or more separate networks are connected together using <strong>routers</strong>, the combined system is called an <strong>internetwork</strong>. The word <em>Internet</em> with a capital I means one specific internetwork — the global public network of millions of networks that uses the <strong>TCP/IP</strong> protocol suite. So every Internet is an internetwork, but not every internetwork is the Internet."
+        },
+        {
+          "title": "Intranet vs Internet",
+          "text": "An <strong>intranet</strong> uses exactly the same technologies as the Internet — web pages, browsers, TCP/IP, email — but it is <strong>private</strong> and accessible only to the members of one organisation, usually protected by a firewall. Your college's internal portal for attendance and results is an intranet. The Internet is <strong>public</strong> and open to everyone. An <strong>extranet</strong> is the middle case: an intranet whose access is extended to selected outsiders like suppliers or partner companies."
+        }
+      ],
+      "realLife": "Your college's Wi-Fi and lab machines form a LAN. The internal results-and-attendance portal you log into with a college ID is an intranet. When you open YouTube, you leave both and go out onto the Internet — through a WAN link the college has bought from a service provider.",
+      "table": {
+        "headers": [
+          "",
+          "LAN",
+          "MAN",
+          "WAN"
+        ],
+        "rows": [
+          [
+            "Area covered",
+            "Room, building, campus (up to a few km)",
+            "A city (up to about 50 km)",
+            "Country, continent, world"
+          ],
+          [
+            "Ownership",
+            "Private, one organisation",
+            "Usually one service provider",
+            "Usually many operators"
+          ],
+          [
+            "Speed",
+            "Very high",
+            "Moderate to high",
+            "Lower per link"
+          ],
+          [
+            "Error rate",
+            "Lowest",
+            "Moderate",
+            "Highest"
+          ],
+          [
+            "Medium",
+            "Twisted pair, fibre, Wi-Fi",
+            "Fibre, coaxial, wireless",
+            "Leased lines, fibre, satellite"
+          ],
+          [
+            "Example",
+            "College computer lab",
+            "City cable-TV / broadband network",
+            "The Internet, a bank's national network"
+          ]
+        ]
+      },
+      "mistake": "An intranet is not 'a small internet'. The difference is not size but <strong>access</strong> — an intranet is private and restricted to one organisation, while the Internet is public. Also note the spelling trap: <em>internet</em> (small i) is any joined-up set of networks; <em>Internet</em> (capital I) is the one global network.",
+      "examAnswer": "Computer networks are commonly classified according to the geographical area they cover. A Local Area Network covers a limited area such as a single room, building or campus, is normally owned by a single organisation, and provides very high data rates with very low error rates. A Metropolitan Area Network extends over an entire city, typically up to about fifty kilometres, and is often operated by a single service provider, a city cable television network being a common example. A Wide Area Network covers a large geographical area such as a country or continent, generally makes use of leased telecommunication links and satellites, and has lower data rates and higher error rates than a LAN. When two or more networks are connected together using routers the result is called an internetwork, the largest example being the Internet. An intranet is a private network belonging to a single organisation which uses Internet technologies but restricts access to authorised members only.",
+      "remember": "LAN = one building. MAN = one city. WAN = the world. Intranet = private; Internet = public.",
+      "why": "Every job advertisement for a network engineer assumes you can tell these apart instantly, and the LAN/MAN/WAN comparison table is near-certain exam marks.",
+      "practice": "Differentiate LAN, MAN and WAN on any five points. Then explain the difference between an intranet and the Internet in three lines."
+    },
+    {
+      "title": "Functions of the Layers: The OSI Reference Model",
+      "teacher": "Posting a parcel to Chennai involves you, the shop that packs it, the post office that addresses it, the truck, the railways... Nobody does the whole job, and nobody needs to understand the other's job. Networking is organised in exactly the same way — seven departments, each doing one thing. Learn the order once and you have it for life.",
+      "explain": "The <strong>OSI (Open Systems Interconnection) model</strong>, given by ISO, divides the work of networking into <strong>seven layers</strong>. Each layer performs one well-defined function, uses the services of the layer below it, and provides services to the layer above it. From bottom to top the layers are: <strong>Physical, Data Link, Network, Transport, Session, Presentation, Application</strong>.",
+      "keyPoints": [
+        "OSI was developed by <strong>ISO</strong> (International Organization for Standardization) as a reference model.",
+        "<strong>Layer 1 — Physical</strong>: transmits raw bits over the medium; deals with voltages, cables, connectors, data rate.",
+        "<strong>Layer 2 — Data Link</strong>: node-to-node (hop-to-hop) delivery; framing, physical/MAC addressing, error control, flow control, access control.",
+        "<strong>Layer 3 — Network</strong>: source-to-destination delivery across multiple networks; logical (IP) addressing and <strong>routing</strong>.",
+        "<strong>Layer 4 — Transport</strong>: process-to-process delivery; segmentation and reassembly, port addressing, end-to-end error and flow control (TCP, UDP).",
+        "<strong>Layer 5 — Session</strong>: establishes, manages and terminates sessions; dialog control and synchronisation (checkpoints).",
+        "<strong>Layer 6 — Presentation</strong>: translation of data formats, <strong>encryption/decryption</strong> and <strong>compression</strong>.",
+        "<strong>Layer 7 — Application</strong>: services directly to the user — HTTP, FTP, SMTP, DNS, file transfer, email.",
+        "Data unit names: bits (L1), frames (L2), packets/datagrams (L3), segments (L4), messages/data (L5–L7).",
+        "The practical model actually used on the Internet is <strong>TCP/IP</strong>, which has 4–5 layers."
+      ],
+      "subtopics": [
+        {
+          "title": "The three lower layers — moving the bits",
+          "text": "The <strong>Physical</strong> layer is pure electronics and mechanics: what voltage is a 1, how many bits per second, which pin of the connector does what. The <strong>Data Link</strong> layer groups bits into <strong>frames</strong> and gets them safely across <em>one</em> link, using MAC addresses, error detection and flow control. The <strong>Network</strong> layer is the one that thinks about the whole journey — it adds logical (IP) addresses and chooses the route through many intermediate networks."
+        },
+        {
+          "title": "The transport layer — the heart of the model",
+          "text": "Layers 1–3 get data to the correct <em>computer</em>. The <strong>Transport</strong> layer gets it to the correct <em>program</em> on that computer, using <strong>port numbers</strong> — which is how your browser and your music app can both use the network without their data getting mixed up. It breaks long messages into segments, numbers them, reassembles them in order at the far end, and handles end-to-end error and flow control. TCP does all this reliably; UDP does it fast but without guarantees."
+        },
+        {
+          "title": "The three upper layers — making it usable",
+          "text": "The <strong>Session</strong> layer sets up, manages and closes a conversation, including dialog control (who talks when) and synchronisation points, so a large transfer that fails can restart from a checkpoint instead of from the beginning. The <strong>Presentation</strong> layer handles <em>meaning and form</em> — character-code translation, compression, and encryption/decryption. The <strong>Application</strong> layer is what you actually see: web browsing, email, file transfer, remote login."
+        },
+        {
+          "title": "How a message travels through the layers",
+          "text": "At the sender, the message goes down from layer 7 to layer 1, and each layer adds its own <strong>header</strong> (layer 2 adds a trailer too) — this is called <strong>encapsulation</strong>. It crosses the physical medium as bits. At the receiver, it climbs from layer 1 up to layer 7, each layer removing and acting on its matching header. Each layer effectively talks to the same layer on the other machine — this is called <strong>peer-to-peer communication</strong>."
+        }
+      ],
+      "realLife": "Posting a gift to your cousin: you choose the gift (Application), gift-wrap it in an agreed style (Presentation), agree on the phone that you'll send it today (Session), split it into two parcels and number them 1 of 2, 2 of 2 (Transport), write the full address (Network), hand it to the local post office which passes it to the next hub (Data Link), and the actual train carries it (Physical).",
+      "table": {
+        "headers": [
+          "No.",
+          "Layer",
+          "Main Function (one line)",
+          "Data Unit"
+        ],
+        "rows": [
+          [
+            "7",
+            "Application",
+            "Provides network services directly to the user — HTTP, FTP, SMTP, DNS",
+            "Message / Data"
+          ],
+          [
+            "6",
+            "Presentation",
+            "Translation of data format, encryption/decryption, compression",
+            "Message / Data"
+          ],
+          [
+            "5",
+            "Session",
+            "Establishes, manages and ends sessions; dialog control and synchronisation",
+            "Message / Data"
+          ],
+          [
+            "4",
+            "Transport",
+            "Process-to-process delivery using port numbers; segmentation, reassembly, end-to-end reliability",
+            "Segment"
+          ],
+          [
+            "3",
+            "Network",
+            "Source-to-destination delivery across networks; logical (IP) addressing and routing",
+            "Packet / Datagram"
+          ],
+          [
+            "2",
+            "Data Link",
+            "Node-to-node delivery on one link; framing, MAC addressing, error and flow control",
+            "Frame"
+          ],
+          [
+            "1",
+            "Physical",
+            "Transmits raw bits over the medium; voltages, cables, connectors, data rate",
+            "Bit"
+          ]
+        ]
+      },
+      "worked": "<strong>Learn the order bottom-up with this sentence:</strong><br><em>Please Do Not Throw Sausage Pizza Away</em><br>P = <strong>P</strong>hysical (1)<br>D = <strong>D</strong>ata Link (2)<br>N = <strong>N</strong>etwork (3)<br>T = <strong>T</strong>ransport (4)<br>S = <strong>S</strong>ession (5)<br>P = <strong>P</strong>resentation (6)<br>A = <strong>A</strong>pplication (7)<br><br><strong>And top-down:</strong> <em>All People Seem To Need Data Processing</em> — Application, Presentation, Session, Transport, Network, Data Link, Physical.",
+      "mistake": "Do not mix up Layer 2 and Layer 3 addressing. The <strong>Data Link</strong> layer uses <strong>physical/MAC addresses</strong> and only gets data to the <em>next</em> device on the link. The <strong>Network</strong> layer uses <strong>logical/IP addresses</strong> and is responsible for the whole journey from original source to final destination. Also, encryption belongs to the <strong>Presentation</strong> layer, not the Application layer.",
+      "examAnswer": "The Open Systems Interconnection model, proposed by the International Organization for Standardization, is a seven-layer reference model for network communication in which each layer performs a specific function, uses the services of the layer below and provides services to the layer above. The Physical layer transmits raw bits over the transmission medium and defines electrical and mechanical specifications. The Data Link layer is responsible for node-to-node delivery and performs framing, physical addressing, error control, flow control and access control. The Network layer provides source-to-destination delivery across multiple networks through logical addressing and routing. The Transport layer provides process-to-process delivery, performing segmentation and reassembly, port addressing and end-to-end error and flow control. The Session layer establishes, maintains and synchronises the interaction between communicating systems. The Presentation layer deals with the syntax and semantics of the information exchanged, including translation, encryption and compression. The Application layer provides services directly to the user, such as electronic mail, file transfer and web access.",
+      "remember": "Bottom-up: Please Do Not Throw Sausage Pizza Away.",
+      "why": "The OSI model is the vocabulary of the entire networking industry. When an engineer says 'that's a layer 3 problem', everyone immediately knows it is about IP addresses and routing.",
+      "practice": "List the seven OSI layers from bottom to top and write one function of each. Then say which layer handles routing, which handles framing, and which handles encryption."
+    },
+    {
+      "title": "Transmission Media: Guided and Unguided",
+      "teacher": "The data has to physically travel through something. Either you give it a pipe to run through, or you throw it into the open air and hope it lands. Those two choices have names — guided and unguided — and knowing which to use where is most of this topic.",
+      "explain": "<strong>Transmission media</strong> are the physical paths that carry the signal. <strong>Guided (wired) media</strong> confine the signal inside a solid conductor or fibre — twisted pair, coaxial cable and optical fibre. <strong>Unguided (wireless) media</strong> send the signal through free space — radio waves, microwaves, infrared and satellite links.",
+      "keyPoints": [
+        "<strong>Guided</strong> = signal travels inside a physical conductor. <strong>Unguided</strong> = signal travels through air/space.",
+        "<strong>Twisted pair</strong>: two insulated copper wires twisted together; the twisting cancels noise. Cheapest.",
+        "Twisted pair types: <strong>UTP</strong> (unshielded, used in LANs with RJ-45 connectors) and <strong>STP</strong> (shielded, better noise immunity).",
+        "<strong>Coaxial cable</strong>: a central conductor inside an insulator and a metal shield; higher bandwidth than twisted pair. Used in cable TV.",
+        "<strong>Optical fibre</strong>: carries <em>light</em> through a glass core using <strong>total internal reflection</strong>; core, cladding, jacket.",
+        "Fibre has the highest bandwidth, least attenuation, and is <strong>immune to electromagnetic interference</strong> — but is costly and fragile.",
+        "<strong>Radio waves</strong> (3 kHz–1 GHz): omnidirectional, can pass through walls. Used for AM/FM radio, TV, Wi-Fi.",
+        "<strong>Microwaves</strong> (1–300 GHz): unidirectional, need <strong>line of sight</strong>, cannot bend around obstacles. Used for mobile towers.",
+        "<strong>Infrared</strong> (300 GHz–400 THz): very short range, <em>cannot pass through walls</em> — which makes it secure. TV remote.",
+        "<strong>Satellite</strong>: a microwave relay in space covering huge areas; useful for remote regions, but has a noticeable propagation delay."
+      ],
+      "subtopics": [
+        {
+          "title": "Guided media compared",
+          "text": "<strong>Twisted pair</strong> is the cheapest and easiest to install, and the twisting cancels out interference picked up equally by both wires; it is what connects the PCs in your lab. <strong>Coaxial cable</strong> has better shielding and much higher bandwidth, used historically for cable television and older Ethernet. <strong>Optical fibre</strong> transmits light instead of electricity, so it carries far more data, loses far less signal over distance, and cannot be disturbed by electrical noise or tapped easily — the reason all long-distance backbones are fibre."
+        },
+        {
+          "title": "How optical fibre works",
+          "text": "A very thin glass <strong>core</strong> is surrounded by a <strong>cladding</strong> of slightly lower refractive index. When light enters at a shallow enough angle it strikes the boundary and is reflected back inside instead of escaping — <strong>total internal reflection</strong>. The light therefore bounces along the fibre for kilometres. In <strong>single-mode</strong> fibre one beam travels almost straight, giving the longest distance; in <strong>multimode</strong> fibre several beams travel at different angles, which is cheaper but limits distance."
+        },
+        {
+          "title": "Unguided media compared",
+          "text": "<strong>Radio waves</strong> are omnidirectional — they spread in all directions and pass through walls, so a Wi-Fi router does not need to be pointed at your laptop, but neighbours can also receive it. <strong>Microwaves</strong> are focused into a narrow beam and need a clear <strong>line of sight</strong> between two dish antennas, which is why mobile towers are tall and placed on hills or rooftops. <strong>Infrared</strong> cannot pass through walls at all, which limits it to one room but also makes it interference-free and reasonably private."
+        }
+      ],
+      "realLife": "Look around your house: the broadband cable entering your room is guided media (fibre or coaxial). Your Wi-Fi is unguided radio. Your TV remote is unguided infrared — and that is exactly why it stops working when you hide behind the door, but the Wi-Fi keeps working there.",
+      "table": {
+        "headers": [
+          "Medium",
+          "Type",
+          "Key Feature",
+          "Typical Use"
+        ],
+        "rows": [
+          [
+            "Twisted pair (UTP/STP)",
+            "Guided",
+            "Cheapest, twisting cancels noise",
+            "LAN cabling, telephone lines"
+          ],
+          [
+            "Coaxial cable",
+            "Guided",
+            "Better shielding, higher bandwidth",
+            "Cable TV, older Ethernet"
+          ],
+          [
+            "Optical fibre",
+            "Guided",
+            "Light + total internal reflection; immune to EMI",
+            "Backbones, long distance, high speed"
+          ],
+          [
+            "Radio waves",
+            "Unguided",
+            "Omnidirectional, passes through walls",
+            "AM/FM radio, TV, Wi-Fi"
+          ],
+          [
+            "Microwaves",
+            "Unguided",
+            "Unidirectional, needs line of sight",
+            "Mobile towers, point-to-point links"
+          ],
+          [
+            "Infrared",
+            "Unguided",
+            "Very short range, blocked by walls",
+            "TV remote, short-range device links"
+          ],
+          [
+            "Satellite",
+            "Unguided",
+            "Huge coverage, noticeable delay",
+            "Remote areas, broadcasting, GPS"
+          ]
+        ]
+      },
+      "mistake": "Do not say optical fibre carries electricity — it carries <strong>light</strong>. That is precisely why it is immune to electromagnetic interference. And remember the wall test: infrared is stopped by walls, radio is not.",
+      "examAnswer": "A transmission medium is the physical path through which a signal travels from sender to receiver, and it may be guided or unguided. Guided media confine the signal within a solid medium and include twisted-pair cable, coaxial cable and optical fibre. Twisted-pair cable consists of insulated copper conductors twisted together to cancel electromagnetic interference and is the least expensive; coaxial cable provides greater bandwidth and better shielding; optical fibre transmits data as pulses of light through a glass core by total internal reflection and offers the highest bandwidth, lowest attenuation and complete immunity to electromagnetic interference. Unguided or wireless media transmit signals through free space and include radio waves, which are omnidirectional and can penetrate walls, microwaves, which are unidirectional and require line-of-sight propagation, infrared, which is restricted to short distances within a room, and satellite communication, which relays microwave signals over very large geographical areas.",
+      "remember": "Guided = inside a wire. Unguided = through the air. Fibre = light, not electricity. Infrared = cannot pass walls.",
+      "why": "Choosing a medium is a real engineering decision — cost, distance, speed and interference. This topic gives you the whole comparison in one place.",
+      "practice": "Differentiate guided and unguided media. Give three examples of each and state one advantage and one disadvantage of optical fibre."
+    },
+    {
+      "title": "Switching: Circuit, Packet and Message",
+      "teacher": "A network cannot give every pair of computers its own private cable — we saw that mesh gets impossible very fast. So the network must find a path through shared intermediate devices each time. There are three ways to do that, and the difference between them is basically: do you book the road in advance, or just start driving?",
+      "explain": "<strong>Switching</strong> is the method a network uses to create a path from sender to receiver through intermediate switching nodes. The three techniques are <strong>circuit switching</strong> (reserve a whole path first), <strong>message switching</strong> (store and forward the whole message) and <strong>packet switching</strong> (break the message into packets and forward each one), with packet switching having two approaches: <strong>datagram</strong> and <strong>virtual circuit</strong>.",
+      "keyPoints": [
+        "<strong>Circuit switching</strong>: a dedicated physical path is reserved for the whole conversation.",
+        "Circuit switching has three phases: <strong>setup → data transfer → teardown (disconnect)</strong>.",
+        "Once set up there is no per-packet delay, but capacity is wasted whenever nobody is speaking. Example: the classic telephone network.",
+        "<strong>Message switching</strong>: the entire message is sent to a node, <strong>stored</strong> completely, then forwarded — 'store and forward'.",
+        "Message switching needs no dedicated path, but each node needs large storage and the delay is very long. Now obsolete (telegram-style systems).",
+        "<strong>Packet switching</strong>: the message is broken into small fixed-size <strong>packets</strong>, each carrying address information.",
+        "<strong>Datagram approach</strong>: connectionless — each packet is treated independently, may take a different route, and may arrive <strong>out of order</strong> or not at all. Used by the Internet (IP).",
+        "<strong>Virtual circuit approach</strong>: connection-oriented — a logical path is set up first and <em>all</em> packets follow it in order, identified by a <strong>VCI</strong> in the header.",
+        "A virtual circuit is <em>logical</em>, not physical — the link is still shared with others, unlike circuit switching.",
+        "Packet switching uses the network most efficiently, which is why the Internet is built on it."
+      ],
+      "subtopics": [
+        {
+          "title": "Circuit switching — book the whole road",
+          "text": "Before any data moves, the network reserves a complete physical path from sender to receiver and keeps it reserved until the call ends. Because the path is dedicated, data flows in order with a fixed, predictable delay — excellent for voice. The cost is waste: during every pause in your conversation the reserved path sits idle and no one else may use it. The old landline telephone network is the classic example."
+        },
+        {
+          "title": "Message switching — store and forward",
+          "text": "No path is reserved at all. The complete message is transmitted to the first intermediate node, which <strong>stores the whole message on disk</strong>, waits for a free outgoing link, and then forwards it to the next node — repeating until it reaches the destination. This uses the network efficiently and lets nodes set priorities, but every node needs huge storage and the total delay is long, so it is unsuitable for interactive or real-time traffic. It is now obsolete, surviving in ideas like store-and-forward email."
+        },
+        {
+          "title": "Packet switching — the datagram approach",
+          "text": "The message is chopped into small packets, each carrying the full destination address. Each packet is routed <strong>independently</strong>, so different packets of the same message may travel by different routes depending on traffic. They can therefore arrive <strong>out of order, delayed, or duplicated</strong>, and it is the transport layer at the destination (TCP) that must reorder them and ask for any missing ones. There is no setup phase — you simply start sending. This is how the Internet's IP layer works."
+        },
+        {
+          "title": "Packet switching — the virtual circuit approach",
+          "text": "Here a <strong>logical</strong> connection is established first, exactly like circuit switching's setup phase, and every packet of the message then follows that same pre-decided route in order. Each packet carries only a short <strong>virtual circuit identifier (VCI)</strong> rather than the full address, so headers are smaller and switching is faster. Packets arrive in order, but — crucially — the links along the route are still <em>shared</em> with other connections, so no bandwidth is wasted the way it is in true circuit switching. Frame Relay and ATM used this approach."
+        }
+      ],
+      "realLife": "Circuit switching is booking a whole taxi for the day — it waits for you even while you are inside the shop. Packet switching (datagram) is sending ten friends to the same wedding by whatever bus each one finds; they all reach, but not together or in order. A virtual circuit is those ten friends all agreeing in advance to take the same bus route, one after another.",
+      "table": {
+        "headers": [
+          "",
+          "Circuit Switching",
+          "Message Switching",
+          "Packet Switching"
+        ],
+        "rows": [
+          [
+            "Path",
+            "Dedicated physical path reserved",
+            "No dedicated path; store and forward",
+            "No dedicated path; per-packet routing"
+          ],
+          [
+            "Unit sent",
+            "Continuous bit stream",
+            "The entire message",
+            "Small packets"
+          ],
+          [
+            "Setup phase",
+            "Yes (setup, transfer, teardown)",
+            "No",
+            "Datagram: no. Virtual circuit: yes"
+          ],
+          [
+            "Storage at nodes",
+            "Not required",
+            "Very large (whole message)",
+            "Small (one packet)"
+          ],
+          [
+            "Bandwidth use",
+            "Wasteful — idle time is reserved",
+            "Efficient",
+            "Most efficient"
+          ],
+          [
+            "Delay",
+            "Only at setup, then fixed",
+            "Long and variable",
+            "Small, variable per packet"
+          ],
+          [
+            "Order of arrival",
+            "Always in order",
+            "In order",
+            "Datagram: may be out of order. VC: in order"
+          ],
+          [
+            "Example",
+            "Telephone network",
+            "Telegram-style systems (obsolete)",
+            "The Internet, Frame Relay, ATM"
+          ]
+        ]
+      },
+      "worked": "<strong>Datagram vs Virtual Circuit — side by side</strong><br>You send a 3-packet message P1, P2, P3 from A to B.<br><br><strong>Datagram:</strong> No setup. Each packet carries the full address of B.<br>P1 takes route A–X–B · P2 takes route A–Y–B (X was busy) · P3 takes route A–X–B<br>P2 travels a faster route and arrives first → arrival order at B could be P2, P1, P3.<br>The destination must <strong>reorder</strong> them using sequence numbers.<br><br><strong>Virtual circuit:</strong> Setup packet first fixes the route A–X–B and assigns a VCI.<br>P1, P2, P3 all carry only the small VCI and all follow A–X–B.<br>Arrival order at B = P1, P2, P3 — <strong>always in order</strong>, no reordering needed.<br><br>Note the key point: in BOTH cases the links A–X and X–B are still shared with other users. Only true <em>circuit</em> switching reserves them exclusively.",
+      "mistake": "A virtual circuit is NOT circuit switching. In circuit switching a <em>physical</em> path is exclusively reserved and wasted when idle; in a virtual circuit only a <em>logical</em> route is fixed, and the actual links stay shared with other traffic. Also, do not say datagram packets always take different routes — they <em>may</em>; usually they follow the same route when the network is stable.",
+      "examAnswer": "Switching is the technique by which a network establishes a path between a sender and a receiver through intermediate switching nodes. In circuit switching a dedicated physical path is established between the two end systems before any data is transferred, and the communication proceeds in three phases: circuit establishment, data transfer and circuit disconnection; the path remains reserved for the entire duration, giving a fixed delay but wasting capacity during idle periods, as in the traditional telephone network. In message switching no dedicated path is established; the entire message is transmitted to an intermediate node, stored there completely and then forwarded to the next node, a technique known as store and forward, which requires large storage at each node and introduces long delays. In packet switching the message is divided into small packets which are transmitted independently. The datagram approach is connectionless, each packet carrying the full destination address and being routed independently, so that packets may follow different routes and arrive out of order. The virtual circuit approach is connection oriented, a logical path being established before transmission so that all packets follow the same route in sequence, each carrying only a virtual circuit identifier. Packet switching makes the most efficient use of network resources and is the basis of the Internet.",
+      "remember": "Circuit = book the road first. Message = carry the whole load, one stop at a time. Packet = break it up and send. Datagram = no booking; Virtual circuit = logical booking.",
+      "why": "This is the single most-asked long question in this unit, and it also explains why the Internet survived when telephone-style networks could not scale.",
+      "practice": "Compare circuit switching, message switching and packet switching on any five points. Then explain the difference between the datagram and virtual circuit approaches with an example."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Which of these is NOT one of the five components of a data communication system?",
+      "options": [
+        "Message",
+        "Protocol",
+        "Operating system",
+        "Transmission medium"
+      ],
+      "answer": 2,
+      "why": "The five components are message, sender, receiver, transmission medium and protocol. The operating system is not one of them."
+    },
+    {
+      "q": "A walkie-talkie, where you must say 'over' before the other person can speak, works in which mode?",
+      "options": [
+        "Simplex",
+        "Half-duplex",
+        "Full-duplex",
+        "Multiplex"
+      ],
+      "answer": 1,
+      "why": "Both sides can send and receive, but only one at a time — that is exactly half-duplex. A telephone call, where both can speak together, is full-duplex."
+    },
+    {
+      "q": "In which multiplexing technique does each signal get its own short time slot on the shared link?",
+      "options": [
+        "FDM",
+        "TDM",
+        "WDM",
+        "AMI"
+      ],
+      "answer": 1,
+      "why": "TDM (Time Division Multiplexing) divides the link in time. FDM divides it in frequency and WDM divides it by wavelength of light."
+    },
+    {
+      "q": "Bipolar AMI encoding uses how many voltage levels?",
+      "options": [
+        "One",
+        "Two",
+        "Three",
+        "Four"
+      ],
+      "answer": 2,
+      "why": "Bipolar uses three levels: positive, zero and negative. Zero volts represents binary 0 and successive 1s alternate between positive and negative. Polar uses two levels; unipolar uses one polarity."
+    },
+    {
+      "q": "How many links are needed to connect 6 devices in a full mesh topology?",
+      "options": [
+        "6",
+        "12",
+        "15",
+        "30"
+      ],
+      "answer": 2,
+      "why": "Links = n(n−1)/2 = 6 × 5 / 2 = 15. Each device also needs n−1 = 5 I/O ports."
+    },
+    {
+      "q": "Which OSI layer is responsible for routing and logical (IP) addressing?",
+      "options": [
+        "Data Link layer",
+        "Network layer",
+        "Transport layer",
+        "Session layer"
+      ],
+      "answer": 1,
+      "why": "The Network layer (Layer 3) handles source-to-destination delivery, logical addressing and routing. The Data Link layer only handles node-to-node delivery using MAC addresses."
+    },
+    {
+      "q": "Which transmission medium cannot pass through walls, making it useful only inside one room?",
+      "options": [
+        "Radio waves",
+        "Microwaves",
+        "Infrared",
+        "Optical fibre"
+      ],
+      "answer": 2,
+      "why": "Infrared cannot penetrate walls — which is why your TV remote stops working from the next room, but also why infrared links are hard to eavesdrop on from outside."
+    },
+    {
+      "q": "In the datagram approach to packet switching, packets…",
+      "options": [
+        "Always follow the same fixed path in order",
+        "Are routed independently and may arrive out of order",
+        "Require a dedicated physical circuit",
+        "Are stored completely at every node before forwarding"
+      ],
+      "answer": 1,
+      "why": "The datagram approach is connectionless: each packet carries the full destination address and is routed on its own, so packets may take different routes and arrive out of order. The virtual circuit approach is the one that keeps them in order."
+    },
+    {
+      "q": "Which topology continues working for everyone else if one computer's cable is cut, but fails completely if the central device fails?",
+      "options": [
+        "Bus",
+        "Ring",
+        "Star",
+        "Mesh"
+      ],
+      "answer": 2,
+      "why": "In a star, every device has its own cable to the central hub or switch, so one broken cable affects only that device — but the central device is a single point of failure for the whole network."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Explain the five components of a data communication system, and identify each one for a video call between you and a friend.",
+      "hint": "Do not forget the protocol — it is the component most students leave out."
+    },
+    {
+      "q": "Differentiate simplex, half-duplex and full-duplex transmission modes with a suitable everyday example of each. Why is a walkie-talkie half-duplex and not simplex?"
+    },
+    {
+      "q": "Compare the bus, star, ring, mesh and hybrid topologies in a table, giving at least one advantage and one disadvantage of each. Also calculate the number of links required for a full mesh of 7 devices.",
+      "hint": "Use links = n(n−1)/2."
+    },
+    {
+      "q": "List the seven layers of the OSI model from bottom to top and state one function of each layer. Which layer performs routing, which performs framing, and which performs encryption?",
+      "hint": "Remember 'Please Do Not Throw Sausage Pizza Away' for the bottom-up order."
+    },
+    {
+      "q": "Compare circuit switching, message switching and packet switching. Then explain the difference between the virtual circuit and datagram approaches, stating clearly why a virtual circuit is not the same thing as circuit switching."
+    }
+  ]
+};

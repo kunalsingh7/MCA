@@ -6,7 +6,9 @@
   document.getElementById("page-subtitle").textContent = PAGE.subtitle;
   document.title = PAGE.title;
 
-  const subjects = PAGE.order.map((id) => SUBJECTS[id]).filter(Boolean);
+  const subjects = PAGE.order
+    .map((id) => Object.assign({}, SUBJECT_META[id], { units: (typeof UNITS !== "undefined" && UNITS[id]) || [] }))
+    .filter((s) => s && s.id);
 
   subjects.forEach((subject, index) => {
     tabsEl.appendChild(buildTabButton(subject, index));
@@ -35,7 +37,7 @@
     }
   }
 
-  /* ---------------- tabs ---------------- */
+  /* ---------------- subject tabs ---------------- */
 
   function buildTabButton(subject, index) {
     const btn = document.createElement("button");
@@ -43,11 +45,11 @@
     btn.dataset.target = subject.id;
     btn.innerHTML = `<span>${subject.icon}</span><span>${subject.name}</span>`;
     btn.style.setProperty("--accent", subject.accent);
-    btn.addEventListener("click", () => switchTo(subject.id));
+    btn.addEventListener("click", () => switchSubject(subject.id));
     return btn;
   }
 
-  function switchTo(id) {
+  function switchSubject(id) {
     document.querySelectorAll(".tab-btn").forEach((b) => {
       b.classList.toggle("active", b.dataset.target === id);
       if (b.dataset.target === id) {
@@ -60,7 +62,7 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  /* ---------------- subject panel ---------------- */
+  /* ---------------- subject panel (holds all its units) ---------------- */
 
   function buildSubjectPanel(subject, index) {
     const panel = document.createElement("section");
@@ -72,27 +74,80 @@
       <div class="subject-head" style="border-top-color:${subject.accent}">
         <div class="code" style="color:${subject.accent}">${subject.code}</div>
         <h2>${subject.icon} ${subject.name}</h2>
-        <div class="unit-title">${subject.unit}</div>
-        <div class="progress-wrap">
-          <div class="progress-bar"><span class="progress-fill" style="background:${subject.accent}"></span></div>
-          <span class="progress-text"></span>
-        </div>
+        <div class="unit-nav"></div>
+      </div>
+      <div class="unit-panels"></div>
+    `;
+
+    const unitNav = panel.querySelector(".unit-nav");
+    const unitPanels = panel.querySelector(".unit-panels");
+
+    const savedUnit = parseInt(read("mca-unit:" + subject.id) || "1", 10);
+    const startUnit = subject.units.some((u) => u && u.num === savedUnit) ? savedUnit : 1;
+
+    for (let n = 1; n <= 5; n++) {
+      const unit = subject.units.find((u) => u && u.num === n);
+      const pill = document.createElement("button");
+      pill.type = "button";
+      pill.className = "unit-pill" + (n === startUnit ? " active" : "") + (unit ? "" : " missing");
+      pill.dataset.unit = String(n);
+      pill.textContent = "Unit " + n;
+      if (!unit) {
+        pill.disabled = true;
+        pill.title = "Coming soon";
+      } else {
+        pill.addEventListener("click", () => switchUnit(panel, subject, n));
+      }
+      unitNav.appendChild(pill);
+
+      if (unit) unitPanels.appendChild(buildUnitPanel(unit, subject, n === startUnit));
+    }
+
+    return panel;
+  }
+
+  function switchUnit(panel, subject, num) {
+    panel.querySelectorAll(".unit-pill").forEach((p) => {
+      p.classList.toggle("active", p.dataset.unit === String(num));
+    });
+    panel.querySelectorAll(".unit-panel").forEach((p) => {
+      p.classList.toggle("active", p.dataset.unit === String(num));
+    });
+    store("mca-unit:" + subject.id, String(num));
+    panel.querySelector(".subject-head").scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
+  /* ---------------- one unit ---------------- */
+
+  function buildUnitPanel(unit, subject, isActive) {
+    const wrap = document.createElement("div");
+    wrap.className = "unit-panel" + (isActive ? " active" : "");
+    wrap.dataset.unit = String(unit.num);
+
+    wrap.innerHTML = `
+      <div class="unit-heading">
+        <span class="unit-badge" style="background:${subject.accent}">Unit ${unit.num}</span>
+        <span class="unit-name">${unit.title}</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><span class="progress-fill" style="background:${subject.accent}"></span></div>
+        <span class="progress-text"></span>
       </div>
 
       <div class="section-title"><span class="step-num">1</span> What you will learn</div>
       <div class="objectives">
         <p class="objectives-intro">By the end of this unit, you should be able to:</p>
-        <ul>${(subject.objectives || []).map((o) => `<li>${o}</li>`).join("")}</ul>
+        <ul>${(unit.objectives || []).map((o) => `<li>${o}</li>`).join("")}</ul>
       </div>
 
       <div class="why-box">
         <div class="why-card problem">
           <div class="label">🚧 The Problem</div>
-          <p>${subject.problem}</p>
+          <p>${unit.problem}</p>
         </div>
         <div class="why-card solution">
           <div class="label">💡 How This Unit Solves It</div>
-          <p>${subject.solution}</p>
+          <p>${unit.solution}</p>
         </div>
       </div>
 
@@ -106,18 +161,18 @@
       <div class="questions"></div>
     `;
 
-    const topicsWrap = panel.querySelector(".topics");
-    subject.topics.forEach((topic, i) => topicsWrap.appendChild(buildTopic(topic, i, subject)));
+    const topicsWrap = wrap.querySelector(".topics");
+    unit.topics.forEach((topic, i) => topicsWrap.appendChild(buildTopic(topic, i, subject, unit)));
 
-    panel.querySelector(".quiz").appendChild(buildQuiz(subject.quiz || [], subject));
+    wrap.querySelector(".quiz").appendChild(buildQuiz(unit.quiz || [], subject, unit));
 
-    const questionsWrap = panel.querySelector(".questions");
-    (subject.examQuestions || []).forEach((q, i) => {
-      questionsWrap.appendChild(buildExamQuestion(q, i, subject.id));
+    const questionsWrap = wrap.querySelector(".questions");
+    (unit.examQuestions || []).forEach((q, i) => {
+      questionsWrap.appendChild(buildExamQuestion(q, i, subject.id, unit.num));
     });
 
-    updateProgress(panel, subject);
-    return panel;
+    updateProgress(wrap, subject, unit);
+    return wrap;
   }
 
   /* ---------------- topic blocks ---------------- */
@@ -139,8 +194,7 @@
 
   function buildKeyPoints(t) {
     if (!t.keyPoints || !t.keyPoints.length) return "";
-    const items = t.keyPoints.map((p) => `<li>${p}</li>`).join("");
-    return block("keypoints", "🔑 Key Points", `<ul>${items}</ul>`);
+    return block("keypoints", "🔑 Key Points", `<ul>${t.keyPoints.map((p) => `<li>${p}</li>`).join("")}</ul>`);
   }
 
   function buildSubtopics(t) {
@@ -174,12 +228,12 @@
     return block("code-block", "💻 Code Example", `<pre><code>${escapeHtml(t.code)}</code></pre>${note}`);
   }
 
-  function buildTopic(topic, i, subject) {
+  function buildTopic(topic, i, subject, unit) {
     const details = document.createElement("details");
     details.className = "topic";
     if (i === 0) details.open = true;
 
-    const doneKey = "mca-done:" + subject.id + ":" + i;
+    const doneKey = "mca-done:" + subject.id + ":u" + unit.num + ":" + i;
     const isDone = read(doneKey) === "1";
 
     details.innerHTML = `
@@ -218,33 +272,33 @@
     checkbox.addEventListener("change", () => {
       store(doneKey, checkbox.checked ? "1" : "0");
       badge.hidden = !checkbox.checked;
-      updateProgress(details.closest(".subject-panel"), subject);
+      updateProgress(details.closest(".unit-panel"), subject, unit);
     });
 
     return details;
   }
 
-  function updateProgress(panel, subject) {
-    if (!panel) return;
-    const total = subject.topics.length;
+  function updateProgress(unitPanel, subject, unit) {
+    if (!unitPanel) return;
+    const total = unit.topics.length;
     let done = 0;
     for (let i = 0; i < total; i++) {
-      if (read("mca-done:" + subject.id + ":" + i) === "1") done++;
+      if (read("mca-done:" + subject.id + ":u" + unit.num + ":" + i) === "1") done++;
     }
     const pct = total ? Math.round((done / total) * 100) : 0;
-    panel.querySelector(".progress-fill").style.width = pct + "%";
-    panel.querySelector(".progress-text").textContent =
+    unitPanel.querySelector(".progress-fill").style.width = pct + "%";
+    unitPanel.querySelector(".progress-text").textContent =
       done === total ? `All ${total} topics done! 🎉` : `${done} of ${total} topics done`;
   }
 
   /* ---------------- quiz ---------------- */
 
-  function buildQuiz(questions, subject) {
+  function buildQuiz(questions, subject, unit) {
     const wrap = document.createElement("div");
     wrap.className = "quiz-card";
 
     if (!questions.length) {
-      wrap.innerHTML = `<p class="quiz-intro">Quiz coming soon for this subject.</p>`;
+      wrap.innerHTML = `<p class="quiz-intro">Quiz coming soon for this unit.</p>`;
       return wrap;
     }
 
@@ -323,7 +377,7 @@
     retry.className = "quiz-retry";
     retry.textContent = "↻ Try the quiz again";
     retry.addEventListener("click", () => {
-      const fresh = buildQuiz(questions, subject);
+      const fresh = buildQuiz(questions, subject, unit);
       wrap.replaceWith(fresh);
       fresh.scrollIntoView({ block: "start", behavior: "smooth" });
     });
@@ -334,10 +388,10 @@
 
   /* ---------------- exam practice ---------------- */
 
-  function buildExamQuestion(question, i, subjectId) {
+  function buildExamQuestion(question, i, subjectId, unitNum) {
     const card = document.createElement("div");
     card.className = "question-card";
-    const storeKey = "mca-answer:" + subjectId + ":" + i;
+    const storeKey = "mca-answer:" + subjectId + ":u" + unitNum + ":" + i;
 
     const hintHtml = question.hint
       ? `<details><summary class="hint-toggle">💡 Need a hint?</summary><div class="hint-text">${question.hint}</div></details>`

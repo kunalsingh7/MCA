@@ -1,0 +1,849 @@
+/* Fundamentals of Computer Technologies (MCA 111) — Unit 5. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.fct = UNITS.fct || [];
+UNITS.fct[4] = {
+  "num": 5,
+  "title": "Network Security and Cryptography",
+  "problem": "Unit 4 taught you how a message crosses the world. But that same message passes through cables, routers and Wi-Fi you do not own, and any of them could read it, change it, or pretend to be you. How do you send a password across a network full of strangers and still be safe?",
+  "solution": "This unit gives you the defender's toolkit. You'll learn what 'secure' actually means, the attacks and malware you are defending against, how encryption hides a message, how old ciphers were broken, how DES and digital signatures work, and how firewalls, PGP and S/MIME protect real systems.",
+  "objectives": [
+    "State the CIA triad and explain authentication and non-repudiation",
+    "Distinguish active from passive attacks and give examples of each",
+    "Differentiate a virus, a worm, a trojan, a backdoor, ransomware and spyware",
+    "Recognise a phishing attempt and explain how it works",
+    "Define plaintext, ciphertext, key, encryption, decryption and cryptanalysis",
+    "Compare symmetric and asymmetric cryptography",
+    "Encrypt and decrypt a word using the Caesar cipher, showing every step",
+    "Explain why frequency analysis breaks a simple substitution cipher",
+    "Describe DES and explain why Triple DES was introduced",
+    "Explain what a digital signature guarantees, and compare the main types of firewall",
+    "Describe how PGP and S/MIME secure electronic mail"
+  ],
+  "topics": [
+    {
+      "title": "Security Terminologies and Principles: The CIA Triad",
+      "teacher": "Ask yourself honestly — what does 'my data is safe' actually mean? It turns out it means three separate things, and most people only think of the first one. Get these three words right and half of this unit's marks are already yours.",
+      "explain": "Information security rests on three core principles known as the <strong>CIA triad</strong>: <strong>Confidentiality</strong> (only authorised people can read it), <strong>Integrity</strong> (nobody has changed it) and <strong>Availability</strong> (it is there when you need it). Two more principles are usually added: <strong>Authentication</strong> and <strong>Non-repudiation</strong>.",
+      "keyPoints": [
+        "<strong>Confidentiality</strong> — information is readable only by authorised parties. Protected by <em>encryption</em>.",
+        "<strong>Integrity</strong> — information is not altered in transit or storage. Protected by <em>hashing and checksums</em>.",
+        "<strong>Availability</strong> — authorised users can access the system whenever needed. Attacked by <em>DoS</em>.",
+        "<strong>Authentication</strong> — proving you are who you claim to be (password, OTP, biometric).",
+        "<strong>Non-repudiation</strong> — the sender cannot later deny having sent the message. Provided by <em>digital signatures</em>.",
+        "<strong>Authorisation</strong> — deciding what an already-authenticated user is allowed to do.",
+        "<strong>Vulnerability</strong> = a weakness. <strong>Threat</strong> = a possible danger. <strong>Attack</strong> = an actual attempt. <strong>Risk</strong> = chance × impact.",
+        "Security is never 100%. The aim is to make an attack cost more effort than the data is worth."
+      ],
+      "subtopics": [
+        {
+          "title": "The three core goals, one line each",
+          "text": "<strong>Confidentiality</strong> asks 'can the wrong person read it?' — solved with encryption. <strong>Integrity</strong> asks 'has it been tampered with?' — solved with hash values that change completely if even one bit changes. <strong>Availability</strong> asks 'can the right person get to it right now?' — attacked by flooding a server so genuine users are locked out."
+        },
+        {
+          "title": "Authentication vs authorisation",
+          "text": "These two sound similar and are constantly confused. <strong>Authentication</strong> answers <em>'who are you?'</em> — your password or fingerprint proves your identity. <strong>Authorisation</strong> answers <em>'what are you allowed to do?'</em> — once the college portal knows you are a student, it still will not let you edit marks. Authentication always comes first."
+        },
+        {
+          "title": "Non-repudiation — the missing fourth",
+          "text": "<strong>Repudiate</strong> means 'to deny'. Non-repudiation means the sender <em>cannot deny</em> that they sent the message, and the receiver cannot deny receiving it. A handwritten signature does this on paper; a <strong>digital signature</strong> does it electronically, and it is essential in banking and legal documents."
+        },
+        {
+          "title": "Vulnerability, threat, attack and risk",
+          "text": "A <strong>vulnerability</strong> is a weakness that exists — an unlocked window. A <strong>threat</strong> is something that could exploit it — a thief in the area. An <strong>attack</strong> is the actual attempt — the thief climbing in. <strong>Risk</strong> combines how likely that is with how much damage it would cause. Security work is mostly about finding vulnerabilities before anyone else does."
+        }
+      ],
+      "realLife": "Your exam result on the college portal shows all three. <strong>Confidentiality</strong> — only you and the office should see your marks. <strong>Integrity</strong> — nobody should be able to change 45 to 95. <strong>Availability</strong> — the site must actually load on result day, when thousands of students hit it at once.",
+      "table": {
+        "headers": [
+          "Principle",
+          "Question it answers",
+          "Typical protection",
+          "Typical attack"
+        ],
+        "rows": [
+          [
+            "Confidentiality",
+            "Can the wrong person read it?",
+            "Encryption, access control",
+            "Eavesdropping, data theft"
+          ],
+          [
+            "Integrity",
+            "Has it been changed?",
+            "Hash functions, checksums",
+            "Message modification"
+          ],
+          [
+            "Availability",
+            "Can I get to it when needed?",
+            "Backups, redundancy, filtering",
+            "Denial of Service (DoS)"
+          ],
+          [
+            "Authentication",
+            "Who are you?",
+            "Password, OTP, biometric",
+            "Masquerade / spoofing"
+          ],
+          [
+            "Non-repudiation",
+            "Can the sender deny it later?",
+            "Digital signature",
+            "False denial of a transaction"
+          ]
+        ]
+      },
+      "mistake": "Encryption alone does not give you all of security. It protects <strong>confidentiality</strong> only. An encrypted message can still be deleted (availability lost) or replaced with a different encrypted message (integrity lost). You need different tools for different goals.",
+      "examAnswer": "Information security is founded on three fundamental principles, collectively called the CIA triad. Confidentiality ensures that information is accessible only to those authorised to have access, and is normally achieved through encryption and access control. Integrity ensures that information is not altered by unauthorised parties, either in storage or in transit, and is verified using hash functions and checksums. Availability ensures that information and services are accessible to authorised users whenever required, and is threatened principally by denial-of-service attacks. Two further principles are commonly included: authentication, which establishes that a user or message is genuinely from the claimed source, and non-repudiation, which prevents the sender of a message from subsequently denying having sent it, and which is provided by digital signatures.",
+      "remember": "CIA = Confidentiality (secret), Integrity (unchanged), Availability (reachable). Plus Authentication (who) and Non-repudiation (cannot deny).",
+      "why": "Every security tool you meet later — encryption, hashing, firewalls, signatures — exists to protect one of these five properties. Ask 'which one?' each time and the whole unit organises itself.",
+      "practice": "Define the CIA triad. For each principle, give one real example of an attack that breaks it."
+    },
+    {
+      "title": "Security Threats and Types of Attacks",
+      "teacher": "Not every attacker wants to break something. Some just want to listen quietly and never be noticed — and honestly, those are the scarier ones, because you will never know they were there. Let's split attacks into two clean families.",
+      "explain": "A <strong>security attack</strong> is any action that compromises the security of information. Attacks are divided into <strong>passive attacks</strong>, where the attacker only observes without changing anything, and <strong>active attacks</strong>, where the attacker modifies data or affects the operation of the system.",
+      "keyPoints": [
+        "<strong>Passive attack</strong> — the attacker only <em>listens</em>; nothing is modified.",
+        "Passive types: <strong>release of message contents</strong> (eavesdropping) and <strong>traffic analysis</strong>.",
+        "Passive attacks are <strong>very hard to detect</strong> (no trace) but <strong>easy to prevent</strong> (use encryption).",
+        "<strong>Active attack</strong> — the attacker <em>changes</em> data or disrupts the service.",
+        "Active types: <strong>masquerade</strong>, <strong>replay</strong>, <strong>modification of messages</strong>, <strong>denial of service</strong>.",
+        "Active attacks are <strong>easy to detect</strong> but <strong>hard to prevent completely</strong>.",
+        "Four classic threat categories: <strong>interruption</strong> (availability), <strong>interception</strong> (confidentiality), <strong>modification</strong> (integrity), <strong>fabrication</strong> (authenticity).",
+        "<strong>Man-in-the-middle</strong>: the attacker secretly sits between two parties, relaying and possibly altering messages.",
+        "<strong>DoS / DDoS</strong>: flooding a server with requests so genuine users cannot get service.",
+        "<strong>Social engineering</strong>: attacking the <em>person</em>, not the machine — often the easiest route in."
+      ],
+      "subtopics": [
+        {
+          "title": "Passive attacks — silent listening",
+          "text": "In <strong>release of message contents</strong>, the attacker simply reads a message that was sent in the clear — a password on an open Wi-Fi network, for instance. In <strong>traffic analysis</strong>, the message is encrypted so the attacker cannot read it, but they can still observe <em>who is talking to whom, how often, and how much</em> — and that pattern alone can reveal a great deal. Since nothing is altered, the victim never notices; the defence is to encrypt everything by default."
+        },
+        {
+          "title": "Active attacks — four shapes",
+          "text": "<strong>Masquerade</strong> — one entity pretends to be another, for example logging in with a stolen identity. <strong>Replay</strong> — the attacker captures a valid message and re-sends it later to repeat its effect, such as replaying a 'transfer ₹5000' instruction. <strong>Modification</strong> — a genuine message is altered in transit, changing the account number in a payment. <strong>Denial of service</strong> — the system is overwhelmed or disabled so legitimate users are denied access."
+        },
+        {
+          "title": "The four threat categories",
+          "text": "<strong>Interruption</strong> destroys or blocks a resource, attacking <em>availability</em>. <strong>Interception</strong> lets an unauthorised party gain access, attacking <em>confidentiality</em>. <strong>Modification</strong> tampers with a resource, attacking <em>integrity</em>. <strong>Fabrication</strong> inserts counterfeit objects, such as a fake message claiming to be from your bank, attacking <em>authenticity</em>. Notice how each one maps neatly onto a principle from the previous topic."
+        },
+        {
+          "title": "Social engineering — the human weakness",
+          "text": "The strongest encryption in the world does not help if someone simply telephones your office, claims to be from IT support, and is politely given the password. Social engineering attacks trust, urgency and helpfulness rather than technology. This is why staff training and a rule of 'never share an OTP or password, with anyone, ever' are treated as genuine security controls."
+        }
+      ],
+      "realLife": "On free railway-station Wi-Fi, someone could quietly capture what you send — that is passive. If instead they set up a fake hotspot named 'Free_Station_WiFi' and route your traffic through their laptop, changing what you see, that is an active man-in-the-middle attack.",
+      "table": {
+        "headers": [
+          "",
+          "Passive Attack",
+          "Active Attack"
+        ],
+        "rows": [
+          [
+            "What the attacker does",
+            "Only observes / listens",
+            "Modifies data or disrupts service"
+          ],
+          [
+            "Data altered?",
+            "No",
+            "Yes"
+          ],
+          [
+            "Detection",
+            "Very difficult — no trace left",
+            "Comparatively easy"
+          ],
+          [
+            "Prevention",
+            "Comparatively easy (encryption)",
+            "Difficult to prevent fully"
+          ],
+          [
+            "Principle attacked",
+            "Confidentiality",
+            "Integrity, availability, authenticity"
+          ],
+          [
+            "Examples",
+            "Eavesdropping, traffic analysis",
+            "Masquerade, replay, modification, DoS"
+          ]
+        ]
+      },
+      "mistake": "Students often write that passive attacks are 'less dangerous'. That is wrong. A passive attack that quietly captures thousands of passwords over months can be far more damaging than a noisy DoS that is fixed in an hour. The real difference is <em>detectability</em>, not severity.",
+      "examAnswer": "A security attack is any action that compromises the security of information owned by an organisation, and such attacks are broadly classified as passive or active. In a passive attack the attacker merely observes the transmission without modifying it; the two forms are release of message contents, in which the attacker reads the information, and traffic analysis, in which the attacker studies the pattern of communication even when the contents are encrypted. Passive attacks are very difficult to detect because no data is altered, but they are comparatively easy to prevent by the use of encryption. In an active attack the attacker modifies the data stream or creates a false stream; the principal forms are masquerade, replay, modification of messages and denial of service. Active attacks are easier to detect but difficult to prevent completely, and the emphasis is therefore on detection and recovery. Security threats may also be categorised as interruption, interception, modification and fabrication, which attack availability, confidentiality, integrity and authenticity respectively.",
+      "remember": "Passive = listen only (hard to detect, easy to prevent). Active = change or disrupt (easy to detect, hard to prevent).",
+      "why": "The passive-vs-active table is one of the most predictable questions in this unit, and it also trains you to ask the right first question about any incident: did they read, or did they change?",
+      "practice": "Differentiate active and passive attacks on five points, giving two examples of each."
+    },
+    {
+      "title": "Malware: Viruses, Worms, Trojans and Backdoors",
+      "teacher": "Everyone says 'my computer has a virus' for every problem. But a virus, a worm and a trojan are three genuinely different things, and examiners love the difference. Here is the one line that settles it: a worm walks by itself, a virus needs to be carried.",
+      "explain": "<strong>Malware</strong> (malicious software) is any program written to harm a system or its data. The main families are <strong>virus, worm, trojan horse, backdoor, ransomware</strong> and <strong>spyware</strong>. They differ mainly in how they spread and what they are trying to achieve.",
+      "keyPoints": [
+        "<strong>Virus</strong> — attaches itself to a <em>host</em> file or program and needs a human action (running the file) to spread.",
+        "Virus types: <strong>boot sector, file/program, macro, polymorphic, stealth, multipartite</strong> viruses.",
+        "<strong>Worm</strong> — a standalone program that <strong>replicates and spreads by itself</strong> across a network, with no host and no user action needed.",
+        "<strong>The key difference</strong>: a worm spreads on its own; a virus needs a host file and a user to run it.",
+        "<strong>Trojan horse</strong> — pretends to be a useful program but performs a hidden malicious action. It does <em>not</em> self-replicate.",
+        "<strong>Backdoor</strong> — a secret way to enter a system, bypassing normal authentication. Often installed by a trojan.",
+        "<strong>Ransomware</strong> — encrypts the victim's files and demands payment for the key. Best defence: <em>offline backups</em>.",
+        "<strong>Spyware</strong> — secretly watches the user and reports back; <strong>keyloggers</strong> record every keystroke.",
+        "<strong>Adware</strong> shows unwanted advertisements; a <strong>rootkit</strong> hides the presence of other malware deep in the system.",
+        "General defences: updated antivirus, patched software, no unknown attachments, least privilege, regular offline backups."
+      ],
+      "subtopics": [
+        {
+          "title": "Virus vs worm — the one difference that matters",
+          "text": "A <strong>virus</strong> cannot live alone. It attaches its code to a host — a program, a document macro, a disk boot sector — and only runs when a person opens or runs that host. A <strong>worm</strong> is a complete program in its own right. It finds other machines over the network, copies itself to them, and runs — without anybody clicking anything. That is why worms spread across the world in hours, while viruses spread at the speed of people sharing files."
+        },
+        {
+          "title": "Trojans and backdoors",
+          "text": "A <strong>trojan horse</strong> is named after the wooden horse of the Greek story — it looks like a gift. A 'free movie downloader' or a cracked copy of paid software may work exactly as promised while quietly doing something else. Unlike a virus or worm it does <em>not</em> copy itself; it relies entirely on the user willingly installing it. A common payload is a <strong>backdoor</strong> — a hidden entry point that lets the attacker log in later without any password, bypassing all the normal authentication."
+        },
+        {
+          "title": "Ransomware and spyware",
+          "text": "<strong>Ransomware</strong> encrypts the victim's documents with a key only the attacker holds and demands money to release them. Even paying often does not recover the files, so the only reliable defence is a recent <strong>offline backup</strong> that the ransomware could not reach. <strong>Spyware</strong> is about quiet observation instead — browsing habits, saved data, or every key you press via a <strong>keylogger</strong>, which is how passwords and OTPs are stolen without breaking any encryption at all."
+        },
+        {
+          "title": "How to defend — the practical list",
+          "text": "Keep the operating system and applications <strong>updated</strong>, because most malware uses a known bug that already has a patch. Run reputable, updated <strong>antivirus</strong>. Do not open attachments or install software from unknown sources, especially cracked software. Use an account with the <strong>least privilege</strong> needed. And keep regular <strong>backups stored offline</strong> — this single habit defeats ransomware completely."
+        }
+      ],
+      "realLife": "A friend gives you a pen drive with a 'free software' file. You run it, it installs a game — and also a hidden program that sends your keystrokes away. That is a trojan carrying spyware. Nothing forced you; you invited it in, which is exactly how trojans work.",
+      "table": {
+        "headers": [
+          "Malware",
+          "Needs a host file?",
+          "Self-replicates?",
+          "Main purpose"
+        ],
+        "rows": [
+          [
+            "Virus",
+            "Yes",
+            "Yes, but needs a user to run the host",
+            "Corrupt, delete or alter data"
+          ],
+          [
+            "Worm",
+            "No — standalone",
+            "Yes, automatically over the network",
+            "Spread fast, consume bandwidth, deliver payload"
+          ],
+          [
+            "Trojan horse",
+            "No — it IS the program",
+            "No",
+            "Hide a malicious action inside a useful-looking program"
+          ],
+          [
+            "Backdoor",
+            "No",
+            "No",
+            "Give secret future access, bypassing authentication"
+          ],
+          [
+            "Ransomware",
+            "No",
+            "Sometimes (worm-like variants)",
+            "Encrypt files and demand payment"
+          ],
+          [
+            "Spyware / keylogger",
+            "No",
+            "No",
+            "Secretly collect information and passwords"
+          ]
+        ]
+      },
+      "mistake": "Do not call every malware a 'virus'. A <strong>worm</strong> does not need a host file and spreads on its own; a <strong>trojan</strong> does not replicate at all. Also, a backdoor is not malware that damages data — it is a hidden <em>entry route</em> left open for later.",
+      "examAnswer": "Malware is software written with the intention of damaging a computer system or stealing information from it. A virus is a malicious code that attaches itself to a host program or file and can execute and spread only when the infected host is run by a user; common types include boot sector, file, macro, polymorphic and stealth viruses. A worm is an independent, self-contained program which replicates itself and spreads automatically across a network without requiring a host file or any user action, and therefore propagates far more rapidly than a virus. A trojan horse is a program that appears to perform a useful function while secretly carrying out a malicious one; it does not replicate itself and depends on the user installing it voluntarily. A backdoor is a hidden mechanism that allows an attacker to access a system while bypassing normal authentication, and is frequently installed by a trojan. Other important categories are ransomware, which encrypts the victim's data and demands payment, and spyware, which covertly monitors user activity. Protection is achieved through updated antivirus software, timely patching, cautious handling of attachments and regular offline backups.",
+      "remember": "Worm WALKS alone. Virus needs a RIDE (a host file). Trojan LIES about what it is. Backdoor leaves the LOCK open.",
+      "why": "This is easy, guaranteed exam material — and it is also the practical knowledge that stops you losing your project files a week before submission.",
+      "practice": "Differentiate a virus, a worm and a trojan horse on four points each. Then explain what a backdoor is and how it usually gets onto a system."
+    },
+    {
+      "title": "Cryptography: Terminology, Symmetric and Asymmetric",
+      "teacher": "Two friends in a noisy classroom want to pass a note that nobody else can read, even though the note must travel through five other students' hands. That is the entire problem of cryptography — and the solution is a shared secret called a key.",
+      "explain": "<strong>Cryptography</strong> is the science of protecting information by converting it into an unreadable form. The original readable message is the <strong>plaintext</strong>; the scrambled form is the <strong>ciphertext</strong>; the process of converting plaintext to ciphertext is <strong>encryption</strong> and the reverse is <strong>decryption</strong>. Both use a <strong>key</strong>. Cryptography is of two kinds: <strong>symmetric</strong> (one shared key) and <strong>asymmetric</strong> (a public/private key pair).",
+      "keyPoints": [
+        "<strong>Plaintext</strong> — the original readable message.",
+        "<strong>Ciphertext</strong> — the scrambled, unreadable message.",
+        "<strong>Encryption</strong> — plaintext + key → ciphertext. <strong>Decryption</strong> — ciphertext + key → plaintext.",
+        "<strong>Key</strong> — the secret value that controls the transformation. <strong>Cipher</strong> — the algorithm itself.",
+        "<strong>Cryptanalysis</strong> — the science of breaking ciphers without the key. <strong>Cryptology</strong> = cryptography + cryptanalysis.",
+        "<strong>Symmetric (secret-key)</strong> — the <em>same</em> key encrypts and decrypts. Examples: DES, 3DES, AES.",
+        "Symmetric is very fast, but the key must somehow be shared secretly — the <strong>key distribution problem</strong>.",
+        "For n users, symmetric needs <strong>n(n−1)/2</strong> keys — this grows impossibly fast.",
+        "<strong>Asymmetric (public-key)</strong> — a <strong>public key</strong> encrypts and a different, mathematically related <strong>private key</strong> decrypts. Example: RSA.",
+        "Asymmetric solves key distribution (the public key may be published freely) but is far slower.",
+        "<strong>Kerckhoffs' principle</strong>: the security must depend on the <em>key</em>, not on keeping the algorithm secret."
+      ],
+      "subtopics": [
+        {
+          "title": "Symmetric key cryptography",
+          "text": "Sender and receiver share one single secret key. The sender encrypts with it, the receiver decrypts with the same key. It is computationally very fast, which is why it is used for bulk data. Its weakness is entirely practical: how do you get the key to the other person safely in the first place? If you could send the key securely, you could have sent the message securely. This is called the <strong>key distribution problem</strong>."
+        },
+        {
+          "title": "Asymmetric key cryptography",
+          "text": "Every user has a <strong>pair</strong> of keys. The <strong>public key</strong> is published for anyone to use; the <strong>private key</strong> is kept absolutely secret. What one key locks, only the other can unlock. So to send you a secret, I encrypt with <em>your public key</em>, and only <em>your private key</em> can open it — and we never had to exchange any secret in advance. The mathematics (very large prime numbers in RSA) makes it slow, typically hundreds of times slower than symmetric."
+        },
+        {
+          "title": "Why real systems use both",
+          "text": "Practical systems like HTTPS and PGP use a <strong>hybrid</strong> approach that takes the best of each. Asymmetric cryptography is used once, at the start, only to exchange a small random <strong>session key</strong>. All the actual data is then encrypted with that session key using fast symmetric cryptography. You get asymmetric's easy key distribution plus symmetric's speed."
+        },
+        {
+          "title": "A note on how keys grow",
+          "text": "With symmetric keys, every pair of people needs their own shared key, so n people need n(n−1)/2 keys — for 1000 users that is 499,500 keys to create and protect. With asymmetric, each person needs just one key pair, so 1000 users need only 1000 pairs. This scaling argument alone explains why public-key cryptography was such an important invention."
+        }
+      ],
+      "realLife": "A padlock makes this concrete. I give out open padlocks (public keys) to anyone who wants to send me something. They lock the box and send it. Only I have the key that opens those padlocks (my private key). Note that giving away open padlocks costs me nothing — that is exactly why a public key can be public.",
+      "table": {
+        "headers": [
+          "",
+          "Symmetric (Secret Key)",
+          "Asymmetric (Public Key)"
+        ],
+        "rows": [
+          [
+            "Keys used",
+            "One shared key for both operations",
+            "A pair: public key and private key"
+          ],
+          [
+            "Speed",
+            "Very fast",
+            "Much slower"
+          ],
+          [
+            "Key distribution",
+            "Difficult — the key must be shared secretly",
+            "Easy — the public key can be published"
+          ],
+          [
+            "Number of keys for n users",
+            "n(n−1)/2",
+            "2n (one pair each)"
+          ],
+          [
+            "Main use",
+            "Encrypting bulk data",
+            "Key exchange and digital signatures"
+          ],
+          [
+            "Examples",
+            "DES, Triple DES, AES, Blowfish",
+            "RSA, Diffie–Hellman, ECC"
+          ]
+        ]
+      },
+      "mistake": "Do not write that the public key is 'less secure' because it is public. Publishing it is completely safe and is the whole point — it can only <em>lock</em>, never unlock. The real rule is simply this: the <strong>private key must never leave its owner</strong>.",
+      "examAnswer": "Cryptography is the science of transforming information into an unintelligible form so that it may be transmitted securely over an insecure channel. The original message is called plaintext and the transformed message is called ciphertext; the process of converting plaintext into ciphertext is encryption and the reverse process is decryption, both being controlled by a value called the key, while the algorithm itself is called the cipher. Cryptography is classified as symmetric or asymmetric. In symmetric key cryptography a single secret key, shared by the sender and receiver, is used for both encryption and decryption; it is computationally very fast but suffers from the problem of securely distributing the key, and for n users it requires n(n−1)/2 keys. Examples are DES, Triple DES and AES. In asymmetric or public key cryptography each user possesses a pair of mathematically related keys, a public key which may be freely distributed and a private key which is kept secret; data encrypted with one key can be decrypted only with the other. It solves the key distribution problem and enables digital signatures, but is considerably slower, and RSA is the best known example. Practical systems therefore use a hybrid scheme in which asymmetric cryptography exchanges a symmetric session key that then encrypts the actual data.",
+      "remember": "Symmetric = ONE key, fast, hard to share. Asymmetric = TWO keys, slow, easy to share. Public locks, private unlocks.",
+      "why": "Every time you see the padlock icon in your browser, a hybrid of these two is running. This is the single most-used idea in modern computing security.",
+      "practice": "Compare symmetric and asymmetric cryptography in a table with six points. Then explain why HTTPS uses both together."
+    },
+    {
+      "title": "Classical Cryptosystems and Frequency Analysis",
+      "teacher": "Julius Caesar really did use a secret code for his military letters, and it was almost insultingly simple — shift every letter three places forward. Let's actually do it by hand, because once you can encrypt a word yourself, you will never forget how ciphers work. Then I'll show you how to break it.",
+      "explain": "<strong>Classical cryptosystems</strong> are the early, manual ciphers. They are of two families: <strong>substitution ciphers</strong>, where each letter is <em>replaced</em> by another (Caesar, monoalphabetic, Vigenère), and <strong>transposition ciphers</strong>, where the letters are kept but their <em>positions</em> are rearranged (rail fence). All simple substitution ciphers can be broken by <strong>frequency analysis</strong>.",
+      "keyPoints": [
+        "<strong>Substitution cipher</strong> — each letter is replaced by another letter; positions stay the same.",
+        "<strong>Transposition cipher</strong> — letters stay the same but their positions are rearranged (e.g. rail fence).",
+        "<strong>Caesar cipher</strong> — shift every letter forward by a fixed number k. Formula: C = (P + k) mod 26.",
+        "Decryption for Caesar: P = (C − k) mod 26. Caesar's original shift was <strong>k = 3</strong>.",
+        "The Caesar cipher has only <strong>25 usable keys</strong>, so brute force breaks it instantly.",
+        "<strong>Monoalphabetic substitution</strong> — any letter may map to any other; 26! ≈ 4 × 10²⁶ possible keys.",
+        "Even with 26! keys, monoalphabetic ciphers fall to <strong>frequency analysis</strong>, not brute force.",
+        "In English, <strong>E</strong> is the most common letter, then T, A, O, I, N. Common digrams: TH, HE, IN. Common trigram: THE.",
+        "Frequency analysis works because a monoalphabetic cipher preserves the <em>statistics</em> of the language.",
+        "<strong>Polyalphabetic</strong> ciphers (Vigenère) use several substitutions in turn to flatten the frequency pattern."
+      ],
+      "subtopics": [
+        {
+          "title": "The Caesar cipher",
+          "text": "Number the letters A = 0 to Z = 25. To encrypt, add the key k and take modulo 26 — so with k = 3, A becomes D, B becomes E, and Z wraps around to C. To decrypt, subtract k and take modulo 26. It is beautifully simple, and completely insecure: since k can only be 1 to 25, an attacker just tries all 25 shifts and reads whichever result makes sense. This is called a <strong>brute-force attack</strong>."
+        },
+        {
+          "title": "Monoalphabetic substitution — a bigger key, still broken",
+          "text": "Instead of a fixed shift, allow <em>any</em> permutation of the alphabet as the key: A→Q, B→X, C→M and so on. Now there are 26! (about 4 × 10²⁶) keys, so brute force is hopeless. Yet these ciphers were broken centuries ago, because they are <strong>monoalphabetic</strong>: one plaintext letter always maps to the same ciphertext letter, so every statistical pattern of the language survives the encryption untouched."
+        },
+        {
+          "title": "Cryptanalysis by frequency analysis",
+          "text": "In ordinary English text, letters are not equally common — <strong>E</strong> appears about 12–13% of the time, followed by T, A, O, I and N. So the analyst counts how often each ciphertext letter appears, guesses that the commonest one is E, the next T, and so on. Then they look for the three-letter group that repeats most, which is almost always <strong>THE</strong>, and for doubled letters such as LL and SS. A few confirmed guesses expose more words, and the rest falls out quickly. A message of even 100 letters is usually enough."
+        },
+        {
+          "title": "How later ciphers escaped frequency analysis",
+          "text": "The fix is to stop one letter always mapping to the same letter. A <strong>polyalphabetic</strong> cipher such as <strong>Vigenère</strong> uses a keyword, so the shift changes from position to position — the E in one place may encrypt to K and in another to R. This flattens the frequency graph and defeats simple counting. The idea of hiding statistical patterns is still central to modern ciphers, where it is called <strong>diffusion</strong>."
+        }
+      ],
+      "realLife": "You and a friend passing coded notes in class would face the same trap. If you always write 'Z' for 'a', anyone who watches a few of your notes will notice Z appearing far too often and crack it — no cleverness needed, just counting.",
+      "worked": "<strong>Encrypt the word EXAM using a Caesar cipher with shift k = 3</strong><br>Alphabet positions: A=0, B=1, C=2, D=3, E=4, … , X=23, Y=24, Z=25<br>Rule: C = (P + 3) mod 26<br><br><strong>E</strong> → position 4 → 4 + 3 = 7 → letter at 7 = <strong>H</strong><br><strong>X</strong> → position 23 → 23 + 3 = 26 → 26 mod 26 = 0 → letter at 0 = <strong>A</strong> &nbsp;(X → Y → Z → A, it wraps around)<br><strong>A</strong> → position 0 → 0 + 3 = 3 → letter at 3 = <strong>D</strong><br><strong>M</strong> → position 12 → 12 + 3 = 15 → letter at 15 = <strong>P</strong><br><br><strong>Ciphertext: EXAM → HADP</strong><br><br><strong>Now decrypt it back, P = (C − 3) mod 26:</strong><br><strong>H</strong> → 7 − 3 = 4 → <strong>E</strong><br><strong>A</strong> → 0 − 3 = −3 → −3 + 26 = 23 → <strong>X</strong> &nbsp;(negative, so add 26)<br><strong>D</strong> → 3 − 3 = 0 → <strong>A</strong><br><strong>P</strong> → 15 − 3 = 12 → <strong>M</strong><br><br>Recovered plaintext: <strong>EXAM</strong> ✓ — it matches, so our working is correct.",
+      "mistake": "Two errors cost marks here. First, forgetting the <strong>mod 26 wrap-around</strong> — after Z you must go back to A (X + 3 = A, not some letter past Z). Second, when decrypting, if the answer is negative you must <strong>add 26</strong> before looking up the letter. Also do not confuse substitution (letters are <em>replaced</em>) with transposition (letters are <em>rearranged</em>).",
+      "examAnswer": "Classical cryptosystems are the manual ciphers used before the computer age and are of two kinds. In a substitution cipher each plaintext letter is replaced by another letter while its position is retained, whereas in a transposition cipher the letters themselves are retained but their positions are rearranged. The Caesar cipher is the simplest substitution cipher, in which every letter is shifted forward by a fixed number of positions, so that encryption is given by C = (P + k) mod 26 and decryption by P = (C − k) mod 26, the shift used by Caesar being three. Since only twenty-five keys are possible, it is broken at once by exhaustive search. In a general monoalphabetic substitution cipher any permutation of the alphabet may be used as the key, giving 26! possible keys, which makes exhaustive search impracticable. Such ciphers are nevertheless broken by frequency analysis, because each plaintext letter always maps to the same ciphertext letter and the statistical structure of the language is therefore preserved. The cryptanalyst counts the frequency of each ciphertext letter and compares it with the known frequency distribution of English, in which E is the most frequent letter, followed by T, A, O, I and N, and also examines common digrams and trigrams such as TH and THE. Polyalphabetic ciphers such as the Vigenère cipher were introduced to conceal these frequencies.",
+      "remember": "Caesar: C = (P + k) mod 26. Shift 3 turns EXAM into HADP. Substitution REPLACES; transposition REARRANGES.",
+      "why": "Caesar and frequency analysis are the classic numerical questions in this unit, and they teach the permanent lesson that a huge key space does not make a cipher strong if it leaks patterns.",
+      "practice": "Encrypt the word SECURE with a Caesar cipher of shift 4, showing each letter's working. Then decrypt the ciphertext KHOOR (shift 3) back to plaintext."
+    },
+    {
+      "title": "Block Ciphers, DES and Triple DES",
+      "teacher": "Caesar worked on one letter at a time. Modern ciphers grab a whole chunk of 64 bits and scramble it so thoroughly that changing one input bit changes about half the output bits. DES was the first such standard the whole world shared — and its story, including why it had to be tripled, is a great exam answer.",
+      "explain": "A <strong>block cipher</strong> encrypts a fixed-size block of bits at a time, whereas a <strong>stream cipher</strong> encrypts one bit or byte at a time. <strong>DES (Data Encryption Standard)</strong> is a symmetric block cipher that encrypts a <strong>64-bit block</strong> using an effective <strong>56-bit key</strong> in <strong>16 rounds</strong>. Because 56 bits became too short, <strong>Triple DES</strong> applies DES three times to lengthen the key.",
+      "keyPoints": [
+        "<strong>Block cipher</strong> — encrypts a fixed block (e.g. 64 or 128 bits) at a time. Examples: DES, 3DES, AES.",
+        "<strong>Stream cipher</strong> — encrypts one bit/byte at a time, usually by XOR with a keystream. Example: RC4.",
+        "Block ciphers are used for files and stored data; stream ciphers suit continuous real-time data.",
+        "<strong>DES</strong>: block size <strong>64 bits</strong>; key stored as 64 bits but <strong>8 are parity bits</strong>, so the effective key is <strong>56 bits</strong>.",
+        "DES performs <strong>16 rounds</strong> of a <strong>Feistel</strong> structure, using a different 48-bit round subkey each time.",
+        "Each round: initial permutation, splitting into left/right halves, expansion, XOR with subkey, <strong>S-box substitution</strong>, permutation, swap.",
+        "DES achieves <strong>confusion</strong> (S-boxes) and <strong>diffusion</strong> (permutations) — Shannon's two design principles.",
+        "DES is now <strong>insecure</strong>: a 56-bit key means only 2⁵⁶ possibilities, which modern hardware searches quickly.",
+        "<strong>Double DES</strong> was rejected because of the <strong>meet-in-the-middle attack</strong>, which gives far less strength than expected.",
+        "<strong>Triple DES (3DES)</strong> uses the <strong>EDE</strong> sequence: Encrypt with K1, Decrypt with K2, Encrypt with K3 — effective key 112 bits (2 keys) or 168 bits (3 keys).",
+        "Setting K1 = K2 = K3 makes 3DES behave exactly like single DES — that is deliberate, for backward compatibility.",
+        "<strong>AES</strong> replaced DES as the standard: 128-bit blocks with 128, 192 or 256-bit keys, and it is faster too."
+      ],
+      "subtopics": [
+        {
+          "title": "Block cipher vs stream cipher",
+          "text": "A <strong>block cipher</strong> waits until it has a full block — say 64 bits — and transforms the whole block together, so each output bit depends on every input bit of that block. A <strong>stream cipher</strong> generates a pseudo-random keystream and XORs it with the data one bit or byte at a time, so it can start immediately and needs almost no memory. Block ciphers are the usual choice for files and databases; stream ciphers suit continuous flows such as voice, where waiting for a full block adds delay."
+        },
+        {
+          "title": "How DES works, in outline",
+          "text": "The 64-bit plaintext block first passes through an <strong>initial permutation</strong> and is split into two 32-bit halves, L and R. In each of the <strong>16 rounds</strong>, the right half is expanded to 48 bits, XORed with that round's 48-bit subkey, passed through eight <strong>S-boxes</strong> that substitute and compress it back to 32 bits, permuted, and then XORed with the left half; the halves are then swapped. After 16 rounds the halves are joined and a <strong>final permutation</strong> — the inverse of the initial one — produces the ciphertext. The <strong>S-boxes</strong> are the only non-linear part and are what give DES its real strength."
+        },
+        {
+          "title": "Why DES became unsafe, and why Triple DES exists",
+          "text": "DES's weakness is not its design but its <strong>key length</strong>. A 56-bit key allows about 7.2 × 10¹⁶ combinations, which was impossible to search in 1977 but was publicly broken by dedicated hardware in the late 1990s. The obvious fix, encrypting twice with two keys (<strong>Double DES</strong>), fails: the <strong>meet-in-the-middle attack</strong> lets an attacker work forward from the plaintext and backward from the ciphertext, so the real strength is far below the expected 112 bits. Applying DES <em>three</em> times defeats that attack, which is why <strong>Triple DES</strong> became the standard stopgap."
+        },
+        {
+          "title": "Why 3DES uses Encrypt–Decrypt–Encrypt",
+          "text": "Triple DES runs <strong>E(K1) → D(K2) → E(K3)</strong>. The middle step being a <em>decryption</em> is not a mistake and adds no weakness — it is a compatibility trick. If all three keys are made equal, the encrypt and decrypt cancel out and the result is identical to plain single DES, so new 3DES hardware could still talk to old DES equipment. The cost of 3DES is speed: it is roughly three times slower than DES, which is one reason <strong>AES</strong> eventually replaced both."
+        }
+      ],
+      "realLife": "Think of a block cipher as sealing documents in fixed-size envelopes of 8 pages each, then thoroughly shuffling every envelope's contents. A stream cipher is more like writing each letter on a conveyor belt through a scrambling machine as it passes. Old ATM and card systems used Triple DES for exactly the reason described above — DES hardware already existed everywhere.",
+      "table": {
+        "headers": [
+          "",
+          "DES",
+          "Triple DES",
+          "AES"
+        ],
+        "rows": [
+          [
+            "Block size",
+            "64 bits",
+            "64 bits",
+            "128 bits"
+          ],
+          [
+            "Key size (effective)",
+            "56 bits",
+            "112 bits (2 keys) or 168 bits (3 keys)",
+            "128 / 192 / 256 bits"
+          ],
+          [
+            "Number of rounds",
+            "16",
+            "48 (16 × 3)",
+            "10 / 12 / 14"
+          ],
+          [
+            "Structure",
+            "Feistel",
+            "Feistel, applied three times",
+            "Substitution–permutation network"
+          ],
+          [
+            "Speed",
+            "Fast",
+            "About 3 times slower than DES",
+            "Fastest of the three"
+          ],
+          [
+            "Status",
+            "Insecure — key too short",
+            "Secure but slow; being retired",
+            "Current standard"
+          ]
+        ]
+      },
+      "worked": "<strong>Why is 56 bits not enough any more?</strong><br>Number of possible DES keys = 2⁵⁶<br>2⁵⁶ ≈ 7.2 × 10¹⁶ keys<br><br>Suppose a machine tries <strong>1 billion (10⁹) keys per second</strong>:<br>time = 7.2 × 10¹⁶ ÷ 10⁹ = 7.2 × 10⁷ seconds ≈ <strong>2.3 years</strong><br><br>Now suppose purpose-built hardware tries <strong>1 trillion (10¹²) keys per second</strong>:<br>time = 7.2 × 10¹⁶ ÷ 10¹² = 7.2 × 10⁴ seconds ≈ <strong>20 hours</strong><br><br>On average you find the key after searching only half the space, so roughly <strong>10 hours</strong>.<br>That is why DES had to be replaced. Compare AES-128: 2¹²⁸ ≈ 3.4 × 10³⁸ keys — the same machine would need far longer than the age of the universe.",
+      "mistake": "Do not write that the DES key is 64 bits. The key is <em>stored</em> in 64 bits, but every eighth bit is a <strong>parity bit</strong> used only for error checking, so the <strong>effective key length is 56 bits</strong>. Also, Triple DES with three different keys gives 168 bits of key material, not 192 — and remember the order is Encrypt–Decrypt–Encrypt, not three encryptions.",
+      "examAnswer": "A block cipher is a symmetric cipher that operates on a fixed-length group of bits called a block, whereas a stream cipher operates on one bit or one byte at a time. The Data Encryption Standard is a symmetric block cipher adopted as a standard in 1977 which encrypts a plaintext block of 64 bits and produces a ciphertext block of 64 bits. Its key is stored in 64 bits, of which every eighth bit is a parity bit, giving an effective key length of 56 bits. DES uses a Feistel structure consisting of an initial permutation, sixteen identical rounds and a final permutation. In each round the block is divided into two halves, the right half is expanded, combined with a 48-bit round subkey derived from the main key, passed through eight substitution boxes which provide confusion, permuted to provide diffusion, and then combined with the left half before the halves are exchanged. DES is no longer considered secure because a 56-bit key can be recovered by exhaustive search with modern hardware. Double DES was found to be vulnerable to the meet-in-the-middle attack, and Triple DES was therefore adopted, in which DES is applied three times in the sequence encrypt with the first key, decrypt with the second and encrypt with the third, giving an effective key length of 112 or 168 bits. The encrypt–decrypt–encrypt order allows Triple DES to interoperate with single DES when all three keys are identical. Triple DES is about three times slower than DES and has now largely been replaced by the Advanced Encryption Standard.",
+      "remember": "DES = 64-bit block, 56-bit effective key, 16 rounds, Feistel. 3DES = EDE, because 56 bits got too short.",
+      "why": "DES is the standard numerical question here — the examiner wants 64, 56 and 16, and the reason for Triple DES. It is also the clearest illustration of how key length decides security.",
+      "practice": "State the block size, effective key size and number of rounds in DES. Explain in five lines why Triple DES was introduced instead of Double DES."
+    },
+    {
+      "title": "Digital Signatures",
+      "teacher": "Encryption hides <em>what</em> you wrote. But how does the bank know the instruction really came from you, and that you cannot walk in tomorrow and say 'I never sent that'? That needs a different tool — one that works like a signature on paper, but is impossible to forge.",
+      "explain": "A <strong>digital signature</strong> is a cryptographic value attached to a message that proves who sent it and that it has not been altered. The sender computes a <strong>hash</strong> of the message and encrypts that hash with their <strong>private key</strong>. Anyone can verify it using the sender's <strong>public key</strong>. It guarantees <strong>authentication, integrity and non-repudiation</strong> — but not confidentiality.",
+      "keyPoints": [
+        "A digital signature uses asymmetric cryptography <strong>in reverse</strong>: sign with the <em>private</em> key, verify with the <em>public</em> key.",
+        "Signing step: compute a <strong>message digest (hash)</strong>, then encrypt that digest with the sender's private key.",
+        "Verification: decrypt the signature with the sender's public key, hash the received message, and compare the two values.",
+        "If the two hashes match, the message is genuine and unaltered; if not, it was tampered with or is not from that sender.",
+        "Only the hash is signed, not the whole message — the hash is short, so signing is fast.",
+        "<strong>Hash functions</strong> are one-way and fixed-length: SHA-256 is standard; MD5 and SHA-1 are now considered broken.",
+        "Guarantees: <strong>Authentication</strong> (who sent it), <strong>Integrity</strong> (not changed), <strong>Non-repudiation</strong> (cannot be denied).",
+        "It does <strong>NOT</strong> provide confidentiality — the message itself is still readable unless you also encrypt it.",
+        "A <strong>digital certificate</strong>, issued by a <strong>Certificate Authority (CA)</strong>, binds a public key to a real identity.",
+        "In India, digital signatures are legally recognised under the Information Technology Act, 2000."
+      ],
+      "subtopics": [
+        {
+          "title": "How signing and verification work",
+          "text": "The sender runs the message through a <strong>hash function</strong> to produce a short fixed-length digest — change even a comma in the message and the digest changes completely. The sender encrypts that digest with their <strong>private key</strong>; the result is the signature, sent along with the message. The receiver decrypts the signature using the sender's <strong>public key</strong> to recover the original digest, independently hashes the message they received, and compares. Two equal values means the message is authentic and untouched."
+        },
+        {
+          "title": "Why this proves so much at once",
+          "text": "Only the sender holds the private key, so only the sender could have produced a signature that opens correctly with their public key — that gives <strong>authentication</strong> and <strong>non-repudiation</strong>. Any change to the message would produce a different hash from the one inside the signature — that gives <strong>integrity</strong>. All three come from one small operation, which is why digital signatures are the backbone of e-governance, online tax filing and banking."
+        },
+        {
+          "title": "The role of the Certificate Authority",
+          "text": "A public key on its own is just a number — how do you know it truly belongs to your bank and not an impostor? A <strong>Certificate Authority</strong> checks the owner's identity and issues a <strong>digital certificate</strong> (X.509 format) that contains the public key, the owner's details and the CA's own signature. Your browser already trusts a list of CAs, which is how it can silently verify a website's identity when you see the padlock icon."
+        },
+        {
+          "title": "Signature and encryption together",
+          "text": "Remember that a signature does <em>not</em> hide the message. To get both privacy and proof of origin, the sender first signs the message with their own private key, then encrypts the signed message with the receiver's public key. The receiver decrypts with their private key, then verifies the signature with the sender's public key. This 'sign then encrypt' pattern is exactly what PGP does."
+        }
+      ],
+      "realLife": "Filing income tax returns online in India uses a Digital Signature Certificate. The department can be sure the return came from you, that nobody altered the figures on the way, and you cannot later claim you never filed it — the same three guarantees a signed paper form gives, but stronger.",
+      "table": {
+        "headers": [
+          "Goal",
+          "Encryption (with receiver's public key)",
+          "Digital Signature (with sender's private key)"
+        ],
+        "rows": [
+          [
+            "Confidentiality",
+            "Yes",
+            "No"
+          ],
+          [
+            "Authentication of sender",
+            "No",
+            "Yes"
+          ],
+          [
+            "Integrity",
+            "No (not by itself)",
+            "Yes"
+          ],
+          [
+            "Non-repudiation",
+            "No",
+            "Yes"
+          ],
+          [
+            "Key used to create",
+            "Receiver's public key",
+            "Sender's private key"
+          ],
+          [
+            "Key used to open/verify",
+            "Receiver's private key",
+            "Sender's public key"
+          ]
+        ]
+      },
+      "mistake": "The most common error is reversing the keys. To <em>encrypt</em> a secret for someone you use <strong>their public key</strong>. To <em>sign</em> something you use <strong>your own private key</strong>. And never write that a digital signature keeps the message secret — it does not; it only proves who sent it and that it is unchanged.",
+      "examAnswer": "A digital signature is a cryptographic mechanism that authenticates the originator of a message and guarantees that the message has not been altered. To sign a message, the sender first applies a one-way hash function to it, producing a fixed-length message digest, and then encrypts this digest with the sender's own private key; the encrypted digest forms the digital signature and is transmitted with the message. To verify the signature, the receiver decrypts it using the sender's public key to obtain the original digest, independently computes the hash of the received message, and compares the two values. If they are identical the message is accepted as genuine. A digital signature therefore provides authentication, since only the sender possesses the private key; integrity, since any modification alters the hash; and non-repudiation, since the sender cannot subsequently deny having signed the message. It does not, however, provide confidentiality, for which the message must additionally be encrypted with the receiver's public key. A digital certificate issued by a Certificate Authority binds a public key to the identity of its owner and is used to establish trust in the public key.",
+      "remember": "Sign with YOUR PRIVATE key. Encrypt with THEIR PUBLIC key. Signature = Authentication + Integrity + Non-repudiation, but NOT secrecy.",
+      "why": "Digital signatures are what make online banking, e-tenders and income-tax e-filing legally valid. It is also the topic where the public/private key confusion costs students the most marks.",
+      "practice": "Explain with a diagram in words how a digital signature is created and verified. State the three security services it provides and the one it does not."
+    },
+    {
+      "title": "Firewalls: Design and Types",
+      "teacher": "Every college has a gate with a guard. The guard does not know what each student intends to do — he just checks who may come in and who may not, and turns the rest away. A firewall is that guard, standing between your trusted network and the wild internet.",
+      "explain": "A <strong>firewall</strong> is a hardware or software system placed between a trusted internal network and an untrusted external network, which examines all traffic passing through and <strong>allows or blocks</strong> it according to a set of security rules. The main types are <strong>packet filtering, stateful inspection</strong> and <strong>proxy (application gateway)</strong> firewalls.",
+      "keyPoints": [
+        "A firewall enforces a <strong>security policy</strong>: all traffic in or out must pass through it and only authorised traffic is allowed.",
+        "<strong>Packet filtering firewall</strong> — works at the <strong>network/transport layer</strong>; checks source/destination IP, port and protocol.",
+        "Packet filtering is <strong>stateless</strong>: each packet is judged alone, with no memory of earlier packets. Fast and cheap, but easily fooled by spoofing.",
+        "<strong>Stateful inspection firewall</strong> — keeps a <strong>state table</strong> of active connections and allows replies only for connections that were properly started.",
+        "Stateful firewalls are more secure than packet filters and are the common choice today.",
+        "<strong>Proxy / application gateway firewall</strong> — works at the <strong>application layer</strong>; it terminates the connection and makes its own request on the client's behalf.",
+        "A proxy can inspect the <em>actual content</em> (e.g. block a specific URL or file type) — most secure, but slowest.",
+        "<strong>Circuit-level gateway</strong> — works at the session layer, verifying that a connection handshake is legitimate without inspecting content.",
+        "Design architectures: <strong>screening router, bastion host, dual-homed host, screened host, screened subnet (DMZ)</strong>.",
+        "A <strong>DMZ (demilitarised zone)</strong> holds public servers (web, mail) between two firewalls, separate from the internal network.",
+        "A firewall cannot stop attacks that do not pass through it, insider misuse, or malware in already-allowed traffic — it is one layer, not a complete solution."
+      ],
+      "subtopics": [
+        {
+          "title": "Packet filtering — the quick gate check",
+          "text": "The firewall looks only at the packet <strong>header</strong>: source IP, destination IP, source port, destination port and protocol. A rule such as 'block all incoming traffic to port 23 (Telnet)' is applied to each packet independently. It is very fast and adds almost no delay, but because it is <strong>stateless</strong> it cannot tell whether an incoming packet is a genuine reply to something your machine asked for, or a forged packet pretending to be one."
+        },
+        {
+          "title": "Stateful inspection — the gate with a register",
+          "text": "This firewall maintains a <strong>state table</strong> recording every connection your network has opened. When a packet arrives, it is checked not only against the rules but also against this table: if it claims to be a reply but no matching outgoing connection exists, it is dropped. That closes the main weakness of packet filtering, at the cost of more memory and processing. Most modern firewalls work this way."
+        },
+        {
+          "title": "Proxy / application gateway — the guard who reads the letter",
+          "text": "A proxy firewall does not forward packets at all. The internal client connects to the <strong>proxy</strong>, and the proxy makes a <em>separate</em> connection to the outside server, so the internal network is never directly exposed. Because it understands the application protocol, it can inspect the actual content — block a specific website, strip an executable attachment, or log full URLs. It is the most secure type but also the slowest, and a separate proxy is needed for each application protocol."
+        },
+        {
+          "title": "Firewall design architectures",
+          "text": "A <strong>screening router</strong> is the simplest — a router doing packet filtering at the boundary. A <strong>bastion host</strong> is a hardened, heavily secured machine deliberately exposed to the outside. A <strong>dual-homed host</strong> has two network cards and no direct routing between them, so everything must pass through its software. A <strong>screened subnet</strong>, the strongest common design, places a <strong>DMZ</strong> between two firewalls: public-facing servers live in the DMZ, so even if one is compromised, the attacker is still outside the internal network."
+        }
+      ],
+      "realLife": "Your college network probably blocks certain sites and ports. That is a firewall rule. If it can block a particular website by name rather than just by IP address, an application-layer proxy is involved — it is reading the request, not just the envelope.",
+      "table": {
+        "headers": [
+          "Type",
+          "OSI layer",
+          "What it examines",
+          "Speed",
+          "Security"
+        ],
+        "rows": [
+          [
+            "Packet filtering",
+            "Network / Transport (3–4)",
+            "IP addresses, ports, protocol in the header",
+            "Fastest",
+            "Basic; stateless, fooled by spoofing"
+          ],
+          [
+            "Stateful inspection",
+            "Network / Transport (3–4)",
+            "Header plus the state of the whole connection",
+            "Fast",
+            "Good — the usual modern choice"
+          ],
+          [
+            "Circuit-level gateway",
+            "Session (5)",
+            "Legitimacy of the connection handshake",
+            "Fast",
+            "Moderate; does not inspect content"
+          ],
+          [
+            "Proxy / application gateway",
+            "Application (7)",
+            "The full content of the request",
+            "Slowest",
+            "Highest; can filter by content and URL"
+          ]
+        ]
+      },
+      "mistake": "A firewall is not an antivirus. It controls <em>which traffic may pass</em>; it does not scan your existing files for malware, and it cannot help against an attack carried inside traffic you have already allowed — such as a malicious attachment in ordinary email. Also remember: <strong>packet filtering is stateless, stateful inspection is not</strong>.",
+      "examAnswer": "A firewall is a hardware or software system placed at the boundary between a trusted internal network and an untrusted external network, which examines all traffic passing between them and permits or blocks it in accordance with a defined security policy. All traffic entering or leaving the network must pass through the firewall, and only traffic authorised by the policy is allowed. A packet filtering firewall operates at the network and transport layers and takes decisions on the basis of the source and destination IP addresses, port numbers and protocol contained in each packet header; it is stateless, very fast and inexpensive, but cannot detect spoofed packets. A stateful inspection firewall additionally maintains a table of active connections and permits an incoming packet only if it belongs to a legitimately established connection, offering considerably greater security. A proxy or application gateway firewall operates at the application layer and terminates the connection, establishing a separate connection on behalf of the client, which enables it to examine the actual content of the traffic and filter it by URL or file type; it is the most secure but also the slowest type. Common firewall architectures include the screening router, the bastion host, the dual-homed host and the screened subnet, in which a demilitarised zone containing public servers is placed between two firewalls.",
+      "remember": "Packet filter = checks the envelope. Stateful = checks the envelope and remembers the conversation. Proxy = opens and reads the letter.",
+      "why": "Firewalls are the first line of defence in every real organisation, and the three-type comparison with their OSI layers is a standard exam table.",
+      "practice": "Compare packet filtering, stateful inspection and proxy firewalls on four points. Explain what a DMZ is and why it is used."
+    },
+    {
+      "title": "Email Security: Phishing, PGP and S/MIME",
+      "teacher": "Email was designed in a friendlier time — it has no built-in secrecy and no proof of who sent it. Anyone can write any name in the 'From' field, exactly like writing a false return address on a postcard. Two systems were built to fix this, and one very common attack exploits the fact that most people do not know it is broken.",
+      "explain": "Ordinary email travels in <strong>plaintext</strong> and its sender address is easily <strong>spoofed</strong>, so it offers no confidentiality, integrity or authentication. <strong>Phishing</strong> exploits this by sending fake messages that impersonate a trusted organisation. <strong>PGP</strong> and <strong>S/MIME</strong> are the two standard systems that add encryption and digital signatures to email.",
+      "keyPoints": [
+        "Email by default is sent in <strong>plaintext</strong> and the 'From' address can be freely <strong>spoofed</strong>.",
+        "The five security services email needs: <strong>confidentiality, authentication, integrity, non-repudiation</strong> and protection against spoofing.",
+        "<strong>Phishing</strong> — a fake message impersonating a trusted organisation to trick you into revealing passwords, OTPs or card details.",
+        "<strong>Spear phishing</strong> targets one specific person using personal details; <strong>whaling</strong> targets senior executives.",
+        "Phishing warning signs: urgency and threats, a slightly wrong sender domain, generic greeting, a link whose real address differs from its text, unexpected attachments, any request for an OTP or password.",
+        "Defence: never click links in unexpected mail — type the address yourself; never share an OTP; enable <strong>two-factor authentication</strong>; verify by phoning the organisation on a known number.",
+        "<strong>PGP (Pretty Good Privacy)</strong> — created by <strong>Phil Zimmermann</strong> in 1991; provides confidentiality, authentication, compression, email compatibility and segmentation.",
+        "PGP uses a <strong>web of trust</strong>: users personally sign each other's keys; there is no central authority.",
+        "<strong>S/MIME (Secure/Multipurpose Internet Mail Extensions)</strong> — provides the same services but uses <strong>X.509 certificates</strong> issued by a hierarchy of <strong>Certificate Authorities</strong>.",
+        "S/MIME is built into corporate mail clients (Outlook, Thunderbird) and is the usual choice for organisations; PGP is popular with individuals.",
+        "Both use the same hybrid pattern: a random <strong>session key</strong> encrypts the message symmetrically, and that session key is encrypted with the recipient's <strong>public key</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "Why email is insecure by default",
+          "text": "The SMTP protocol was designed for a small, trusted research network, so it carries messages in readable text and performs no check on the claimed sender. A message can therefore be read by anyone handling it in transit, altered on the way, or sent with a completely false 'From' address. Attacks through email include spoofing, phishing, malicious attachments carrying malware, malicious links, and spam — which is why email remains the most common entry point for attacks on organisations."
+        },
+        {
+          "title": "Phishing — how the trick works",
+          "text": "The attacker sends a message that looks like it is from your bank, your college or a delivery company, usually creating <strong>urgency</strong> — 'your account will be blocked in 24 hours'. The link leads to a convincing copy of the real login page, and whatever you type there goes straight to the attacker. Look for a sender domain that is subtly wrong, a generic greeting like 'Dear Customer', and above all remember the rule that settles almost every case: <strong>no genuine bank or organisation will ever ask for your password or OTP</strong>."
+        },
+        {
+          "title": "PGP — Pretty Good Privacy",
+          "text": "PGP provides five services: <strong>authentication</strong> by digital signature (SHA hash signed with the sender's private key), <strong>confidentiality</strong> by encrypting the message with a one-time session key which is itself encrypted with the receiver's public key, <strong>compression</strong> of the message before encryption, <strong>email compatibility</strong> by converting the binary result into printable characters using Radix-64, and <strong>segmentation</strong> of very long messages. Its distinctive feature is the <strong>web of trust</strong>: instead of a central authority, users vouch for each other's keys by signing them, so trust spreads person to person."
+        },
+        {
+          "title": "S/MIME and how it differs from PGP",
+          "text": "S/MIME provides the same core protections — signing, encryption, integrity and non-repudiation — but manages trust differently. It uses <strong>X.509 digital certificates</strong> issued by recognised <strong>Certificate Authorities</strong> in a strict hierarchy, which suits organisations where identity must be formally verified and centrally managed. It is built into standard mail clients, so it works without extra software. PGP's web of trust is more flexible and needs no paid authority, which is why individuals and activists prefer it, while companies standardise on S/MIME."
+        }
+      ],
+      "realLife": "An SMS or email saying 'Your KYC will expire today, click here to update' is textbook phishing. The urgency is manufactured, the link is fake, and no real bank works this way. The correct response is to not click at all and to open the bank's app or call the number printed on your card.",
+      "table": {
+        "headers": [
+          "",
+          "PGP",
+          "S/MIME"
+        ],
+        "rows": [
+          [
+            "Full form",
+            "Pretty Good Privacy",
+            "Secure/Multipurpose Internet Mail Extensions"
+          ],
+          [
+            "Created by",
+            "Phil Zimmermann (1991)",
+            "RSA Data Security, later an IETF standard"
+          ],
+          [
+            "Trust model",
+            "Web of trust — users sign each other's keys",
+            "Hierarchical — X.509 certificates from Certificate Authorities"
+          ],
+          [
+            "Certificates",
+            "PGP's own key format",
+            "X.509 certificates"
+          ],
+          [
+            "Typical users",
+            "Individuals, privacy-focused users",
+            "Corporate and organisational email"
+          ],
+          [
+            "Client support",
+            "Usually needs a plug-in or extra software",
+            "Built into Outlook, Thunderbird and similar clients"
+          ],
+          [
+            "Services provided",
+            "Authentication, confidentiality, compression, Radix-64 conversion, segmentation",
+            "Authentication, confidentiality, integrity, non-repudiation"
+          ]
+        ]
+      },
+      "mistake": "Do not write that PGP and S/MIME use different cryptography. They use the <em>same</em> hybrid idea — a symmetric session key for the message, protected by the recipient's public key. The real difference is the <strong>trust model</strong>: PGP's web of trust versus S/MIME's hierarchy of Certificate Authorities. Also, phishing is <em>not</em> malware — it attacks the person, not the machine, which is why antivirus alone cannot stop it.",
+      "examAnswer": "Electronic mail is inherently insecure because messages are transmitted in plaintext and the sender's address can easily be forged, so email provides no confidentiality, integrity or authentication by default. Attacks conducted through email include spoofing, phishing, the distribution of malware through attachments, malicious links and spam. Phishing is an attack in which a fraudulent message impersonating a trusted organisation persuades the recipient to disclose confidential information such as passwords or one-time passwords, usually by creating a sense of urgency and directing the victim to a counterfeit website. Two standards provide security for electronic mail. Pretty Good Privacy, developed by Phil Zimmermann, provides authentication through digital signatures, confidentiality by encrypting the message with a one-time session key which is itself encrypted with the recipient's public key, compression, email compatibility through Radix-64 conversion and segmentation of long messages; it establishes trust through a decentralised web of trust in which users sign one another's keys. Secure/Multipurpose Internet Mail Extensions provides the same services but establishes trust through X.509 digital certificates issued by a hierarchy of Certificate Authorities, and is integrated into standard commercial mail clients, which makes it the preferred choice for organisational use.",
+      "remember": "PGP = web of trust (friends vouch). S/MIME = X.509 certificates (authority vouches). Phishing = no real bank ever asks for your OTP.",
+      "why": "Phishing is the attack you are personally most likely to meet, and the PGP-vs-S/MIME comparison is a standard exam table. Both are high-value marks for little effort.",
+      "practice": "List four security services that email needs and explain how PGP provides each. Then write five warning signs that an email is a phishing attempt."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Which principle of security ensures that a message has not been altered in transit?",
+      "options": [
+        "Confidentiality",
+        "Integrity",
+        "Availability",
+        "Non-repudiation"
+      ],
+      "answer": 1,
+      "why": "Integrity means the data is unchanged. Confidentiality is about secrecy, availability is about access, and non-repudiation stops the sender denying they sent it."
+    },
+    {
+      "q": "What is the key difference between a virus and a worm?",
+      "options": [
+        "A virus is more damaging than a worm",
+        "A worm needs a host file, a virus does not",
+        "A worm spreads by itself, while a virus needs a host file and a user action",
+        "A virus only affects networks, a worm only affects single computers"
+      ],
+      "answer": 2,
+      "why": "A worm is a standalone program that replicates and spreads automatically across a network. A virus must attach to a host file and only spreads when a user runs that file."
+    },
+    {
+      "q": "Encrypting the word EXAM with a Caesar cipher of shift 3 gives:",
+      "options": [
+        "HADP",
+        "HBDP",
+        "GZCO",
+        "HXDM"
+      ],
+      "answer": 0,
+      "why": "E(4)+3=7=H, X(23)+3=26 mod 26=0=A, A(0)+3=3=D, M(12)+3=15=P. So EXAM becomes HADP. Note the wrap-around: X becomes A."
+    },
+    {
+      "q": "Eavesdropping on a network without altering any data is an example of:",
+      "options": [
+        "An active attack",
+        "A passive attack",
+        "A denial of service attack",
+        "A masquerade attack"
+      ],
+      "answer": 1,
+      "why": "In a passive attack the attacker only observes and changes nothing, which makes it very hard to detect but easy to prevent with encryption."
+    },
+    {
+      "q": "What is the effective key length of DES?",
+      "options": [
+        "64 bits",
+        "56 bits",
+        "128 bits",
+        "168 bits"
+      ],
+      "answer": 1,
+      "why": "The DES key is stored in 64 bits, but every eighth bit is a parity bit used only for error checking, leaving 56 effective key bits. DES uses a 64-bit block and 16 rounds."
+    },
+    {
+      "q": "To create a digital signature, the sender encrypts the message hash with:",
+      "options": [
+        "The receiver's public key",
+        "The receiver's private key",
+        "The sender's public key",
+        "The sender's private key"
+      ],
+      "answer": 3,
+      "why": "Signing uses the sender's own private key, so that anyone can verify it with the sender's public key. Encrypting for secrecy is the opposite — you use the receiver's public key."
+    },
+    {
+      "q": "Which type of firewall can block a specific website by examining the actual content of the request?",
+      "options": [
+        "Packet filtering firewall",
+        "Stateful inspection firewall",
+        "Proxy / application gateway firewall",
+        "Circuit-level gateway"
+      ],
+      "answer": 2,
+      "why": "A proxy firewall works at the application layer and inspects the content, so it can filter by URL or file type. Packet filters only see headers — IP addresses and port numbers."
+    },
+    {
+      "q": "Frequency analysis breaks a monoalphabetic substitution cipher because:",
+      "options": [
+        "The key is only 25 possibilities long",
+        "Each plaintext letter always maps to the same ciphertext letter, preserving language statistics",
+        "The cipher rearranges letter positions",
+        "The algorithm is kept secret"
+      ],
+      "answer": 1,
+      "why": "A monoalphabetic cipher has a huge key space (26!), but since one letter always becomes the same letter, the frequency pattern of English survives — so counting letters reveals E, T, A and the rest."
+    },
+    {
+      "q": "PGP and S/MIME differ mainly in their:",
+      "options": [
+        "Encryption algorithms",
+        "Trust model — web of trust versus Certificate Authorities",
+        "Ability to provide confidentiality",
+        "Use of symmetric cryptography"
+      ],
+      "answer": 1,
+      "why": "Both use the same hybrid cryptography. PGP builds trust through a decentralised web of trust where users sign each other's keys; S/MIME uses X.509 certificates issued by a hierarchy of Certificate Authorities."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Explain the CIA triad with one real example of an attack that breaks each principle. Also explain authentication and non-repudiation, and say which mechanism provides non-repudiation."
+    },
+    {
+      "q": "Differentiate active and passive attacks on at least five points, giving two examples of each. Which is harder to detect, and which is harder to prevent?"
+    },
+    {
+      "q": "Distinguish between a virus, a worm, a trojan horse and a backdoor. State clearly the one key difference between how a virus and a worm spread."
+    },
+    {
+      "q": "Encrypt the word CIPHER using a Caesar cipher with shift 5, showing the working for every letter. Then explain why a monoalphabetic substitution cipher with 26! keys is still broken by frequency analysis.",
+      "hint": "Use C = (P + k) mod 26, and do not forget the wrap-around past Z."
+    },
+    {
+      "q": "Describe the Data Encryption Standard, stating its block size, effective key length and number of rounds, and explain why Triple DES was introduced. Then explain how a digital signature is created and verified, and state the three security services it provides."
+    }
+  ]
+};

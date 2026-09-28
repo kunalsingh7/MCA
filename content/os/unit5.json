@@ -1,0 +1,595 @@
+/* Operating System (MCA 108) — Unit 5. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.os = UNITS.os || [];
+UNITS.os[4] = {
+  "num": 5,
+  "title": "File Systems, I/O Management and Disks",
+  "problem": "A hard disk is just billions of numbered blocks. Nothing on it is called 'notes.pdf', nothing knows which blocks belong together, and nothing stops your friend from opening your files. And the disk itself is a thousand times slower than the CPU, so every wasted head movement hurts.",
+  "solution": "The file system turns raw blocks into named files and folders with owners and permissions. The I/O software stack hides every different device behind one simple interface. And disk scheduling reorders pending requests so the arm travels the shortest distance possible.",
+  "objectives": [
+    "Define a file, list its attributes and the basic operations performed on it",
+    "Compare single-level, two-level, tree-structured and acyclic-graph directory structures",
+    "Compare contiguous, linked and indexed file allocation, with advantages and drawbacks",
+    "Explain file protection using access control lists and the owner/group/other permission model",
+    "Describe I/O devices, device controllers and Direct Memory Access (DMA)",
+    "Name the four layers of I/O software and state the job of each",
+    "Explain disk geometry and calculate access time from seek, rotational latency and transfer time",
+    "Apply FCFS, SSTF, SCAN, C-SCAN, LOOK and C-LOOK and compute total head movement",
+    "Describe disk error handling, track-at-a-time caching, RAM disks and clock hardware and software"
+  ],
+  "topics": [
+    {
+      "title": "Files: Attributes, Operations and Access Methods",
+      "teacher": "Your assignment is saved as 'unit5.docx'. But the disk has no idea what a name is — it only knows block number 84,239. So who remembers that the name belongs to that block? Someone keeps a small card for every file, like a library catalogue card. Let's open that card.",
+      "explain": "A <strong>file</strong> is a named collection of related information stored on secondary storage. It is the smallest unit of storage the user can see, and the OS keeps a set of <strong>attributes</strong> for each one. The file system is the part of the OS that creates, names, stores, protects and retrieves files.",
+      "keyPoints": [
+        "A file is a <strong>named</strong> collection of related information on secondary storage.",
+        "Attributes: <strong>name, identifier, type, location, size, protection, time/date and owner</strong>.",
+        "The <strong>identifier</strong> is the internal number the OS uses; the name is for humans.",
+        "Operations: <strong>create, write, read, reposition (seek), delete, truncate</strong>, plus open and close.",
+        "Attributes are stored in a <strong>directory entry</strong> on the disk, not inside the file's data.",
+        "The <strong>open-file table</strong> holds files currently in use so attributes are not re-read from disk each time.",
+        "A <strong>file pointer</strong> records the current position; a <strong>file-open count</strong> records how many processes have it open.",
+        "Access methods: <strong>sequential</strong> (record by record), <strong>direct/random</strong> (jump to record n), and <strong>indexed</strong> (look up an index first).",
+        "File type is shown by <strong>extension</strong> (.txt, .exe) in Windows or by a <strong>magic number</strong> inside the file in UNIX."
+      ],
+      "subtopics": [
+        {
+          "title": "The attributes, one by one",
+          "text": "<strong>Name</strong> is the human-readable string. <strong>Identifier</strong> is a unique number inside the file system. <strong>Type</strong> tells the OS how to treat it. <strong>Location</strong> is a pointer to where the data physically sits. <strong>Size</strong> is the current length. <strong>Protection</strong> controls who may read, write or execute. <strong>Time, date and user identification</strong> record creation, last modification and the owner. Notice that none of this is inside the file's contents — it is all kept in the directory."
+        },
+        {
+          "title": "Why open() and close() exist",
+          "text": "Searching the directory on disk every single time you read a byte would be painfully slow. So <code>open()</code> searches the directory once, copies the entry into an <strong>open-file table</strong> in memory, and returns a small handle. Every later read or write uses that handle — no disk search at all. <code>close()</code> writes back any changes and removes the entry. This is also where the <strong>file-open count</strong> matters: the entry is removed only when the last process closes the file."
+        },
+        {
+          "title": "The three access methods",
+          "text": "<strong>Sequential access</strong> reads records in order from start to finish, like an audio cassette — simple and the most common. <strong>Direct (or relative) access</strong> treats the file as numbered blocks and jumps straight to block n, like a music CD — essential for databases. <strong>Indexed access</strong> builds an index file containing keys and pointers; you search the small index, then jump directly to the record — the method used by large databases on huge files."
+        }
+      ],
+      "realLife": "Think of a library. The book on the shelf is the file's data. The catalogue card — title, author, shelf number, date added, who borrowed it — is the set of attributes, and it sits in a drawer at the counter, not inside the book. Issuing the book is open(); returning it is close().",
+      "table": {
+        "headers": ["Access method", "How it reads", "Best for", "Everyday analogy"],
+        "rows": [
+          ["Sequential", "One record after another, in order", "Log files, text processing", "Audio cassette"],
+          ["Direct / Random", "Jump straight to record number n", "Databases, large data files", "Music CD — track 7 directly"],
+          ["Indexed", "Search a small index, then jump", "Very large keyed files", "Index at the back of a textbook"]
+        ]
+      },
+      "mistake": "Students confuse the file's <em>data</em> with its <em>attributes</em>. The name, size, owner and permissions are NOT stored inside the file — they live in the directory entry (or the inode in UNIX). That is why renaming a 2 GB file takes no time at all.",
+      "examAnswer": "A file is a named collection of related information recorded on secondary storage, and it forms the logical unit of storage presented to the user by the operating system. Every file has a set of attributes, namely its name, a unique internal identifier, its type, its location on the storage device, its size, its protection information, and the time, date and user identification associated with it; these attributes are held in the directory entry rather than within the file's data. The operations supported on files include create, write, read, reposition within the file, delete and truncate, together with open and close, which respectively copy the directory entry into an in-memory open-file table and remove it. Information within a file may be accessed sequentially, directly by relative block number, or through an index that maps keys to record locations.",
+      "remember": "Attributes = <strong>N-I-T-L-S-P-T</strong>: Name, Identifier, Type, Location, Size, Protection, Time/owner.",
+      "why": "Every question in this unit — directories, allocation, protection — is really about how these attributes are stored and used. Get the attribute list right and the rest follows.",
+      "practice": "List any six file attributes and state where they are physically stored. Why does renaming a huge file take almost no time?"
+    },
+    {
+      "title": "Directory Structures",
+      "teacher": "Imagine a school where every student in every class must have a different name. Two Priyas? Not allowed. Sounds silly, but that is exactly how the earliest file systems worked. Let's watch directories grow up from that mess into the folder tree you use every day.",
+      "explain": "A <strong>directory</strong> is a table that maps file names to their attributes and locations. Directory structures evolved through four stages — <strong>single-level, two-level, tree-structured</strong> and <strong>acyclic-graph</strong> — each one fixing a problem of the one before it.",
+      "keyPoints": [
+        "A directory is a symbol table: file name → file attributes and location.",
+        "<strong>Single-level</strong>: one directory for the whole disk; every file name must be unique.",
+        "<strong>Two-level</strong>: one directory per user (a UFD) under a Master File Directory (MFD).",
+        "Two-level solves name clashes but makes <strong>sharing between users</strong> awkward.",
+        "<strong>Tree-structured</strong>: directories may contain subdirectories — the familiar folder tree.",
+        "Tree gives <strong>absolute paths</strong> (from the root) and <strong>relative paths</strong> (from the current directory).",
+        "In a tree, each file has exactly <strong>one</strong> path — so genuine sharing is still not possible.",
+        "<strong>Acyclic graph</strong>: allows <strong>links</strong>, so one file can appear in two directories.",
+        "Acyclic-graph problems: deleting a shared file (dangling pointers) and avoiding cycles.",
+        "Solution: a <strong>reference count</strong> — delete the actual file only when the count reaches zero."
+      ],
+      "subtopics": [
+        {
+          "title": "Single-level and two-level",
+          "text": "A <strong>single-level directory</strong> keeps every file of every user in one flat list. It is trivially simple, but with fifty users no two people may use the name <code>notes.txt</code>, and searching gets slow. The <strong>two-level directory</strong> gives each user a private User File Directory (UFD) listed in a Master File Directory (MFD). Now two users may both have <code>notes.txt</code>. But one user still cannot organise her own files into groups, and sharing a file with another user requires special path syntax."
+        },
+        {
+          "title": "Tree-structured directories",
+          "text": "The natural next step: allow a directory to contain other directories, giving a tree of arbitrary depth. Each user gets a <strong>current working directory</strong>, and files are named by an <strong>absolute path</strong> from the root (<code>/home/riya/os/unit5.txt</code>) or a <strong>relative path</strong> from where she is standing (<code>os/unit5.txt</code>). Deleting a directory needs care — either it must be empty, or the delete must be recursive. This is the structure Windows, Linux and Android all use."
+        },
+        {
+          "title": "Acyclic-graph directories and links",
+          "text": "A tree still gives each file exactly one name and one place. If two students genuinely work on the same project file, we want it to appear in <em>both</em> their folders — and be the same file, so that an edit by one is seen by the other. The <strong>acyclic-graph</strong> structure allows this by adding <strong>links</strong>. A <strong>hard link</strong> is a second directory entry pointing at the same file; a <strong>symbolic (soft) link</strong> is a tiny file containing the path of the real one. 'Acyclic' means no cycles are allowed, because a cycle would make a traversal loop forever and would make counting references impossible."
+        },
+        {
+          "title": "The deletion problem",
+          "text": "If Riya deletes the shared file, what happens to Sneha's entry? If the data is removed, Sneha is left with a <strong>dangling pointer</strong>. The standard fix is a <strong>reference count</strong> stored with the file: each new hard link increments it, each delete decrements it, and the data blocks are freed only when the count reaches zero. With symbolic links the OS instead simply leaves the link broken, and reports an error when it is followed."
+        }
+      ],
+      "realLife": "Single-level is one shared hostel shelf where nobody's dabba may have the same label. Two-level gives each student her own shelf. Tree-structured lets her add boxes inside her shelf, and boxes inside those boxes. Acyclic-graph is the group project file that sits in both Riya's box and Sneha's box — but is genuinely the same file, so when Riya edits it, Sneha sees the change.",
+      "table": {
+        "headers": ["Structure", "Grouping", "Same name for two users?", "Sharing possible?", "Main problem"],
+        "rows": [
+          ["Single-level", "None", "No", "No", "Name clashes, slow search"],
+          ["Two-level", "One directory per user", "Yes", "Difficult", "No grouping within a user"],
+          ["Tree-structured", "Subdirectories, any depth", "Yes", "No — one path per file", "Cannot truly share a file"],
+          ["Acyclic-graph", "Subdirectories plus links", "Yes", "Yes, via links", "Dangling pointers on delete; must avoid cycles"]
+        ]
+      },
+      "mistake": "Copying a file is NOT the same as linking it. A copy makes two independent files — edit one and the other is unchanged. A link makes two names for ONE file — edit through either name and both 'see' the change. Exams love this distinction.",
+      "examAnswer": "A directory is a symbol table that maps file names to the corresponding file attributes and storage locations. In a single-level directory all files of all users are held in one list, so every file name must be unique and searching is inefficient. A two-level directory provides a separate user file directory for each user beneath a master file directory, which removes name conflicts but does not permit a user to group her own files and makes sharing awkward. A tree-structured directory permits directories to contain subdirectories to an arbitrary depth, and files are named by absolute paths from the root or relative paths from the current working directory. Finally, an acyclic-graph directory permits a file or subdirectory to be referenced from more than one directory through links, thereby supporting genuine sharing; its main difficulties are the possibility of dangling pointers when a shared file is deleted, which is handled by maintaining a reference count, and the need to ensure that no cycles are introduced.",
+      "remember": "Single → Two → Tree → Graph. Each step adds one thing: users, then grouping, then sharing.",
+      "why": "This is a guaranteed comparison question, and the 'copy vs link' idea is the foundation of how Git, Docker and cloud storage all save space.",
+      "practice": "Why is the directory structure called 'acyclic' graph and not simply 'graph'? Give two problems that a cycle would cause."
+    },
+    {
+      "title": "File System Implementation and Allocation Methods",
+      "teacher": "Your 10 MB video needs 2500 disk blocks. Should they sit side by side, or can they be scattered anywhere? Both work — but one makes the video play smoothly and the other makes the disk head run around like a confused peon. Let's see the three ways.",
+      "explain": "<strong>File allocation</strong> decides which disk blocks belong to which file, and how the OS finds them. The three classic methods are <strong>contiguous, linked</strong> and <strong>indexed</strong> allocation. The file system also needs a layered structure and a way to track which blocks are free.",
+      "keyPoints": [
+        "<strong>Contiguous</strong>: the file occupies a run of consecutive blocks. Directory stores <strong>start block + length</strong>.",
+        "Contiguous is the fastest to read, and supports both sequential and direct access easily.",
+        "But contiguous suffers <strong>external fragmentation</strong>, and the file cannot easily grow.",
+        "<strong>Linked</strong>: each block holds a pointer to the next. Directory stores <strong>first and last block</strong>.",
+        "Linked has no external fragmentation and files can grow freely.",
+        "But linked supports only <strong>sequential access</strong> well, and one corrupted pointer loses the rest of the file.",
+        "<strong>FAT</strong> (File Allocation Table) is a variation of linked allocation with all pointers kept in one table.",
+        "<strong>Indexed</strong>: one <strong>index block</strong> holds all the block numbers of the file.",
+        "Indexed gives direct access with no external fragmentation, but wastes space on tiny files.",
+        "Large files need <strong>linked, multilevel</strong> or <strong>combined</strong> index schemes — UNIX inodes use the combined scheme.",
+        "Free space is tracked using a <strong>bit vector (bitmap)</strong>, a <strong>linked list</strong>, grouping or counting."
+      ],
+      "subtopics": [
+        {
+          "title": "Contiguous allocation",
+          "text": "The whole file sits in consecutive blocks, so the directory only has to record the <strong>starting block and the length</strong>. Reading is extremely fast because the head barely moves, and computing the address of block i is simply start + i, which makes direct access trivial. The two problems are serious though: free space breaks into small unusable holes (<strong>external fragmentation</strong>), and if the file grows beyond the space reserved for it, the whole file must be copied elsewhere. This is why CD-ROMs use it but hard disks generally do not."
+        },
+        {
+          "title": "Linked allocation",
+          "text": "The file's blocks may be anywhere on the disk; each block contains the data plus a <strong>pointer to the next block</strong>. The directory records only the first and last block. There is no external fragmentation at all and the file can grow to any size while free blocks remain. The cost is that reaching block 100 requires reading blocks 1 to 99 first, so <strong>direct access is effectively impossible</strong>; pointers also consume space in every block; and a single damaged pointer orphans the entire rest of the file. The FAT file system improves this by moving all the pointers into one table that can be cached in memory."
+        },
+        {
+          "title": "Indexed allocation",
+          "text": "Each file gets its own <strong>index block</strong>, which is simply an array of block numbers. To read block i, the OS looks at the i-th entry of the index — so <strong>direct access is as easy as contiguous allocation</strong>, while blocks can still be scattered anywhere, so there is no external fragmentation. The drawback is the space overhead: a file of one single block still needs a whole index block. And if a file is larger than one index block can describe, the system must chain index blocks together (<strong>linked index</strong>), use a <strong>multilevel index</strong>, or use the <strong>combined scheme</strong> of the UNIX inode, which has a few direct pointers plus single, double and triple indirect pointers."
+        },
+        {
+          "title": "Layers of the file system, and free-space management",
+          "text": "The file system itself is built in layers: the application calls the <strong>logical file system</strong> (which handles directories and protection), which calls the <strong>file-organisation module</strong> (which maps logical block numbers to physical ones and manages free space), which calls the <strong>basic file system</strong> (which issues 'read physical block 84239' commands), which calls the <strong>I/O control layer</strong> of device drivers. Free blocks are usually tracked with a <strong>bit vector</strong>: one bit per block, 1 = free, 0 = used. It is compact and makes it easy to find a run of consecutive free blocks, but the whole vector must be kept in memory to be fast."
+        }
+      ],
+      "realLife": "Contiguous is seats 21 to 26 booked together for your family in one train coach — easiest, but only if six seats are free in a row. Linked is six scattered seats where each person is told 'the next one is in coach B3, seat 14' — you can always find seats, but reaching the last person means walking past everyone. Indexed is one card at the door listing all six seat numbers — walk straight to any of them.",
+      "table": {
+        "headers": ["", "Contiguous", "Linked", "Indexed"],
+        "rows": [
+          ["Directory stores", "Start block + length", "First and last block", "Address of the index block"],
+          ["Direct access", "Excellent", "Very poor", "Excellent"],
+          ["External fragmentation", "Yes — the main problem", "None", "None"],
+          ["File growth", "Difficult", "Easy", "Easy"],
+          ["Space overhead", "None", "A pointer in every block", "One whole index block per file"],
+          ["Reliability", "Good", "Poor — one bad pointer loses the rest", "Good, unless the index block is damaged"],
+          ["Used in", "CD-ROM, DVD", "FAT (as a variation)", "UNIX/Linux inodes"]
+        ]
+      },
+      "mistake": "Do not say contiguous allocation suffers from <em>internal</em> fragmentation. Its characteristic problem is <strong>external</strong> fragmentation — free space exists, but broken into holes too small to hold a file. Internal fragmentation is the unused part of the last block, and it happens in every method.",
+      "examAnswer": "File allocation determines how disk blocks are assigned to files. In contiguous allocation a file occupies a set of consecutive blocks and the directory records only the starting block and the length; this gives excellent sequential and direct access performance but causes external fragmentation and makes it difficult for a file to grow. In linked allocation the blocks of a file may be scattered anywhere and each block contains a pointer to the next, which eliminates external fragmentation and permits unrestricted growth, but it supports only sequential access efficiently, consumes pointer space in every block, and is vulnerable to the loss of a single pointer. In indexed allocation all the block addresses of a file are gathered into a dedicated index block, which restores efficient direct access without external fragmentation at the cost of the space occupied by the index; for large files the index is extended by linked, multilevel or combined schemes, the last of which is used by the UNIX inode. Free blocks are commonly managed by a bit vector in which each bit indicates whether the corresponding block is free.",
+      "remember": "Contiguous = fast but fragments. Linked = flexible but sequential only. Indexed = best of both, costs one index block.",
+      "why": "This is the single most-asked long question in the file-system section, and the comparison table alone can carry an eight-mark answer.",
+      "practice": "A file has 5 blocks. Explain how the OS reaches the 4th block under each of the three allocation methods, and say how many disk reads each one needs."
+    },
+    {
+      "title": "File Protection and Security Mechanisms",
+      "teacher": "Your laptop is shared with your brother. You would like him to read your notes, but definitely not to delete them, and certainly not to open your diary. The OS has to express all of that with a very small amount of information. Let's see how it manages.",
+      "explain": "<strong>Protection</strong> controls which users may perform which operations on which files. The general model is an <strong>access matrix</strong> of domains against objects; in practice it is implemented as <strong>access control lists</strong>, or — more compactly — as the <strong>owner / group / other</strong> permission scheme used by UNIX.",
+      "keyPoints": [
+        "The operations to be controlled are <strong>read, write, execute, append, delete and list</strong>.",
+        "<strong>Protection</strong> = controlling access by legitimate users; <strong>security</strong> = defending against outsiders and attacks.",
+        "The general model is an <strong>access matrix</strong>: rows are domains (users), columns are objects (files).",
+        "Storing the matrix by <strong>column</strong> gives an <strong>Access Control List (ACL)</strong> — per file, who may do what.",
+        "Storing the matrix by <strong>row</strong> gives a <strong>capability list</strong> — per user, which files she may touch.",
+        "A full ACL per file is precise but too large, so UNIX compresses it into three classes.",
+        "The three classes are <strong>owner, group and other (universe)</strong>, with <strong>rwx</strong> bits for each — 9 bits in total.",
+        "So <code>rwxr-xr--</code> means owner: read/write/execute, group: read/execute, others: read only.",
+        "In octal these 9 bits are written as three digits, e.g. <code>754</code> for the example above (r=4, w=2, x=1).",
+        "Other mechanisms: <strong>passwords per file</strong>, <strong>encryption</strong>, and <strong>backups</strong> for recovery."
+      ],
+      "subtopics": [
+        {
+          "title": "The access matrix and its two implementations",
+          "text": "Conceptually, protection is one big table with a row for every user (domain) and a column for every file (object); each cell lists the allowed operations. Storing this table as it is would be enormous and mostly empty. So it is stored either by column, giving each file an <strong>access control list</strong> of the users allowed to touch it, or by row, giving each user a <strong>capability list</strong> — a set of unforgeable tickets. ACLs make it easy to answer 'who can read this file'; capability lists make it easy to answer 'what can this user do'."
+        },
+        {
+          "title": "The UNIX rwx scheme",
+          "text": "A full ACL needs one entry per user, which is far too much to keep in a directory entry. UNIX condenses it into <strong>three classes</strong>: the <strong>owner</strong> of the file, the <strong>group</strong> she belongs to, and <strong>everyone else</strong>. For each class three bits are stored: <strong>r</strong> (read), <strong>w</strong> (write) and <strong>x</strong> (execute). Nine bits in total control the whole file. For a directory the bits mean slightly different things: r means 'list the contents', w means 'create or delete entries inside it', and x means 'enter it and access files within'."
+        },
+        {
+          "title": "Protection versus security",
+          "text": "<strong>Protection</strong> is an internal matter: the users are legitimate, and we are enforcing the rules of who may do what. <strong>Security</strong> is an external matter: it deals with threats such as stolen passwords, viruses, worms and physical theft of the disk. Protection mechanisms are the tools; security is the overall policy. A well-protected system can still be insecure if someone simply steals the hard disk — which is why <strong>encryption</strong> and physical safeguards matter too."
+        }
+      ],
+      "realLife": "Your college result portal. You (owner) can see and download your own marksheet. Your class teacher (group) can view it but not change it. Any random visitor (other) gets nothing at all. Three classes, three different levels — exactly the owner/group/other model.",
+      "table": {
+        "headers": ["Class", "Who it is", "Example permission", "Meaning"],
+        "rows": [
+          ["Owner", "The user who created the file", "rwx (7)", "Read, write and execute"],
+          ["Group", "Other members of her group", "r-x (5)", "Read and execute, cannot modify"],
+          ["Other", "Everyone else on the system", "r-- (4)", "Read only"]
+        ]
+      },
+      "mistake": "Students mix up protection and security, and they also forget that on a <strong>directory</strong> the x bit does not mean 'run a program' — it means 'you are allowed to enter this directory'. Without x on a directory you cannot reach any file inside it, even one you own.",
+      "examAnswer": "File protection is concerned with controlling the operations that legitimate users of a system may perform on files, the operations normally controlled being read, write, execute, append, delete and list. The general model is an access matrix whose rows represent domains or users and whose columns represent objects; since storing this matrix in full is impractical, it is implemented either column-wise as an access control list attached to each file, or row-wise as a capability list held by each user. Because an access control list containing one entry per user would be too large to store in a directory entry, UNIX-based systems condense it into three classes, namely the owner of the file, the group to which the owner belongs, and all other users, and associate three bits, read, write and execute, with each class. Protection should be distinguished from security, which is concerned with external threats such as unauthorised intrusion, viruses and physical theft, and which additionally relies on authentication, encryption and regular backups.",
+      "remember": "Three classes (owner, group, other) × three rights (r, w, x) = 9 bits. r = 4, w = 2, x = 1.",
+      "why": "Every <code>chmod 755</code> you will ever type at work is this exact table, and it is a reliable short-answer question.",
+      "practice": "Write the 9 permission bits and the octal number for: owner can do everything, group can read and write, others can do nothing."
+    },
+    {
+      "title": "I/O Hardware: Devices, Controllers and DMA",
+      "teacher": "The CPU runs billions of instructions per second. A printer prints ten pages a minute. If the CPU personally handed over every single byte to the printer, it would spend its whole life waiting. There has to be a smarter arrangement — and there is.",
+      "explain": "I/O devices are connected to the computer through a <strong>device controller</strong>, a small piece of electronics with its own registers and buffer. The CPU talks to the controller, not to the device. <strong>Direct Memory Access (DMA)</strong> then lets the controller move data to and from memory <strong>without the CPU doing the copying</strong>.",
+      "keyPoints": [
+        "<strong>Block devices</strong> (disk, CD) transfer fixed-size blocks and support addressing.",
+        "<strong>Character devices</strong> (keyboard, mouse, printer) transfer a stream of bytes, not addressable.",
+        "A <strong>device controller</strong> is the electronics that operates the device; it has registers and a local buffer.",
+        "Controller registers: <strong>data-in, data-out, status</strong> and <strong>control</strong>.",
+        "<strong>Port-mapped I/O</strong> uses special I/O instructions; <strong>memory-mapped I/O</strong> gives registers ordinary memory addresses.",
+        "<strong>Programmed I/O (polling)</strong>: the CPU repeatedly checks the busy bit — simple but wastes CPU.",
+        "<strong>Interrupt-driven I/O</strong>: the device raises an interrupt when it is ready — no polling, but one interrupt per byte or word.",
+        "<strong>DMA</strong>: a DMA controller transfers a whole block between device and memory, interrupting the CPU only <strong>once</strong>, at the end.",
+        "During DMA the controller briefly takes the memory bus — this is called <strong>cycle stealing</strong>.",
+        "DMA is essential for fast block devices such as disks; polling is still fine for very fast, rare transfers."
+      ],
+      "subtopics": [
+        {
+          "title": "Devices and controllers",
+          "text": "Devices differ wildly — a mouse sends a few bytes a second, a disk sends hundreds of megabytes. So each device has its own <strong>controller</strong>, a circuit board that knows the physical details (how to move a disk arm, how to fire a printer head) and presents a simple register interface upward. The CPU writes a command into the <strong>control register</strong>, reads progress from the <strong>status register</strong>, and passes bytes through the <strong>data registers</strong>. The controller usually has a local <strong>buffer</strong> so it can collect a whole sector before involving the CPU at all."
+        },
+        {
+          "title": "Three ways the CPU can do I/O",
+          "text": "In <strong>programmed I/O (polling)</strong>, the CPU sits in a loop reading the status register until the busy bit clears, then transfers one byte. It is easy to program but burns enormous amounts of CPU time. In <strong>interrupt-driven I/O</strong>, the CPU issues the command and goes off to do other work; the controller raises an <strong>interrupt</strong> when it is ready. Much better — but for a 4 KB disk block the CPU would still be interrupted thousands of times and would still copy every byte itself."
+        },
+        {
+          "title": "Direct Memory Access in five steps",
+          "text": "<strong>(1)</strong> The CPU programs the <strong>DMA controller</strong> with the memory address, the byte count and the direction. <strong>(2)</strong> The CPU then goes on with other work — it is completely free. <strong>(3)</strong> The DMA controller and the device transfer the data <strong>directly to or from memory</strong>, one word at a time, without the CPU. <strong>(4)</strong> The DMA controller decrements the count until it reaches zero. <strong>(5)</strong> It then raises a <strong>single interrupt</strong> to say the whole block is done. So instead of 4096 interruptions, the CPU is disturbed exactly once."
+        },
+        {
+          "title": "Cycle stealing",
+          "text": "The DMA controller and the CPU both need the memory bus, and only one can use it at a time. The DMA controller takes the bus for the odd cycle here and there, which slightly slows the CPU down — this is called <strong>cycle stealing</strong>. It is a very small price, because it replaces the CPU copying every single byte by hand."
+        }
+      ],
+      "realLife": "Polling is you standing at the door asking the delivery boy 'has it come? has it come?' every five seconds. Interrupt-driven is him ringing the doorbell when he arrives. DMA is him having the key to put the whole parcel directly in your cupboard and only ringing the bell once, when everything is inside.",
+      "table": {
+        "headers": ["", "Programmed I/O (polling)", "Interrupt-driven I/O", "DMA"],
+        "rows": [
+          ["Who copies the data", "The CPU", "The CPU", "The DMA controller"],
+          ["CPU free while waiting?", "No — it is in a loop", "Yes", "Yes"],
+          ["Interrupts per block", "None", "One per byte or word", "One per whole block"],
+          ["CPU overhead", "Very high", "Medium", "Very low"],
+          ["Best for", "Fast, very short transfers", "Slow devices like the keyboard", "Fast block devices like disks"]
+        ]
+      },
+      "mistake": "Do not write that DMA means 'no interrupt at all'. DMA raises <strong>exactly one</strong> interrupt, at the end of the whole transfer. The saving is in the <em>number</em> of interrupts and in the CPU not copying the bytes — not in eliminating interrupts.",
+      "examAnswer": "Input and output devices are connected to a computer through device controllers, which are electronic components containing control, status and data registers together with a local buffer, and which present a uniform register interface to the processor. The processor may perform input and output by programmed input/output, in which it repeatedly polls the status register and transfers each byte itself, or by interrupt-driven input/output, in which the controller raises an interrupt when it is ready, thereby freeing the processor from polling. Both methods nevertheless require the processor to transfer every byte. Direct Memory Access overcomes this by employing a DMA controller that is given the memory address, the transfer count and the direction, and which then transfers an entire block directly between the device and main memory without processor involvement, raising a single interrupt only when the transfer is complete. Because the DMA controller and the processor contend for the memory bus, DMA transfers briefly delay the processor, a phenomenon known as cycle stealing.",
+      "remember": "Polling = CPU asks repeatedly. Interrupt = device tells CPU. DMA = device writes to memory itself, one interrupt at the end.",
+      "why": "DMA is why you can copy a 2 GB file and still scroll smoothly. It is also one of the most common five-mark questions in the I/O section.",
+      "practice": "A 4 KB disk block is transferred using interrupt-driven I/O with one interrupt per word (4 bytes), and then using DMA. How many interrupts occur in each case?"
+    },
+    {
+      "title": "Principles of I/O Software: The Four Layers",
+      "teacher": "You write one line — save the file. It works whether you have an SSD, a pen drive, or a network folder. Somebody in the middle is translating your one simple wish into a thousand different hardware languages. That somebody is built in four neat layers.",
+      "explain": "I/O software is organised in <strong>four layers</strong>, from the hardware upward: <strong>interrupt handlers</strong>, <strong>device drivers</strong>, <strong>device-independent OS software</strong>, and <strong>user-level I/O software</strong>. Each layer hides some detail from the layer above, so that the topmost layer is simple and device-neutral.",
+      "keyPoints": [
+        "<strong>Goal 1 — Device independence</strong>: the same program should work with any device.",
+        "<strong>Goal 2 — Uniform naming</strong>: a device or file is named the same way regardless of hardware.",
+        "<strong>Goal 3 — Error handling</strong>: errors should be handled as close to the hardware as possible.",
+        "<strong>Goal 4 — Synchronous handling of asynchronous transfers</strong>: I/O really is interrupt-driven, but programs see a simple blocking call.",
+        "<strong>Goal 5 — Buffering</strong>: data is collected in memory because speeds do not match.",
+        "<strong>Goal 6 — Sharable vs dedicated devices</strong>: a disk is shared; a printer must be given to one job at a time.",
+        "Layer 1 (lowest, above hardware) — <strong>Interrupt handlers</strong>: hidden deep so the rest of the OS barely knows they exist.",
+        "Layer 2 — <strong>Device drivers</strong>: the only code that knows the specific hardware registers.",
+        "Layer 3 — <strong>Device-independent software</strong>: naming, protection, buffering, block size, error reporting, allocation.",
+        "Layer 4 (highest) — <strong>User-level software</strong>: library routines such as <code>printf</code>, and <strong>spooling</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "Interrupt handlers",
+          "text": "When a device finishes, it raises an interrupt and the CPU jumps to the <strong>interrupt handler</strong> (also called the interrupt service routine). The handler saves the context, works out what happened, and then unblocks the driver that was waiting. Interrupts are deliberately kept hidden in the deepest layer, because they are messy and hardware-specific — ideally the driver simply 'blocks until the operation completes' and never thinks about interrupts at all."
+        },
+        {
+          "title": "Device drivers",
+          "text": "A <strong>device driver</strong> is the only piece of software that knows the actual registers of a particular device — how many there are, what each bit means, how to start a seek. There is normally one driver per device type, written by the manufacturer. It accepts abstract requests such as 'read block 5000' from the layer above, translates them into the exact register writes the controller needs, and then blocks until the interrupt handler wakes it. Because drivers must issue privileged instructions, they usually run in <strong>kernel mode</strong> — which is also why a bad driver can crash the whole machine."
+        },
+        {
+          "title": "Device-independent I/O software",
+          "text": "This is the layer that does everything common to all devices, so that it is not rewritten in every driver. Its jobs are: providing a <strong>uniform interface</strong> to the drivers, <strong>naming</strong> devices, <strong>protection</strong> (checking who may use the device), supplying a <strong>device-independent block size</strong>, <strong>buffering</strong>, <strong>allocating and releasing dedicated devices</strong>, and <strong>reporting errors</strong> that the driver could not fix."
+        },
+        {
+          "title": "User-space I/O software and spooling",
+          "text": "Not all I/O software lives in the kernel. Library routines such as <code>printf</code> and <code>scanf</code> run in <strong>user space</strong>: they format the data and then make a single system call. Also in user space are <strong>spooling</strong> systems. A printer is a dedicated device — if every process could open it, their outputs would interleave into nonsense. So a special <strong>daemon</strong> process owns the printer, and user processes simply write their output into a <strong>spooling directory</strong>; the daemon prints the files one after another. The word SPOOL stands for Simultaneous Peripheral Operation On-Line."
+        }
+      ],
+      "realLife": "Sending a courier. You (user-level software) just write the address on the packet. The local office (device-independent layer) checks the address format and rates. The delivery boy for that particular locality (device driver) knows which gali and which building. The doorbell at the house (interrupt handler) signals that the delivery has finished.",
+      "table": {
+        "headers": ["Layer (top to bottom)", "Runs where", "Main job"],
+        "rows": [
+          ["User-level I/O software", "User space", "Library calls like printf; spooling"],
+          ["Device-independent OS software", "Kernel", "Naming, protection, buffering, uniform block size, error reporting"],
+          ["Device drivers", "Kernel", "Knows the actual device registers; translates requests into commands"],
+          ["Interrupt handlers", "Kernel", "Wakes the waiting driver when the device signals completion"],
+          ["Hardware", "—", "The device and its controller"]
+        ]
+      },
+      "mistake": "Students put the layers in the wrong order. Remember the hardware is at the bottom, so the <strong>interrupt handler is the LOWEST software layer</strong> (closest to hardware) and <strong>user-level software is the highest</strong>. Also, spooling is user-level software, not a driver.",
+      "examAnswer": "Input/output software is structured in four layers, each of which hides detail from the layer above it. The lowest layer consists of interrupt handlers, which respond to the completion interrupt raised by a device controller and unblock the driver that was waiting for it; interrupts are deliberately confined to this layer so that the remainder of the system need not be aware of them. Above this lie the device drivers, which are the only components that know the specific registers and commands of a particular device and which translate abstract requests into the corresponding hardware operations. The third layer is the device-independent operating system software, which performs the functions common to all devices, namely uniform interfacing to drivers, device naming and protection, provision of a device-independent block size, buffering, allocation and release of dedicated devices, and error reporting. The highest layer is user-level software, comprising library procedures such as printf that are linked into user programs, together with spooling systems in which a daemon process manages a dedicated device such as a printer. The principal goals of this design are device independence, uniform naming, error handling at the lowest possible level, and presenting inherently asynchronous transfers to user programs as simple synchronous operations.",
+      "remember": "Bottom to top: <strong>Interrupt handler → Driver → Device-independent → User-level</strong>. Hardware is below all four.",
+      "why": "This layering is exactly why plugging in a new printer does not require rewriting Word — you install one driver and everything else already works.",
+      "practice": "Name the four layers of I/O software in order from the hardware upwards, and state one function of each in a single line."
+    },
+    {
+      "title": "Disk Hardware and Access Time",
+      "teacher": "Reading from RAM takes about 100 nanoseconds. Reading from a hard disk takes about 10 milliseconds — that is one hundred thousand times slower. Why? Because something physical has to move. Let's look inside the disk and find out exactly what is moving, and how long each movement takes.",
+      "explain": "A hard disk has rotating <strong>platters</strong> divided into circular <strong>tracks</strong>, which are divided into <strong>sectors</strong>. The same track number on all platters forms a <strong>cylinder</strong>. Access time is the sum of <strong>seek time</strong>, <strong>rotational latency</strong> and <strong>transfer time</strong>.",
+      "keyPoints": [
+        "<strong>Platter</strong>: a rigid magnetic disc; a drive has several, stacked on one spindle.",
+        "<strong>Track</strong>: one circular ring on one surface of one platter.",
+        "<strong>Sector</strong>: a small arc of a track — the smallest readable unit, traditionally 512 bytes.",
+        "<strong>Cylinder</strong>: all the tracks at the same radius across all platters (they are read without moving the arm).",
+        "<strong>Seek time</strong>: time for the arm to move to the correct cylinder — the <strong>largest and most controllable</strong> part.",
+        "<strong>Rotational latency</strong>: time for the required sector to rotate under the head; on average <strong>half a rotation</strong>.",
+        "<strong>Transfer time</strong>: time to actually read or write the bytes once positioned.",
+        "<strong>Access time = seek time + rotational latency + transfer time.</strong>",
+        "Average rotational latency (ms) = 30000 / RPM — e.g. 7200 RPM gives about <strong>4.17 ms</strong>.",
+        "Disk scheduling can only reduce <strong>seek time</strong> — that is why every algorithm measures head movement.",
+        "The disk is addressed by a <strong>logical block number</strong>, which the controller maps to cylinder, head and sector.",
+        "An <strong>SSD</strong> has no moving parts, so seek time and rotational latency are essentially zero — disk scheduling barely matters there."
+      ],
+      "subtopics": [
+        {
+          "title": "The geometry",
+          "text": "Picture several stacked plates spinning on one spindle, with one read/write head per surface, all mounted on a single arm that moves in and out together. Each surface carries thousands of concentric <strong>tracks</strong>, and each track is cut into <strong>sectors</strong>. Because all the heads move as one unit, the set of tracks at the same radius — the <strong>cylinder</strong> — can be read without moving the arm at all. That is why the OS tries to place related data in the same cylinder."
+        },
+        {
+          "title": "Where the time actually goes",
+          "text": "<strong>Seek time</strong> is mechanical arm movement and is typically 5 to 10 milliseconds — by far the biggest component and the only one software can influence. <strong>Rotational latency</strong> depends only on the spin speed: on average you wait half a rotation, so at 7200 RPM (one rotation = 60000/7200 = 8.33 ms) the average latency is about 4.17 ms. <strong>Transfer time</strong> is usually well under a millisecond for one sector. This is the whole reason disk scheduling exists: attack the biggest number."
+        },
+        {
+          "title": "Why the disk is the bottleneck",
+          "text": "A CPU instruction takes under a nanosecond; a RAM access takes about 100 nanoseconds; a disk access takes about 10 milliseconds. In the time one disk read completes, the CPU could have executed roughly ten million instructions. Every trick in this unit — caching, buffering, scheduling, RAM disks — exists to avoid or shorten that wait."
+        }
+      ],
+      "realLife": "Think of an old jukebox or a record player. Moving the arm across to the right song is the <strong>seek</strong>. Waiting for the record to spin around to the start of that song is the <strong>rotational latency</strong>. Actually playing the song is the <strong>transfer</strong>. Moving the arm is the slow, clumsy part — exactly as in a disk.",
+      "worked": "<strong>Calculating disk access time.</strong> A disk spins at <strong>6000 RPM</strong>, has an average seek time of <strong>6 ms</strong>, and a transfer rate of <strong>50 MB per second</strong>. Find the average time to read one 4 KB block.<br><br><strong>Step 1 — Seek time</strong> = 6 ms (given).<br><br><strong>Step 2 — Rotational latency.</strong> One full rotation takes 60 / 6000 seconds = 0.01 s = <strong>10 ms</strong>. On average we wait half a rotation, so latency = 10 / 2 = <strong>5 ms</strong>.<br>(Shortcut: average latency in ms = 30000 / RPM = 30000 / 6000 = 5 ms.)<br><br><strong>Step 3 — Transfer time.</strong> 4 KB = 4096 bytes. At 50 MB/s = 50 × 1024 × 1024 bytes/s, time = 4096 / 52428800 s ≈ 0.000078 s ≈ <strong>0.08 ms</strong>.<br><br><strong>Step 4 — Total access time</strong> = 6 + 5 + 0.08 = <strong>11.08 ms</strong>.<br><br>Look at the split: seek 6 ms, latency 5 ms, transfer only 0.08 ms. Over <strong>99 per cent</strong> of the time is spent just getting to the data. That single observation is the justification for every disk scheduling algorithm in the next topic.",
+      "table": {
+        "headers": ["Component", "What causes it", "Typical size", "Can software reduce it?"],
+        "rows": [
+          ["Seek time", "Arm moving to the right cylinder", "5-10 ms", "Yes — this is what scheduling attacks"],
+          ["Rotational latency", "Waiting for the sector to come round", "About 4-5 ms (half a rotation)", "Only slightly, by sector ordering"],
+          ["Transfer time", "Actually reading the bytes", "Well under 1 ms per sector", "No — it is a hardware limit"]
+        ]
+      },
+      "mistake": "Rotational latency is <strong>half</strong> a rotation on average, not a full rotation. And do not confuse a track with a cylinder — a track is on one surface, a cylinder is the same track number on <em>all</em> surfaces together.",
+      "examAnswer": "A magnetic disk consists of one or more rotating platters, each surface of which is divided into concentric circular tracks that are further divided into sectors, the sector being the smallest addressable unit. The set of tracks occupying the same relative position on all surfaces constitutes a cylinder, which can be accessed without any movement of the read/write arm. The total time required to access a block of data is the sum of three components: the seek time, which is the time taken by the arm to position itself over the required cylinder; the rotational latency, which is the time taken for the required sector to rotate beneath the head and which averages one half of a rotation; and the transfer time, which is the time actually required to read or write the data. Since seek time is normally the dominant component, disk scheduling algorithms attempt to minimise the total movement of the read/write head.",
+      "remember": "<strong>Access time = Seek + Rotational latency + Transfer.</strong> Average latency (ms) = 30000 / RPM.",
+      "why": "You cannot explain why SSTF beats FCFS unless you know that seek time dominates. This topic is the reasoning behind the next one.",
+      "practice": "A disk rotates at 10000 RPM with an average seek time of 4 ms. Find the average rotational latency and the approximate access time for a small block, ignoring transfer time."
+    },
+    {
+      "title": "Disk Scheduling Algorithms",
+      "teacher": "Eight people in your building have pressed the lift button, on floors all over the place. Should the lift serve them in the exact order they pressed? Or should it just sweep up and then sweep down? That choice is worth real seconds — and inside a computer it is worth a huge amount of performance. Let's do the numbers.",
+      "explain": "Several disk requests usually wait in a queue at once. <strong>Disk scheduling</strong> decides the order in which to serve them so that the total <strong>head movement</strong> (and therefore the seek time) is as small as possible. The six standard algorithms are <strong>FCFS, SSTF, SCAN, C-SCAN, LOOK</strong> and <strong>C-LOOK</strong>.",
+      "keyPoints": [
+        "<strong>FCFS</strong>: serve in arrival order. Fair and simple, but the head jumps wildly.",
+        "<strong>SSTF</strong>: always serve the closest request next. Good average, but <strong>can starve</strong> far-away requests.",
+        "<strong>SCAN (elevator)</strong>: sweep in one direction to the <strong>end of the disk</strong>, then reverse and sweep back.",
+        "<strong>C-SCAN</strong>: sweep to the end, then <strong>jump back to the start</strong> without serving, and sweep the same way again.",
+        "C-SCAN gives a <strong>more uniform waiting time</strong> than SCAN, because no cylinder waits twice as long as another.",
+        "<strong>LOOK</strong>: like SCAN, but reverses at the <strong>last request</strong>, not at the physical end of the disk.",
+        "<strong>C-LOOK</strong>: like C-SCAN, but jumps back to the <strong>lowest request</strong>, not to cylinder 0.",
+        "LOOK and C-LOOK are the practical versions — no wasted travel to an empty end of the disk.",
+        "Total head movement is measured in <strong>cylinders</strong>; always state the starting head position and the direction.",
+        "Direction matters: SCAN, C-SCAN, LOOK and C-LOOK give different totals depending on which way the head is moving, so <strong>always state your assumed direction</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "FCFS and SSTF",
+          "text": "<strong>FCFS</strong> is perfectly fair — no request is ever overtaken — but it makes no attempt to reduce movement, so the head can swing from cylinder 183 down to 37 and back up to 122. <strong>SSTF</strong> (Shortest Seek Time First) picks the request closest to the current head position, which is a great improvement, but it is essentially the SJF of disk scheduling and inherits the same flaw: a request at cylinder 190 can be starved indefinitely while new requests keep arriving near cylinder 50."
+        },
+        {
+          "title": "SCAN and C-SCAN",
+          "text": "<strong>SCAN</strong>, the elevator algorithm, moves the head in one direction serving every request on the way, reaches the physical end of the disk, reverses, and comes back serving the rest. Nothing starves. But it is slightly unfair in timing: a cylinder just behind the head has to wait for the full sweep out and back, while one just ahead is served at once. <strong>C-SCAN</strong> (Circular SCAN) fixes this by treating the disk as circular: it serves in one direction only, and on reaching the end it returns immediately to the other end <strong>without serving anything on the way back</strong>. Every cylinder is then visited at a regular interval, so waiting time is much more uniform."
+        },
+        {
+          "title": "LOOK and C-LOOK",
+          "text": "SCAN and C-SCAN waste movement by travelling all the way to cylinder 0 or 199 even when no request is out there. <strong>LOOK</strong> and <strong>C-LOOK</strong> simply 'look' ahead: they reverse (or jump back) at the <strong>last actual request</strong> in that direction. LOOK is the improved SCAN, C-LOOK is the improved C-SCAN, and in practice real operating systems use versions of these two."
+        },
+        {
+          "title": "Choosing between them",
+          "text": "FCFS is used only when the queue is short. SSTF gives the best average seek but risks starvation. SCAN and C-SCAN are good under heavy load, and C-SCAN is preferred when uniform response time matters. LOOK and C-LOOK always beat their parents, so they are the practical defaults. On an SSD none of this matters much, because there is no arm to move."
+        }
+      ],
+      "realLife": "A lift in a ten-storey building. FCFS is a lift that goes to floors in exactly the order the buttons were pressed — up to 8, down to 2, up to 7. SSTF goes to the nearest requested floor, which may leave the person on floor 10 waiting all day. SCAN is a normal lift: it sweeps all the way up, then all the way down. LOOK is a smarter lift that turns around at the highest floor anyone actually asked for, instead of pointlessly going to the tenth.",
+      "worked": "<strong>The standard worked example.</strong> Request queue (cylinders): <strong>98, 183, 37, 122, 14, 124, 65, 67</strong>. The head starts at cylinder <strong>53</strong>. The disk has cylinders <strong>0 to 199</strong>. For SCAN, C-SCAN, LOOK and C-LOOK we assume the head is moving <strong>towards the higher cylinder numbers</strong>.<br><br>━━━━━━━━━━━━━━━━━━━━<br><strong>1. FCFS</strong> — serve in the given order.<br>Order: 53 → 98 → 183 → 37 → 122 → 14 → 124 → 65 → 67<br>Movements: |98-53| = 45, |183-98| = 85, |37-183| = 146, |122-37| = 85, |14-122| = 108, |124-14| = 110, |65-124| = 59, |67-65| = 2<br>45 + 85 + 146 + 85 + 108 + 110 + 59 + 2<br><strong>Total head movement = 640 cylinders.</strong><br><br>━━━━━━━━━━━━━━━━━━━━<br><strong>2. SSTF</strong> — always go to the nearest pending request.<br>From 53: nearest is 65 (distance 12). → 65<br>From 65: nearest is 67 (2). → 67<br>From 67: 37 is 30 away, 98 is 31 away → 37 wins. → 37<br>From 37: nearest is 14 (23). → 14<br>From 14: only higher ones left; nearest is 98 (84). → 98<br>From 98: nearest is 122 (24). → 122<br>From 122: nearest is 124 (2). → 124<br>From 124: last one is 183 (59). → 183<br>Order: 53 → 65 → 67 → 37 → 14 → 98 → 122 → 124 → 183<br>12 + 2 + 30 + 23 + 84 + 24 + 2 + 59<br><strong>Total head movement = 236 cylinders.</strong><br><br>━━━━━━━━━━━━━━━━━━━━<br><strong>3. SCAN</strong> — go up to the end (199), then reverse.<br>Order: 53 → 65 → 67 → 98 → 122 → 124 → 183 → <strong>199</strong> → 37 → 14<br>Up: 199 - 53 = 146<br>Down: 199 - 14 = 185<br>146 + 185<br><strong>Total head movement = 331 cylinders.</strong><br><br>━━━━━━━━━━━━━━━━━━━━<br><strong>4. C-SCAN</strong> — go up to 199, jump to 0, continue upward.<br>Order: 53 → 65 → 67 → 98 → 122 → 124 → 183 → <strong>199</strong> → <strong>0</strong> → 14 → 37<br>Up: 199 - 53 = 146<br>Jump back: 199 - 0 = 199<br>Up again: 37 - 0 = 37<br>146 + 199 + 37<br><strong>Total head movement = 382 cylinders.</strong><br><br>━━━━━━━━━━━━━━━━━━━━<br><strong>5. LOOK</strong> — like SCAN, but turn back at the last request (183), not at 199.<br>Order: 53 → 65 → 67 → 98 → 122 → <strong>124 → 183</strong> → 37 → 14<br>Up: 183 - 53 = 130<br>Down: 183 - 14 = 169<br>130 + 169<br><strong>Total head movement = 299 cylinders.</strong><br><br>━━━━━━━━━━━━━━━━━━━━<br><strong>6. C-LOOK</strong> — like C-SCAN, but jump back to the lowest request (14), not to 0.<br>Order: 53 → 65 → 67 → 98 → 122 → 124 → <strong>183</strong> → <strong>14</strong> → 37<br>Up: 183 - 53 = 130<br>Jump back: 183 - 14 = 169<br>Up again: 37 - 14 = 23<br>130 + 169 + 23<br><strong>Total head movement = 322 cylinders.</strong><br><br>━━━━━━━━━━━━━━━━━━━━<br><strong>Final comparison (head at 53, moving upward):</strong><br>FCFS = 640 · SSTF = <strong>236 (best here)</strong> · SCAN = 331 · C-SCAN = 382 · LOOK = 299 · C-LOOK = 322<br><br>Two things to notice. First, <strong>LOOK always beats SCAN</strong> and <strong>C-LOOK always beats C-SCAN</strong>, because they never travel to an end of the disk with no requests on it. Second, SSTF wins on total distance here, but it is the only one of the six that can <strong>starve</strong> a request — so the lowest number is not automatically the best algorithm. Always add that sentence in the exam.",
+      "table": {
+        "headers": ["Algorithm", "Rule", "Total movement (this example)", "Starvation possible?"],
+        "rows": [
+          ["FCFS", "Serve in arrival order", "640", "No"],
+          ["SSTF", "Serve the nearest request next", "236", "Yes"],
+          ["SCAN", "Sweep to cylinder 199, then reverse", "331", "No"],
+          ["C-SCAN", "Sweep to 199, jump to 0, sweep up again", "382", "No"],
+          ["LOOK", "Sweep to the last request, then reverse", "299", "No"],
+          ["C-LOOK", "Sweep to the last request, jump to the lowest, sweep up", "322", "No"]
+        ]
+      },
+      "mistake": "Three classic errors. <strong>(1)</strong> Forgetting to count the 199-to-0 jump in C-SCAN — it <em>is</em> counted as head movement (199 cylinders here). <strong>(2)</strong> Going all the way to 199 in LOOK — LOOK stops at 183. <strong>(3)</strong> Not stating the direction of travel. SCAN with the head moving <em>downward</em> gives a completely different total, so always write 'assuming the head moves towards higher cylinders'.",
+      "examAnswer": "Disk scheduling determines the order in which pending disk requests are serviced, with the objective of minimising the total movement of the read/write head and hence the seek time. In first-come first-served scheduling requests are served in arrival order, which is fair but may cause large and wasteful head movements. Shortest seek time first always selects the pending request closest to the current head position, which substantially reduces total movement but may indefinitely postpone requests that lie far from the head. The SCAN or elevator algorithm moves the head in one direction, servicing all requests encountered until it reaches the end of the disk, and then reverses direction. C-SCAN treats the cylinders as a circular list, servicing requests in one direction only and returning immediately to the opposite end without servicing, which produces a more uniform waiting time. LOOK and C-LOOK are refinements of SCAN and C-SCAN respectively in which the head reverses or returns at the last request in the current direction rather than at the physical end of the disk, thereby avoiding unnecessary travel. For the request queue 98, 183, 37, 122, 14, 124, 65, 67 with the head initially at cylinder 53 and moving towards higher cylinder numbers on a disk of 200 cylinders, the total head movements are 640, 236, 331, 382, 299 and 322 cylinders for FCFS, SSTF, SCAN, C-SCAN, LOOK and C-LOOK respectively.",
+      "remember": "SCAN goes to the WALL. LOOK only goes to the LAST REQUEST. The 'C' versions jump back and sweep one way only.",
+      "why": "This is the most predictable numerical question in the whole paper. The method never changes — only the numbers do. Practise it twice and it is guaranteed marks.",
+      "practice": "Request queue: 82, 170, 43, 140, 24, 16, 190, with the head at 50 on a 0-199 disk moving upward. Compute the total head movement for FCFS, SSTF, SCAN, C-SCAN, LOOK and C-LOOK."
+    },
+    {
+      "title": "Disk Error Handling, Caching, RAM Disks and Clocks",
+      "teacher": "One last set of ideas, and they all share one theme: the disk is slow and imperfect, so the OS quietly patches around it. And then there is the clock — the tiniest piece of hardware in the machine, doing the single most important job of all: telling the OS when to stop one process and start another.",
+      "explain": "Disks come from the factory with <strong>bad sectors</strong>, so the controller hides them. <strong>Track-at-a-time caching</strong> and <strong>RAM disks</strong> both trade memory for speed. And the <strong>clock</strong> (timer) is the hardware that makes preemptive multitasking possible at all.",
+      "keyPoints": [
+        "Every disk leaves the factory with some <strong>bad sectors</strong> — this is normal and expected.",
+        "<strong>Sector sparing (forwarding)</strong>: the controller substitutes a spare sector for a bad one, invisibly.",
+        "<strong>Sector slipping</strong>: all sectors are shifted along by one so the bad one is skipped, preserving order.",
+        "The controller also uses an <strong>ECC (error-correcting code)</strong> per sector to fix small errors on the fly.",
+        "<strong>Track-at-a-time caching</strong>: the controller reads the <strong>whole track</strong> into its buffer, not just the requested sector.",
+        "It costs no extra seek and almost no extra time, and later requests on that track are served from memory.",
+        "A <strong>RAM disk</strong> is a block of main memory used as if it were a disk — no seek, no rotation, extremely fast.",
+        "RAM disks are <strong>volatile</strong>: everything is lost when power goes off. Used for temporary files and boot images.",
+        "<strong>Clock (timer) hardware</strong>: a crystal oscillator, a counter and a holding register; every tick decrements the counter.",
+        "When the counter reaches zero it raises a <strong>clock interrupt</strong>.",
+        "Clock software duties: <strong>keep the time of day, stop a process exceeding its time slice, do CPU accounting, handle alarms and watchdogs, and gather profiling statistics</strong>.",
+        "<strong>Memory-mapped terminals</strong>: the screen's contents are held in a <strong>video RAM</strong> that is part of the address space — writing a byte there changes a character on screen instantly."
+      ],
+      "subtopics": [
+        {
+          "title": "Bad sectors and error handling",
+          "text": "A modern disk has millions of sectors and it is simply uneconomical to guarantee that every one is perfect, so manufacturers ship spares. When a sector is found to be bad, the controller uses <strong>sector sparing</strong>, secretly remapping the logical address to a spare sector elsewhere — the OS never notices, though the remapped sector costs an extra seek. <strong>Sector slipping</strong> is the alternative: every sector from the bad one onwards is shifted along by one position, which keeps the sequential ordering intact at the cost of rewriting a whole track. Smaller day-to-day errors are corrected automatically by the <strong>ECC</strong> bits stored with every sector."
+        },
+        {
+          "title": "Track-at-a-time caching",
+          "text": "Once the head has seeked to a track and the platter is spinning anyway, reading the <strong>entire track</strong> costs barely more than reading one sector — the expensive part (the seek) has already been paid. So the controller reads the whole track into its own buffer. If the next request happens to be for another sector on the same track, it is answered straight from the buffer with <strong>zero</strong> seek and <strong>zero</strong> rotational delay. Because files are usually read sequentially, this pays off very often. Note that this cache is inside the <strong>controller</strong>, separate from the OS's own buffer cache in main memory."
+        },
+        {
+          "title": "RAM disks",
+          "text": "A <strong>RAM disk</strong> takes a chunk of main memory and makes the device driver treat it as an ordinary block device. Reads and writes become simple memory copies — no seek, no rotational latency, so it is thousands of times faster. The catch is obvious: RAM is <strong>volatile</strong>, so everything vanishes when the machine is switched off, and the memory used is no longer available to programs. RAM disks are therefore used for temporary scratch files, for <code>/tmp</code>, and famously for the <strong>initial RAM disk</strong> that Linux loads at boot time before the real file system is ready."
+        },
+        {
+          "title": "Clock hardware and clock software",
+          "text": "The clock is very simple hardware: a <strong>crystal oscillator</strong> produces a steady pulse, a <strong>counter</strong> counts the pulses down from a value loaded from a <strong>holding register</strong>, and when the counter reaches zero it generates a <strong>clock interrupt</strong> and reloads. In <em>one-shot</em> mode it fires once; in <em>square-wave</em> mode it reloads automatically and ticks forever. The clock driver then does several jobs: maintaining the <strong>time of day</strong>, <strong>preventing a process from running past its time quantum</strong> (which is what makes preemptive scheduling possible at all), <strong>accounting for CPU usage</strong>, handling <strong>alarm</strong> system calls, providing <strong>watchdog timers</strong> for parts of the OS, and collecting <strong>profiling</strong> statistics."
+        },
+        {
+          "title": "Memory-mapped terminals",
+          "text": "In a <strong>memory-mapped terminal</strong>, the display has a <strong>video RAM</strong> that is mapped into the computer's ordinary address space. To put a character on the screen, software simply <strong>writes a byte into memory</strong> — the video controller continuously reads that RAM and redraws the screen, so the change appears immediately. This is far faster than sending characters one at a time over a serial line, which is how old character terminals worked. Terminal input software also has two modes: <strong>canonical (cooked) mode</strong>, in which the driver collects a whole line and lets the user edit it with backspace before delivering it, and <strong>raw mode</strong>, in which every keystroke is passed to the program at once — which is what a text editor or a game needs."
+        }
+      ],
+      "realLife": "Track-at-a-time caching is going to the market and buying the whole week's vegetables in one trip instead of walking back for each item — the walk was the expensive part. A RAM disk is keeping your daily-use things on the study table instead of in the cupboard downstairs: instant to reach, but the table is cleared every night. And the clock interrupt is the bell in school — without it, one teacher would simply never stop talking.",
+      "table": {
+        "headers": ["Mechanism", "What it trades", "What you gain", "The catch"],
+        "rows": [
+          ["Sector sparing", "A few spare sectors", "Bad sectors become invisible", "The remapped sector costs an extra seek"],
+          ["Track-at-a-time caching", "Buffer memory in the controller", "Later reads on the same track are free", "Useless if access is random"],
+          ["RAM disk", "Main memory", "Enormous speed — no seek, no rotation", "Volatile; data lost on power off"],
+          ["Clock interrupt", "A tiny amount of CPU per tick", "Preemptive multitasking becomes possible", "None worth mentioning"]
+        ]
+      },
+      "mistake": "Do not confuse a <strong>RAM disk</strong> with <strong>virtual memory</strong> — they are opposites. A RAM disk uses <em>memory to act like a disk</em>; virtual memory uses <em>disk to act like memory</em>. Also, the track cache sits in the disk controller, which is not the same thing as the OS buffer cache in main memory.",
+      "examAnswer": "Because it is impractical to manufacture disks entirely free of defects, disk controllers handle bad sectors transparently, either by sector sparing, in which the address of a defective sector is remapped to a spare sector held in reserve, or by sector slipping, in which the sectors following the defect are shifted by one position so that sequential ordering is preserved; in addition, an error-correcting code stored with each sector allows small errors to be corrected automatically. Track-at-a-time caching improves performance by reading an entire track into the controller's buffer once the head has been positioned, so that subsequent requests for sectors on the same track are satisfied without further seek or rotational delay. A RAM disk is a portion of main memory that is presented by its driver as an ordinary block device, giving extremely fast access at the cost of volatility. The clock consists of a crystal oscillator, a counter and a holding register, and generates an interrupt each time the counter reaches zero; the clock software uses these interrupts to maintain the time of day, to prevent processes from exceeding their allotted time quantum, to perform CPU accounting, to implement alarm and watchdog timers, and to gather profiling information. In a memory-mapped terminal the screen contents are held in a video RAM that forms part of the address space, so that writing a byte to this memory immediately alters the displayed character.",
+      "remember": "Bad sector → spare it or slip it. Track cache = seek already paid, so read it all. RAM disk = memory pretending to be a disk. Clock tick = the OS's heartbeat.",
+      "why": "The clock is the small detail that makes the whole of Unit 2's preemptive scheduling possible — without a timer interrupt the OS could never take the CPU back from a running process.",
+      "practice": "Explain the difference between sector sparing and sector slipping. Then list any four duties of the clock software."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Where are a file's attributes (name, size, owner, permissions) physically stored?",
+      "options": [
+        "At the beginning of the file's own data",
+        "In the directory entry, separate from the data",
+        "In the CPU registers",
+        "They are not stored at all — they are recalculated each time"
+      ],
+      "answer": 1,
+      "why": "Attributes live in the directory entry (the inode in UNIX), not inside the file. That is why renaming a 2 GB file is instant — only the directory entry changes."
+    },
+    {
+      "q": "Which directory structure first makes genuine file sharing between two users possible?",
+      "options": [
+        "Single-level",
+        "Two-level",
+        "Tree-structured",
+        "Acyclic-graph"
+      ],
+      "answer": 3,
+      "why": "In a tree each file has exactly one path. The acyclic-graph structure adds links, so the same file can appear in two directories and an edit through either name is seen by both."
+    },
+    {
+      "q": "Which allocation method suffers from external fragmentation?",
+      "options": [
+        "Contiguous",
+        "Linked",
+        "Indexed",
+        "None of them"
+      ],
+      "answer": 0,
+      "why": "Contiguous allocation needs a run of consecutive free blocks, so free space breaks into holes too small to be usable. Linked and indexed allow blocks to be scattered, so neither has external fragmentation."
+    },
+    {
+      "q": "In UNIX-style protection, the permission string rwxr-xr-- means…",
+      "options": [
+        "Everyone can do everything",
+        "Owner: read/write/execute; group: read/execute; others: read only",
+        "Owner: read only; everyone else: full access",
+        "Nobody can access the file"
+      ],
+      "answer": 1,
+      "why": "The nine bits are read in three groups of three: owner rwx, group r-x, other r--. In octal this is 754 (r=4, w=2, x=1)."
+    },
+    {
+      "q": "During a DMA transfer of one 4 KB disk block, how many interrupts does the CPU receive?",
+      "options": [
+        "One per byte",
+        "One per word",
+        "Exactly one, at the end of the whole transfer",
+        "None at all"
+      ],
+      "answer": 2,
+      "why": "The DMA controller moves the whole block to memory by itself and interrupts the CPU only once, on completion. It is not zero interrupts — the CPU must still be told the transfer has finished."
+    },
+    {
+      "q": "Which is the LOWEST layer of I/O software, sitting just above the hardware?",
+      "options": [
+        "User-level I/O software",
+        "Device-independent OS software",
+        "Device drivers",
+        "Interrupt handlers"
+      ],
+      "answer": 3,
+      "why": "From the hardware upwards the order is: interrupt handlers, device drivers, device-independent OS software, user-level software. Interrupts are kept in the deepest layer so the rest of the system need not deal with them."
+    },
+    {
+      "q": "A disk rotates at 6000 RPM. What is the average rotational latency?",
+      "options": [
+        "10 ms",
+        "5 ms",
+        "6 ms",
+        "0.6 ms"
+      ],
+      "answer": 1,
+      "why": "One rotation = 60/6000 s = 10 ms. On average you wait half a rotation, so 5 ms. Shortcut: average latency in ms = 30000 / RPM."
+    },
+    {
+      "q": "For the queue 98, 183, 37, 122, 14, 124, 65, 67 with the head at 53, which algorithm gives a total head movement of 640 cylinders?",
+      "options": [
+        "SSTF",
+        "FCFS",
+        "LOOK",
+        "C-LOOK"
+      ],
+      "answer": 1,
+      "why": "FCFS serves in arrival order and swings the head wildly: 45+85+146+85+108+110+59+2 = 640. SSTF gives 236, LOOK 299 and C-LOOK 322 for the same queue."
+    },
+    {
+      "q": "What is the key difference between SCAN and LOOK?",
+      "options": [
+        "SCAN serves requests in arrival order, LOOK does not",
+        "SCAN travels to the physical end of the disk; LOOK reverses at the last request",
+        "LOOK can starve requests, SCAN cannot",
+        "There is no difference"
+      ],
+      "answer": 1,
+      "why": "LOOK is the practical improvement on SCAN: it 'looks' ahead and turns around at the last actual request instead of wasting movement travelling to cylinder 0 or 199. LOOK therefore always gives movement less than or equal to SCAN."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Compare contiguous, linked and indexed file allocation. For each, state how the directory entry looks, how direct access is performed, and one major disadvantage.",
+      "hint": "Mention external fragmentation for contiguous, poor direct access for linked, and index-block overhead for indexed."
+    },
+    {
+      "q": "Explain the four directory structures (single-level, two-level, tree and acyclic graph). What problem does each one solve that the previous one could not?"
+    },
+    {
+      "q": "What is Direct Memory Access? Explain the steps of a DMA transfer and compare it with programmed I/O and interrupt-driven I/O in terms of CPU overhead.",
+      "hint": "Remember DMA raises exactly one interrupt, and mention cycle stealing."
+    },
+    {
+      "q": "A disk has 200 cylinders (0-199). The pending request queue is 98, 183, 37, 122, 14, 124, 65, 67 and the head is at cylinder 53, moving towards higher numbers. Calculate the total head movement for FCFS, SSTF, SCAN, C-SCAN, LOOK and C-LOOK, showing the order of service in each case.",
+      "hint": "Write the service order first, then the individual distances, then the sum. Do not forget to count the return jump in C-SCAN and C-LOOK."
+    },
+    {
+      "q": "Describe the four layers of I/O software and the main goals of I/O software design. Where does spooling fit, and why is it needed for a printer?"
+    }
+  ]
+};

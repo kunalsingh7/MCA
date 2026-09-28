@@ -1,0 +1,510 @@
+/* Programming & Problem Solving in C (MCA 109) — Unit 4. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.c = UNITS.c || [];
+UNITS.c[3] = {
+  "num": 4,
+  "title": "Pointers, Structures and Unions",
+  "problem": "So far every variable held one value of one type — one int, one float. But real data is not like that. A student has a roll number AND a name AND marks, all together. And sometimes you don't know until the program is running how much memory you will need.",
+  "solution": "Pointers let you work with memory addresses directly, so you can pass data around cheaply and ask for memory while the program runs. Structures and unions let you group different types of data under one name, so one variable can describe one whole student.",
+  "objectives": [
+    "Explain what a pointer really stores, and use the <code>&amp;</code> and <code>*</code> operators correctly",
+    "Predict how an address changes after pointer arithmetic, using the size of the type",
+    "Allocate and release memory at run time using malloc(), calloc() and free()",
+    "Describe how an array name relates to a pointer, and state the one thing an array name cannot do",
+    "Use pointer to pointer, arrays of pointers and command line arguments",
+    "Write functions that return pointers, and call a function through a pointer to function",
+    "Declare a structure, access its members with <code>.</code> and <code>-&gt;</code>, and build a self-referential structure",
+    "Compare a structure with a union, including how much memory each one takes",
+    "Use enum and typedef to make a program shorter and more readable"
+  ],
+  "topics": [
+    {
+      "title": "Pointers: the & and * Operators",
+      "teacher": "Think of a hostel. Every room has a number, and inside every room there is a student. Now, a small note in your pocket that says 'Room 204' is not a student — it is a way to FIND the student. A pointer is exactly that note.",
+      "explain": "A <strong>pointer is a variable that stores the memory address of another variable</strong>. Every variable lives at some address in memory. The <strong>address-of operator <code>&amp;</code></strong> gives you that address, and the <strong>dereference (indirection) operator <code>*</code></strong> goes to that address and gives you the value stored there. Because the pointer knows where the value lives, it can also change it.",
+      "keyPoints": [
+        "A pointer stores an <strong>address</strong>, not a normal value.",
+        "<code>&amp;x</code> means 'the address of x'. It is read as <em>address-of</em>.",
+        "<code>*p</code> means 'the value kept at the address inside p'. This is called <em>dereferencing</em>.",
+        "Declaration: <code>int *p;</code> — read it as 'p is a pointer to an int'.",
+        "The type matters: an <code>int *</code> may point only at an int, a <code>char *</code> only at a char.",
+        "A pointer that points nowhere should be set to <code>NULL</code>.",
+        "<code>*p = 90;</code> changes the ORIGINAL variable, because p knows where it lives.",
+        "Every pointer takes the same amount of memory (commonly 8 bytes on a 64-bit machine), whatever it points to."
+      ],
+      "subtopics": [
+        {
+          "title": "Two different meanings of the star",
+          "text": "The same <code>*</code> symbol is used twice, and this confuses everybody at first. In <code>int *p;</code> the star is part of the <strong>declaration</strong> — it says 'p is a pointer'. Later, in <code>*p = 90;</code> the star is the <strong>dereference operator</strong> — it says 'go to that address'. Declaration star and working star are different jobs."
+        },
+        {
+          "title": "Why the pointer's type matters",
+          "text": "A pointer stores only a starting address. It does not store how many bytes to read from there — the <em>type</em> supplies that. An <code>int *</code> reads 4 bytes from the address, a <code>char *</code> reads 1 byte. That is why you cannot point an <code>int *</code> at a float without a cast."
+        },
+        {
+          "title": "NULL and the dangling pointer",
+          "text": "A pointer that has not been given any address holds garbage, and using it can crash the program. Always initialise: <code>int *p = NULL;</code> means 'points to nothing, deliberately'. Also, after you <code>free()</code> memory, the pointer still holds the old address — that is a <strong>dangling pointer</strong>. Set it to NULL immediately."
+        }
+      ],
+      "realLife": "Your friend's house address written on a slip of paper. The slip is not your friend (that is the pointer), but with it you can reach her house and even leave something there — which is what dereferencing does.",
+      "code": "#include <stdio.h>\n\nint main() {\n    int marks = 85;\n    int *p = &marks;          // p now holds the ADDRESS of marks\n\n    printf(\"Value of marks   : %d\\n\", marks);\n    printf(\"Address of marks : %p\\n\", (void*)&marks);\n    printf(\"Value inside p   : %p\\n\", (void*)p);     // same address\n    printf(\"Value at *p      : %d\\n\", *p);           // 85\n\n    *p = 90;                  // change marks THROUGH the pointer\n    printf(\"marks is now     : %d\\n\", marks);        // 90\n    return 0;\n}",
+      "codeNote": "p holds where marks lives; *p reaches inside and can even change the original value.",
+      "mistake": "Students write <code>int *p = marks;</code> and wonder why it breaks. A pointer must be given an ADDRESS, so it is <code>int *p = &amp;marks;</code>. Remember: <code>&amp;</code> puts the address IN, <code>*</code> takes the value OUT.",
+      "examAnswer": "A pointer is a variable that stores the memory address of another variable. It is declared using the indirection operator, for example int *p; declares p as a pointer to an integer. The address-of operator & is used to obtain the address of a variable, as in p = &marks;, while the dereference operator * is used to access the value stored at that address, as in *p. Since a pointer holds the address of a variable, modifying *p directly modifies the original variable. A pointer that does not point to any valid location should be assigned the value NULL.",
+      "remember": "&amp; = address of (puts the address IN). * = value at (takes the value OUT).",
+      "why": "Pointers are the base of everything that follows — dynamic memory, strings, call by reference, linked lists. Without pointers, half of C is closed to you.",
+      "practice": "If int a = 20; int *p = &a; — write what a, &a, p, *p and &p each mean in one line."
+    },
+    {
+      "title": "Pointer Expressions and Pointer Arithmetic",
+      "teacher": "Here is a surprise that trips up almost everyone. If a pointer holds address 2000 and you write p + 1, the answer is usually NOT 2001. Let me show you why, because this one idea explains how arrays really work.",
+      "explain": "You can do limited arithmetic on pointers: add an integer, subtract an integer, subtract one pointer from another, and compare them. The important rule is that <strong>pointer arithmetic is scaled by the size of the type</strong>. For an <code>int *</code>, <code>p + 1</code> moves forward by <code>sizeof(int)</code> bytes (usually 4), not by 1 byte — because it means 'the next int', not 'the next byte'.",
+      "keyPoints": [
+        "<code>p + n</code> actually moves <code>n * sizeof(type)</code> bytes.",
+        "For int (4 bytes): 2000 → <code>p+1</code> is 2004, <code>p+2</code> is 2008.",
+        "For char (1 byte): 3000 → <code>p+1</code> is 3001.",
+        "Allowed: <code>p+n</code>, <code>p-n</code>, <code>p++</code>, <code>p--</code>, <code>p1-p2</code>, and comparisons <code>&lt; &gt; ==</code>.",
+        "<strong>Not allowed</strong>: <code>p1 + p2</code>, <code>p * 2</code>, <code>p / 2</code>, <code>p % 2</code>.",
+        "<code>p1 - p2</code> gives the number of <strong>elements</strong> between them, not bytes.",
+        "Pointer subtraction and comparison make sense only inside the <strong>same array</strong>.",
+        "This scaling is exactly why <code>arr[i]</code> and <code>*(arr + i)</code> mean the same thing."
+      ],
+      "subtopics": [
+        {
+          "title": "Why scaling is a good idea",
+          "text": "If <code>p+1</code> moved only one byte, you would land in the middle of an integer and read nonsense. By moving a whole <code>sizeof(type)</code>, the compiler guarantees that <code>p+1</code> always points at the next complete element. The programmer thinks in elements; the compiler handles the bytes."
+        },
+        {
+          "title": "The array indexing identity",
+          "text": "The compiler translates <code>arr[i]</code> into <code>*(arr + i)</code> every single time. Because of scaling, <code>arr + 2</code> is the address of the third element, and the star reads it. This is also the funny reason that <code>arr[2]</code> and <code>2[arr]</code> both compile and give the same value — addition is commutative."
+        },
+        {
+          "title": "The void pointer",
+          "text": "<code>void *</code> is a general pointer that can hold the address of any type — <code>malloc()</code> returns one. But since it does not know the size of what it points to, you cannot dereference it or do arithmetic on it directly. You must cast it to a real type first, for example <code>(int *)</code>."
+        }
+      ],
+      "realLife": "Seats in a cinema hall. 'Move 2 seats right' does not mean 'move 2 centimetres' — it means two whole seats. The seat width is your sizeof(type).",
+      "worked": "<strong>Given:</strong> <code>int arr[5] = {10, 20, 30, 40, 50};</code> stored from address <strong>2000</strong>, with <code>sizeof(int) = 4</code> bytes.<br><br><strong>Step 1:</strong> <code>int *p = arr;</code> → p = <strong>2000</strong>, <code>*p</code> = 10<br><strong>Step 2:</strong> <code>p = p + 1;</code> → 2000 + (1 &times; 4) = <strong>2004</strong>, <code>*p</code> = 20<br><strong>Step 3:</strong> <code>p = p + 2;</code> → 2004 + (2 &times; 4) = <strong>2012</strong>, <code>*p</code> = 40<br><strong>Step 4:</strong> <code>p++;</code> → 2012 + 4 = <strong>2016</strong>, <code>*p</code> = 50<br><strong>Step 5:</strong> <code>p--;</code> → 2016 - 4 = <strong>2012</strong>, <code>*p</code> = 40<br><br><strong>Pointer subtraction:</strong> <code>&amp;arr[4] - &amp;arr[0]</code> = (2016 - 2000) / 4 = <strong>4</strong> — four ELEMENTS apart, not 16.<br><br><strong>Now compare with char:</strong> <code>char c[5];</code> stored from address <strong>3000</strong>, <code>sizeof(char) = 1</code>.<br><code>q = c;</code> → 3000 &nbsp;·&nbsp; <code>q + 1</code> → <strong>3001</strong> &nbsp;·&nbsp; <code>q + 3</code> → <strong>3003</strong><br><br><strong>Conclusion:</strong> the same expression <code>p + 1</code> moved 4 bytes for int but only 1 byte for char. The type decides the step size.",
+      "code": "#include <stdio.h>\n\nint main() {\n    int arr[5] = {10, 20, 30, 40, 50};\n    int *p = arr;                 // points at arr[0]\n\n    printf(\"%p -> %d\\n\", (void*)p, *p);    // arr[0] = 10\n    p = p + 1;                    // jumps 4 bytes, not 1\n    printf(\"%p -> %d\\n\", (void*)p, *p);    // arr[1] = 20\n    p++;\n    printf(\"%p -> %d\\n\", (void*)p, *p);    // arr[2] = 30\n\n    // arr[i] and *(arr + i) are exactly the same thing\n    printf(\"%d %d\\n\", arr[3], *(arr + 3)); // 40 40\n\n    // subtraction counts ELEMENTS, not bytes\n    printf(\"Gap = %d\\n\", (int)(&arr[4] - &arr[0]));   // 4\n    return 0;\n}",
+      "codeNote": "Every p++ moves a whole int forward, which is why walking an array with a pointer just works.",
+      "mistake": "Writing that <code>p + 1</code> is address 2001 when p is an <code>int *</code> at 2000. It is <strong>2004</strong>. Also, <code>p1 - p2</code> gives the count of elements (4), not the byte gap (16).",
+      "examAnswer": "Pointer arithmetic refers to the limited set of arithmetic operations permitted on pointers: addition of an integer, subtraction of an integer, subtraction of one pointer from another, and comparison. These operations are scaled by the size of the data type to which the pointer points; therefore, for an integer pointer holding address 2000 with sizeof(int) equal to 4, the expression p + 1 yields the address 2004 and not 2001. The difference of two pointers within the same array gives the number of elements between them rather than the number of bytes. Multiplication, division and addition of two pointers are not permitted.",
+      "remember": "p + 1 means 'next element', never 'next byte'. Size of the type decides the jump.",
+      "why": "Almost every numerical pointer question in the exam is this scaling rule in disguise, and it is also how arrays, strings and dynamic memory actually work internally.",
+      "practice": "A float pointer f holds address 5000 and sizeof(float) = 4. What are f+1, f+3 and f-1? Now redo it for a double pointer (8 bytes)."
+    },
+    {
+      "title": "Dynamic Memory Management: malloc(), calloc(), free()",
+      "teacher": "Imagine booking a hall for a wedding one year in advance, without knowing how many guests will come. Book too small and people stand outside; book too big and you waste money. Arrays have exactly this problem — and dynamic memory is the solution.",
+      "explain": "A normal array has a fixed size decided at compile time. <strong>Dynamic memory allocation</strong> lets a program request memory while it is running, from an area called the <strong>heap</strong>. The functions live in <code>&lt;stdlib.h&gt;</code>: <code>malloc()</code> and <code>calloc()</code> request memory, <code>realloc()</code> resizes it, and <code>free()</code> returns it to the system.",
+      "keyPoints": [
+        "All four functions need <code>#include &lt;stdlib.h&gt;</code>.",
+        "<code>malloc(size)</code> takes <strong>one</strong> argument — the total bytes — and the memory holds <strong>garbage</strong>.",
+        "<code>calloc(n, size)</code> takes <strong>two</strong> arguments and sets every byte to <strong>zero</strong>.",
+        "Both return a <code>void *</code>, so you normally cast it: <code>(int *) malloc(...)</code>.",
+        "Both return <code>NULL</code> if memory is not available — <strong>always check</strong>.",
+        "<code>realloc(p, newSize)</code> grows or shrinks a block already allocated.",
+        "<code>free(p)</code> gives the memory back. Forgetting it causes a <strong>memory leak</strong>.",
+        "Memory from the heap survives until you free it — it is not cleared when a function ends."
+      ],
+      "subtopics": [
+        {
+          "title": "malloc vs calloc — the real difference",
+          "text": "<code>malloc(5 * sizeof(int))</code> and <code>calloc(5, sizeof(int))</code> both give you room for 5 ints. The difference is what is inside. malloc leaves whatever junk was already in that memory, so reading it before writing gives unpredictable values. calloc <strong>clears every byte to zero</strong>, which is slightly slower but safer when you plan to add into the array."
+        },
+        {
+          "title": "What a memory leak actually is",
+          "text": "When you allocate memory and never <code>free()</code> it, that block stays reserved even though your program can no longer reach it. Do this inside a loop and the program's memory use keeps climbing until the system slows down or the program crashes. This waste is called a <strong>memory leak</strong> — and it is the single most common bug in C programs."
+        },
+        {
+          "title": "Rules for using free() safely",
+          "text": "Call <code>free()</code> exactly once for every successful malloc or calloc. Never free the same block twice (a 'double free' crash), and never use the pointer after freeing it (a 'dangling pointer'). The safe habit is: <code>free(p); p = NULL;</code> — because <code>free(NULL)</code> is harmless."
+        }
+      ],
+      "realLife": "Booking hostel rooms as students actually arrive, instead of blocking the whole floor on day one. And when a student leaves, you hand the key back — that hand-back is free(). If nobody hands keys back, soon there are no rooms even though nobody is inside.",
+      "table": {
+        "headers": ["", "malloc()", "calloc()"],
+        "rows": [
+          ["Number of arguments", "1 — total bytes", "2 — count and size of each"],
+          ["Call looks like", "malloc(5 * sizeof(int))", "calloc(5, sizeof(int))"],
+          ["Initial contents", "Garbage (uninitialised)", "All bytes set to 0"],
+          ["Speed", "Slightly faster", "Slightly slower (it clears)"],
+          ["Returns", "void * , or NULL on failure", "void * , or NULL on failure"],
+          ["Use it when", "You will fill every slot yourself", "You want a clean zero start"]
+        ]
+      },
+      "code": "#include <stdio.h>\n#include <stdlib.h>      // needed for malloc, calloc, free\n\nint main() {\n    int n = 5, i;\n\n    int *a = (int *) malloc(n * sizeof(int));   // garbage inside\n    int *b = (int *) calloc(n, sizeof(int));    // all zeros inside\n\n    if (a == NULL || b == NULL) {               // ALWAYS check\n        printf(\"Memory not available\\n\");\n        return 1;\n    }\n\n    for (i = 0; i < n; i++)\n        a[i] = (i + 1) * 10;                    // 10 20 30 40 50\n\n    printf(\"a[2] = %d\\n\", a[2]);               // 30\n    printf(\"b[2] = %d\\n\", b[2]);               // 0  - calloc cleared it\n\n    free(a);            // give the memory back\n    free(b);\n    a = NULL;           // avoid a dangling pointer\n    b = NULL;\n    return 0;\n}",
+      "codeNote": "calloc gives a clean zeroed block; malloc does not — and every allocation ends with a matching free().",
+      "mistake": "Writing <code>calloc(5 * sizeof(int))</code> with one argument, or <code>malloc(5, sizeof(int))</code> with two. malloc takes ONE argument (total bytes), calloc takes TWO (how many, and how big each). Mixing them up is an instant compiler error.",
+      "examAnswer": "Dynamic memory allocation is the process of requesting memory from the heap during program execution rather than at compile time, using the functions declared in stdlib.h. The function malloc() accepts a single argument specifying the total number of bytes required and returns a pointer to an uninitialised block, whereas calloc() accepts two arguments, the number of elements and the size of each element, and initialises the entire block to zero. Both return a void pointer, or NULL if the request cannot be satisfied. The function realloc() resizes a previously allocated block, and free() releases allocated memory back to the system. Failure to call free() results in a memory leak, in which memory remains reserved but unusable.",
+      "remember": "malloc = one argument, memory is dirty. calloc = two arguments, Cleared to zero. Every malloc needs a free.",
+      "why": "Any data structure whose size is not known in advance — a linked list, a dynamic array, a tree — depends entirely on these four functions.",
+      "practice": "Write a program that asks the user how many marks to store, allocates exactly that much memory with calloc, reads the marks, prints the average, and frees the memory."
+    },
+    {
+      "title": "Pointers, Arrays and Strings",
+      "teacher": "You have been using pointers since Unit 3 without knowing it. Every time you wrote an array name, you were really writing an address. Let's uncover that — and then find the one thing an array name can never do.",
+      "explain": "An <strong>array name is the address of its first element</strong>. So <code>arr</code> behaves like <code>&amp;arr[0]</code>, and <code>arr[i]</code> is just shorthand for <code>*(arr + i)</code>. But an array name is a <strong>constant</strong> address — it is fixed to that block of memory and <strong>can never be reassigned</strong>, while a pointer variable is free to move anywhere. A <strong>string</strong> in C is simply a character array ending with the null character <code>'\\0'</code>, so strings and pointers are naturally connected.",
+      "keyPoints": [
+        "The array name <code>arr</code> gives the address of <code>arr[0]</code>.",
+        "<code>arr[i]</code>, <code>*(arr + i)</code>, <code>p[i]</code> and <code>*(p + i)</code> all mean the same thing.",
+        "<strong>An array name cannot be reassigned</strong>: <code>arr = arr + 1;</code> is an error, but <code>p = p + 1;</code> is fine.",
+        "<code>sizeof(arr)</code> gives the whole array's bytes; <code>sizeof(p)</code> gives only the pointer's size.",
+        "A string is a char array ending in <code>'\\0'</code> (the null character), so \"RGPV\" needs 5 bytes.",
+        "<code>char name[] = \"RGPV\";</code> is a modifiable array copy.",
+        "<code>char *msg = \"RGPV\";</code> points at a string literal — <strong>do not modify it</strong>.",
+        "When an array is passed to a function it <strong>decays into a pointer</strong>, so the function cannot see its size."
+      ],
+      "subtopics": [
+        {
+          "title": "Why the array name cannot move",
+          "text": "The name <code>arr</code> is not a separate variable holding an address — the compiler simply substitutes the fixed starting address of the block. There is no storage to write a new value into, so <code>arr++</code> and <code>arr = p</code> are compile-time errors. A pointer, in contrast, is a real variable with its own memory, so it can be pointed anywhere."
+        },
+        {
+          "title": "The sizeof difference",
+          "text": "For <code>int arr[5];</code>, <code>sizeof(arr)</code> is 20 bytes (5 &times; 4) — the whole block. For <code>int *p = arr;</code>, <code>sizeof(p)</code> is just the pointer size, commonly 8 bytes on a 64-bit machine. This is the cleanest way in an exam to prove that an array and a pointer are not the same thing."
+        },
+        {
+          "title": "Array decay in function calls",
+          "text": "Writing <code>void show(int a[])</code> and <code>void show(int *a)</code> means exactly the same to the compiler — an array argument <strong>decays</strong> into a pointer to its first element. That is why <code>sizeof</code> inside the function gives the pointer size, and why array size must always be passed as a separate argument."
+        }
+      ],
+      "realLife": "A printed street name-board is fixed to that street forever (array name). A slip of paper in your pocket can be rewritten with any address you like (pointer). Both tell you where a place is, but only one of them can change its mind.",
+      "table": {
+        "headers": ["", "Array", "Pointer"],
+        "rows": [
+          ["What it is", "A block of memory holding elements", "A variable holding one address"],
+          ["Can it be reassigned?", "No — arr = arr+1 is an error", "Yes — p = p+1 is allowed"],
+          ["Memory allocated", "At compile time, fixed size", "Points to static or heap memory"],
+          ["sizeof result", "Size of the whole block (e.g. 20)", "Size of one pointer (e.g. 8)"],
+          ["Size can change at run time", "No", "Yes, with malloc / realloc"],
+          ["Access style", "arr[i]", "p[i] or *(p+i) — both work"]
+        ]
+      },
+      "code": "#include <stdio.h>\n\nint main() {\n    int arr[5] = {10, 20, 30, 40, 50};\n    int *p = arr;                 // array name = address of arr[0]\n\n    printf(\"%d %d\\n\", arr[2], *(arr + 2));   // 30 30 - identical\n    printf(\"%d %d\\n\", p[2],   *(p + 2));     // 30 30 - identical\n\n    printf(\"sizeof(arr) = %zu\\n\", sizeof(arr)); // 20 - whole array\n    printf(\"sizeof(p)   = %zu\\n\", sizeof(p));   // pointer size only\n\n    p = p + 1;        // allowed: a pointer can be moved\n    // arr = arr + 1; // ERROR: an array name can never be reassigned\n\n    char name[] = \"RGPV\";   // a real array - 5 bytes with '\\0'\n    char *msg   = \"RGPV\";   // a pointer to a read-only string literal\n    name[0] = 'B';          // OK   -> \"BGPV\"\n    // msg[0] = 'B';        // WRONG - never modify a string literal\n\n    printf(\"%s %s\\n\", name, msg);\n    return 0;\n}",
+      "codeNote": "Same access, different nature: the pointer can be moved, the array name cannot.",
+      "mistake": "Saying 'an array IS a pointer'. It is not. An array name <em>behaves like</em> a constant pointer to its first element, but it has no storage of its own, cannot be reassigned, and <code>sizeof</code> tells you the whole block size.",
+      "examAnswer": "In C there is a close relationship between arrays and pointers: the name of an array evaluates to the address of its first element, so arr is equivalent to &arr[0] and the expression arr[i] is internally translated to *(arr + i). However, an array name is a constant address and cannot be reassigned, whereas a pointer is a variable that can be made to point to different locations. The sizeof operator applied to an array gives the size of the entire block, while applied to a pointer it gives only the size of the pointer. When an array is passed to a function it decays into a pointer to its first element, and therefore its size must be passed separately.",
+      "remember": "Array name = fixed address label. Pointer = a slip of paper you can rewrite.",
+      "why": "Every string function, every array passed to a function and every dynamic array in C rests on this relationship — and 'difference between array and pointer' is a guaranteed exam question.",
+      "practice": "For int a[4] = {1,2,3,4}; write four different expressions that all print 3. Then explain why a = a + 1; does not compile."
+    },
+    {
+      "title": "Pointer to Pointer, Array of Pointers and Command Line Arguments",
+      "teacher": "If a pointer can store the address of an int, can something store the address of a pointer? Yes — and once you see it, the strange looking line <code>int main(int argc, char *argv[])</code> suddenly makes perfect sense.",
+      "explain": "A <strong>pointer to pointer</strong> stores the address of another pointer, declared with two stars: <code>int **q;</code>. To reach the final value you dereference twice: <code>**q</code>. An <strong>array of pointers</strong> is an array whose every element is a pointer — <code>char *names[3];</code> holds three string addresses. <strong>Command line arguments</strong> use exactly this: <code>main(int argc, char *argv[])</code> receives a count and an array of string pointers typed by the user while running the program.",
+      "keyPoints": [
+        "<code>int **q = &amp;p;</code> — q holds the address of pointer p.",
+        "<code>*q</code> gives p (an address); <code>**q</code> gives the final value.",
+        "<code>char *names[3];</code> is an <strong>array of 3 pointers</strong> to char.",
+        "Each string in an array of pointers can be a different length — no wasted space.",
+        "<code>argc</code> = argument count, including the program's own name.",
+        "<code>argv[0]</code> is always the program name; the real arguments start at <code>argv[1]</code>.",
+        "<code>argv[argc]</code> is guaranteed to be <code>NULL</code>.",
+        "All command line arguments arrive as <strong>strings</strong> — convert with <code>atoi()</code> or <code>atof()</code> if you need numbers."
+      ],
+      "subtopics": [
+        {
+          "title": "Reading a double pointer",
+          "text": "If <code>int x = 10; int *p = &amp;x; int **q = &amp;p;</code>, then <code>x</code> is 10, <code>*p</code> is 10, and <code>**q</code> is also 10. Each star peels away one level of address. Double pointers are needed whenever a function must change the caller's pointer itself — for example, when a function allocates memory and returns it through a parameter."
+        },
+        {
+          "title": "Array of pointers and its limitations",
+          "text": "<code>char *names[] = {\"Asha\", \"Ravikumar\"};</code> saves memory because each row is exactly as long as it needs to be, unlike a 2-D array which pads every row to the longest one. Its <strong>limitations</strong>: the strings are literals and must not be modified; the rows are scattered in memory, not one contiguous block; and if you allocate the rows with malloc, you must free every single row yourself before freeing the array — forgetting one is a leak."
+        },
+        {
+          "title": "How command line arguments reach main()",
+          "text": "If you run <code>./marks Asha 88</code>, the operating system passes the words to your program. Then <code>argc</code> is 3, <code>argv[0]</code> is \"./marks\", <code>argv[1]</code> is \"Asha\" and <code>argv[2]</code> is \"88\". Note that \"88\" is the two-character string, not the number 88 — use <code>atoi(argv[2])</code> to convert it."
+        }
+      ],
+      "realLife": "A college notice board holds a slip that says 'HOD list is in Room 12'. Room 12 has a slip saying 'the list is in cupboard 3'. Cupboard 3 has the actual list. Two hops to the answer — that is a pointer to pointer.",
+      "code": "#include <stdio.h>\n#include <stdlib.h>      // for atoi()\n\nint main(int argc, char *argv[]) {\n    int x = 10;\n    int *p  = &x;        // pointer to int\n    int **q = &p;        // pointer to pointer\n\n    printf(\"%d %d %d\\n\", x, *p, **q);      // 10 10 10\n\n    char *names[3] = {\"Asha\", \"Ravi\", \"Neha\"};   // array of pointers\n    for (int i = 0; i < 3; i++)\n        printf(\"%s\\n\", names[i]);\n\n    printf(\"argc = %d\\n\", argc);                 // includes program name\n    for (int i = 0; i < argc; i++)\n        printf(\"argv[%d] = %s\\n\", i, argv[i]);\n\n    if (argc > 1)\n        printf(\"As a number: %d\\n\", atoi(argv[1]));  // string -> int\n    return 0;\n}",
+      "codeNote": "argv is an array of char pointers, which is why command line arguments and arrays of pointers are really one topic.",
+      "mistake": "Thinking <code>argc</code> counts only what you typed after the program name. It <strong>includes</strong> the program name, so running <code>./a.out 5</code> gives argc = 2, not 1. Also, <code>argv[1]</code> is the string \"5\", not the number 5.",
+      "examAnswer": "A pointer to pointer is a variable that stores the address of another pointer and is declared using two indirection operators, for example int **q; the value is obtained by double dereferencing as **q. An array of pointers is an array in which every element stores an address, such as char *names[3], which is memory efficient for strings of differing lengths but has the limitations that string literals cannot be modified, the strings are not stored contiguously, and dynamically allocated rows must each be freed individually. Command line arguments are values supplied to a program at the time of execution and are received by main(int argc, char *argv[]), where argc is the argument count including the program name and argv is an array of pointers to those argument strings, with argv[0] holding the program name and argv[argc] equal to NULL.",
+      "remember": "One star = one hop. argv[0] is the program itself, so argc is always at least 1.",
+      "why": "Every real command you type — like <code>gcc file.c -o out</code> — is just argc and argv. It is also how a program is configured without recompiling it.",
+      "practice": "Write a program run as ./sum 10 20 30 that adds all the numbers given on the command line and prints the total. (Hint: loop from i = 1 and use atoi.)"
+    },
+    {
+      "title": "Pointers and Functions",
+      "teacher": "Normally a function gets a photocopy of your data and cannot touch the original. But sometimes you WANT it to change the original — like a teacher correcting your actual answer sheet, not a photocopy of it. Pointers make that possible.",
+      "explain": "Pointers combine with functions in three ways. Passing a pointer as a <strong>parameter</strong> gives call by reference, so the function can modify the caller's variable. A <strong>function returning a pointer</strong> hands back an address instead of a value. A <strong>pointer to function</strong> stores the address of a function itself, so you can decide at run time which function to call.",
+      "keyPoints": [
+        "<strong>Function as parameter (call by reference)</strong>: pass <code>&amp;x</code>, receive <code>int *a</code>, change with <code>*a</code>.",
+        "Call by value copies the data; call by reference passes the address.",
+        "Passing a pointer is also faster for big data — no copying of a whole structure.",
+        "<strong>Function returning a pointer</strong>: declared as <code>int* biggest(...)</code>.",
+        "<strong>Never return the address of a local variable</strong> — it dies when the function ends.",
+        "It is safe to return a pointer to memory from <code>malloc()</code>, or to something the caller owns.",
+        "<strong>Pointer to function</strong>: <code>int (*fp)(int, int) = add;</code> then call it as <code>fp(4, 3)</code>.",
+        "The brackets matter: <code>int (*fp)(int,int)</code> is a function pointer, <code>int *fp(int,int)</code> is a function returning int*."
+      ],
+      "subtopics": [
+        {
+          "title": "Call by value vs call by reference",
+          "text": "In <strong>call by value</strong> the function gets copies, so changes stay inside the function — the famous failed swap. In <strong>call by reference</strong> you pass addresses, so <code>*a</code> and <code>*b</code> reach the caller's actual variables and the swap works. C technically always passes by value; passing a pointer just means the <em>address</em> is what gets copied, which is enough to reach the original."
+        },
+        {
+          "title": "The dangling return trap",
+          "text": "<code>int* wrong() { int x = 10; return &amp;x; }</code> compiles, but <code>x</code> lives on the stack and is destroyed the moment the function returns. The caller gets an address to dead memory. Return a pointer only to <code>malloc()</code>'d memory, to a <code>static</code> variable, or to something the caller passed in."
+        },
+        {
+          "title": "Why pointers to functions are useful",
+          "text": "Because a function's name is also an address, you can store it, pass it and call it later. This is how one sorting routine can sort in any order — you hand it the comparison function. The standard library's <code>qsort()</code> works exactly this way. It lets you choose behaviour while the program runs, not while you write it."
+        }
+      ],
+      "realLife": "Giving a shopkeeper your actual bank card (reference — your balance really changes) versus showing him a photocopy of a currency note (value — nothing real happens). And a function pointer is like a phone contact saved as 'Plumber' — you can change which number that contact points to without changing who you call.",
+      "code": "#include <stdio.h>\n\nvoid swap(int *a, int *b) {      // pointer as parameter = call by reference\n    int t = *a;\n    *a = *b;\n    *b = t;\n}\n\nint* bigger(int *a, int *b) {    // function RETURNING a pointer\n    return (*a > *b) ? a : b;    // safe: these belong to the caller\n}\n\nint add(int a, int b) { return a + b; }\nint sub(int a, int b) { return a - b; }\n\nint main() {\n    int x = 5, y = 9;\n\n    swap(&x, &y);                       // pass ADDRESSES\n    printf(\"%d %d\\n\", x, y);           // 9 5 - originals really changed\n\n    int *big = bigger(&x, &y);\n    printf(\"bigger = %d\\n\", *big);     // 9\n\n    int (*fp)(int, int) = add;          // pointer to function\n    printf(\"%d\\n\", fp(4, 3));          // 7\n    fp = sub;                           // point it at another function\n    printf(\"%d\\n\", fp(4, 3));          // 1\n    return 0;\n}",
+      "codeNote": "One program, three ideas: pointer parameters change originals, a function hands back an address, and fp calls whichever function it points to.",
+      "mistake": "Returning the address of a local variable: <code>int* f(){ int x=5; return &amp;x; }</code>. The variable is destroyed when f() ends, so the caller holds a dangling pointer and gets garbage or a crash.",
+      "examAnswer": "Pointers may be used with functions in three ways. When a pointer is passed as a parameter, the function receives the address of the caller's variable and can therefore modify the original value; this mechanism is known as call by reference and is commonly used to implement functions such as swap(). A function may also return a pointer, declared as int* fun(), but it must never return the address of a local variable because that variable is destroyed when the function terminates. A pointer to function stores the address of a function and is declared as int (*fp)(int, int); the function is then invoked through the pointer as fp(a, b), which allows the function to be selected during execution.",
+      "remember": "&amp; in the call, * in the function = the original changes. (*fp) with brackets = pointer to function.",
+      "why": "Call by reference is how a C function returns more than one result, and function pointers are the foundation of callbacks and menu-driven programs.",
+      "practice": "Write a function that takes two addresses and returns both the sum and the product to the caller without using a return statement for either."
+    },
+    {
+      "title": "Structures: Declaration, Members and Arrays",
+      "teacher": "Suppose you must store details of 60 students — roll number, name and three marks each. Would you really make five separate arrays and hope the index matches everywhere? Structures exist so that one student stays one thing.",
+      "explain": "A <strong>structure</strong> is a user-defined data type that groups variables of <strong>different types</strong> under a single name. Each variable inside is called a <strong>member</strong>. You access a member using the <strong>membership (dot) operator</strong> <code>.</code>, as in <code>s1.roll</code>. Structures can hold arrays, can be nested inside other structures, and you can make an array of structures to store many records.",
+      "keyPoints": [
+        "<code>struct</code> declaration is a <strong>template</strong> — it takes no memory until you create a variable.",
+        "Members may be of different data types, unlike an array.",
+        "<code>.</code> is the <strong>membership operator</strong>: <code>s1.marks</code>.",
+        "Size of a structure is at least the sum of its members, often more because of <strong>padding</strong> (alignment).",
+        "<strong>Array in structure</strong>: <code>float marks[3];</code> as a member.",
+        "<strong>Array of structures</strong>: <code>struct Student cls[60];</code> stores 60 complete records.",
+        "<strong>Structure within structure (nesting)</strong>: reach inner members with two dots — <code>s1.addr.pin</code>.",
+        "A whole structure can be copied with one <code>=</code>, but structures cannot be compared with <code>==</code>."
+      ],
+      "subtopics": [
+        {
+          "title": "Template now, memory later",
+          "text": "<code>struct Student { ... };</code> only describes the shape — no memory is used yet. Memory is reserved when you declare a variable such as <code>struct Student s1;</code>. Think of the declaration as the printed admission form design, and each variable as one filled-in copy of that form."
+        },
+        {
+          "title": "Array of structures — the real workhorse",
+          "text": "<code>struct Student cls[60];</code> creates 60 complete student records in one block. You then use <code>cls[i].name</code> and <code>cls[i].marks[0]</code>. Everything about student i stays together at index i, so there is no risk of the name and the marks going out of step — exactly the bug that parallel arrays cause."
+        },
+        {
+          "title": "Nesting and padding",
+          "text": "A structure can contain another structure: <code>struct Address addr;</code> inside <code>struct Student</code>, accessed as <code>s1.addr.city</code>. Also note that <code>sizeof</code> a structure may be larger than the sum of its members, because compilers insert unused <strong>padding</strong> bytes so each member starts at an address the CPU can read efficiently."
+        }
+      ],
+      "realLife": "A college admission form. One form has your roll number (int), your name (string), your marks (floats) and your address (a smaller form inside the big form). 60 students means 60 forms in a file — that file is an array of structures.",
+      "code": "#include <stdio.h>\n\nstruct Address {              // this will be nested inside Student\n    char city[20];\n    int  pin;\n};\n\nstruct Student {\n    int   roll;\n    char  name[30];\n    float marks[3];           // an ARRAY inside a structure\n    struct Address addr;      // a STRUCTURE inside a structure\n};\n\nint main() {\n    struct Student s1 = {21, \"Asha\", {88.0, 79.5, 91.0},\n                         {\"Bhopal\", 462001}};\n    struct Student cls[3];    // an ARRAY OF structures\n\n    printf(\"%d %s\\n\", s1.roll, s1.name);          // dot operator\n    printf(\"%.1f\\n\", s1.marks[1]);                // 79.5\n    printf(\"%s %d\\n\", s1.addr.city, s1.addr.pin); // two dots for nesting\n\n    cls[0] = s1;              // a whole structure copied in one line\n    printf(\"%s\\n\", cls[0].name);                  // Asha\n    printf(\"size = %zu bytes\\n\", sizeof(struct Student));\n    return 0;\n}",
+      "codeNote": "One dot for a member, two dots for a member inside a nested structure, and index-then-dot for an array of structures.",
+      "mistake": "Trying to compare two structures with <code>if (s1 == s2)</code>. C does not allow that — you must compare member by member (and use <code>strcmp()</code> for the string members). Assignment with <code>=</code> is allowed, comparison with <code>==</code> is not.",
+      "examAnswer": "A structure is a user-defined data type that groups together variables of different data types under a single name, where each variable is called a member. It is declared using the struct keyword, and the declaration serves only as a template; memory is allocated when a structure variable is created. Members are accessed using the membership or dot operator, for example s1.roll. A structure may contain arrays as members, may be nested within another structure, and an array of structures may be declared to store multiple records. The size of a structure is at least the sum of the sizes of its members and may be larger due to padding inserted by the compiler for alignment.",
+      "remember": "struct = one form holding many different fields. Dot for a variable, index-then-dot for an array of them.",
+      "why": "Structures are how C represents a real-world record — a student, an employee, a bank account — and they are the first step towards linked lists and file records.",
+      "practice": "Declare a structure Book with id, title, author and price. Make an array of 3 books, read them and print only the costliest one."
+    },
+    {
+      "title": "Pointer to Structure and Self-Referential Structures",
+      "teacher": "Here is a beautiful, slightly strange idea: what if a structure contains a pointer to a structure of its very own type? That single trick is how a linked list, a stack, a queue and a tree are all built.",
+      "explain": "A <strong>pointer to structure</strong> stores the address of a structure variable. With a normal variable you use the dot <code>.</code>, but with a pointer you use the <strong>arrow (referential) operator <code>-&gt;</code></strong>: <code>p-&gt;roll</code> is a cleaner way of writing <code>(*p).roll</code>. A <strong>self-referential structure</strong> is one that contains a pointer to its own type, which lets one record point to the next one — this is the basis of the <strong>linked list</strong>.",
+      "keyPoints": [
+        "<code>struct Student *p = &amp;s1;</code> — p holds the structure's address.",
+        "Use <code>.</code> with a structure <strong>variable</strong>, <code>-&gt;</code> with a structure <strong>pointer</strong>.",
+        "<code>p-&gt;roll</code> is exactly the same as <code>(*p).roll</code>.",
+        "The brackets in <code>(*p).roll</code> are compulsory — <code>.</code> has higher precedence than <code>*</code>.",
+        "A <strong>self-referential structure</strong> holds a pointer to its own type: <code>struct Node *next;</code>.",
+        "It must be a <strong>pointer</strong> to its own type — a plain <code>struct Node next;</code> would be infinite in size.",
+        "Passing a structure pointer to a function avoids copying the whole structure.",
+        "Nodes are created at run time with <code>malloc(sizeof(struct Node))</code> and released with <code>free()</code>."
+      ],
+      "subtopics": [
+        {
+          "title": "Why the arrow exists",
+          "text": "To reach a member through a pointer you must first dereference, then select: <code>(*p).roll</code>. The brackets are needed because <code>.</code> binds tighter than <code>*</code>, so <code>*p.roll</code> would be read as <code>*(p.roll)</code> and fail. Writing those brackets everywhere is painful, so C provides <code>-&gt;</code> as a shortcut. The two forms are 100% identical in meaning."
+        },
+        {
+          "title": "How self-reference builds a linked list",
+          "text": "Each <code>struct Node</code> holds some data and a pointer <code>next</code> to another Node. Node A's next points to Node B, B's next points to C, and C's next is <code>NULL</code> to mark the end. Now you can grow the chain one node at a time with <code>malloc()</code>, with no fixed size and no shifting of elements — the thing an array can never do."
+        },
+        {
+          "title": "Why it must be a pointer",
+          "text": "If <code>struct Node</code> contained a full <code>struct Node next;</code> inside itself, its size would be its own size plus its own size, for ever — the compiler cannot compute that and rejects it. A <strong>pointer</strong> to Node, however, has a known fixed size, so the declaration is legal even though the type is not yet complete."
+        }
+      ],
+      "realLife": "A treasure hunt in college fest. Each clue slip holds a message AND tells you where the next slip is. The last slip says 'that's all' — that is NULL. Each slip is a node, and the chain of slips is a linked list.",
+      "code": "#include <stdio.h>\n#include <stdlib.h>\n\nstruct Node {                 // SELF-REFERENTIAL structure\n    int data;\n    struct Node *next;        // a pointer to its OWN type\n};\n\nint main() {\n    struct Node a = {10, NULL};\n    struct Node *p = &a;      // pointer to structure\n\n    printf(\"%d\\n\", (*p).data);   // the long way\n    printf(\"%d\\n\", p->data);     // the arrow - same meaning, cleaner\n\n    // build a second node at run time and link it\n    struct Node *b = (struct Node *) malloc(sizeof(struct Node));\n    if (b == NULL) return 1;\n    b->data = 20;\n    b->next = NULL;           // NULL marks the end of the list\n    a.next  = b;              // 10 -> 20 : a tiny linked list\n\n    printf(\"%d %d\\n\", p->data, p->next->data);   // 10 20\n\n    free(b);                  // release what malloc gave\n    return 0;\n}",
+      "codeNote": "p->next->data follows the chain one link at a time — that is a linked list traversal in miniature.",
+      "mistake": "Writing <code>*p.data</code> instead of <code>(*p).data</code> or <code>p-&gt;data</code>. Because <code>.</code> has higher precedence than <code>*</code>, the compiler reads it as <code>*(p.data)</code> and gives an error.",
+      "examAnswer": "A pointer to a structure stores the address of a structure variable and is declared as struct Student *p; the address is assigned as p = &s1. Members are accessed through such a pointer using the arrow or referential operator, so that p->roll is equivalent to (*p).roll, in which the parentheses are necessary because the dot operator has higher precedence than the indirection operator. A self-referential structure is a structure that contains a pointer to a structure of its own type, for example struct Node { int data; struct Node *next; };. Since the member is a pointer, its size is known and the declaration is valid. Self-referential structures, combined with dynamic memory allocation, form the basis of linked lists, stacks, queues and trees.",
+      "remember": "Dot for a variable, arrow for a pointer. A node pointing to its own type = a linked list.",
+      "why": "Data Structures next semester is built almost entirely on this one topic — linked lists, stacks, queues and trees are all self-referential structures plus malloc.",
+      "practice": "Create three nodes with values 5, 15 and 25, link them together, then write a while loop that walks from the first node and prints every value until NULL."
+    },
+    {
+      "title": "Union, Enumerated Data Type and Typedef",
+      "teacher": "Structures give every member its own room. A union is a single room that all members must share — only one can sit in it at a time. Sounds like a downside, but when memory is tight it is exactly what you want.",
+      "explain": "A <strong>union</strong> looks like a structure but all its members <strong>share the same memory space</strong>, so its size equals the size of its <strong>largest member</strong> and only one member holds a valid value at any moment. An <strong>enum</strong> creates a named list of integer constants, making code readable. <strong>typedef</strong> gives an existing type a new, shorter name.",
+      "keyPoints": [
+        "<strong>Structure</strong>: every member gets its own memory; all members usable together.",
+        "<strong>Union</strong>: all members share one memory space; only the last one written is valid.",
+        "<code>sizeof(union)</code> = size of its <strong>largest member</strong> (plus padding if needed).",
+        "Writing to one union member <strong>destroys</strong> the value of the others.",
+        "<code>enum Day { MON, TUE, WED };</code> — values start at <strong>0</strong> by default (MON=0, TUE=1, WED=2).",
+        "You may set values yourself: <code>enum Day { MON = 1, TUE, WED };</code> then TUE=2, WED=3.",
+        "An enum constant is really an <code>int</code>, just with a readable name.",
+        "<code>typedef struct {...} Student;</code> lets you write <code>Student s;</code> without the word struct."
+      ],
+      "subtopics": [
+        {
+          "title": "When a union is the right choice",
+          "text": "Use a union when a value can be <strong>one of several types, but never more than one at a time</strong> — for example a token that is either an int or a float, or a record where an employee is paid either monthly or hourly. You save the memory of all the unused members. The cost is that you must remember yourself which member is currently valid, usually by keeping a small flag beside it."
+        },
+        {
+          "title": "Enumerated data type",
+          "text": "<code>enum</code> defines a set of named integer constants. Writing <code>if (today == WED)</code> is far clearer than <code>if (today == 2)</code>, and if you mistype the name the compiler catches it — a mistyped number it cannot. By default the first constant is 0 and each later one is one more than the previous, unless you assign a value explicitly."
+        },
+        {
+          "title": "typedef — a nickname for a type",
+          "text": "<code>typedef unsigned long ulong;</code> lets you write <code>ulong x;</code>. It is most useful with structures: after <code>typedef struct Node Node;</code> you can write <code>Node *p;</code> instead of <code>struct Node *p;</code> everywhere. Important — typedef creates a <strong>new name for an existing type</strong>, not a new type."
+        }
+      ],
+      "realLife": "A one-room flat shared by three cousins by shift — morning, afternoon, night. The flat is one room, so the rent is for one room (union size = largest member), but only one cousin can be in it at a time. A structure would be a three-bedroom flat: costlier, but everyone fits at once.",
+      "table": {
+        "headers": ["", "Structure", "Union"],
+        "rows": [
+          ["Keyword", "struct", "union"],
+          ["Memory", "Separate memory for every member", "One memory space shared by all members"],
+          ["Size", "At least the SUM of all members", "Size of the LARGEST member only"],
+          ["Example {int; float; char;}", "4 + 4 + 1 = 9, padded to 12 bytes", "4 bytes (the largest member)"],
+          ["Members valid at a time", "All of them together", "Only one — the last one written"],
+          ["Writing to one member", "Does not affect the others", "Overwrites the other members"],
+          ["Use it for", "A record with many fields at once", "Saving memory when only one field is used"]
+        ]
+      },
+      "code": "#include <stdio.h>\n\nstruct SData { int i; float f; char c; };   // separate memory\nunion  UData { int i; float f; char c; };   // shared memory\n\nenum Day { MON, TUE, WED, THU, FRI };       // MON=0, TUE=1, WED=2 ...\n\ntypedef struct {                            // typedef + structure\n    int  roll;\n    char name[20];\n} Student;                                  // new short type name\n\nint main() {\n    printf(\"struct = %zu bytes\\n\", sizeof(struct SData)); // 12 (with padding)\n    printf(\"union  = %zu bytes\\n\", sizeof(union UData));  // 4 (largest member)\n\n    union UData u;\n    u.i = 65;\n    printf(\"u.i = %d\\n\", u.i);      // 65\n    u.f = 3.5;                      // this OVERWRITES u.i\n    printf(\"u.f = %.1f\\n\", u.f);    // 3.5 - u.i is now garbage\n\n    enum Day today = WED;\n    printf(\"WED = %d\\n\", today);    // 2\n\n    Student s = {21, \"Asha\"};       // no need to write 'struct'\n    printf(\"%d %s\\n\", s.roll, s.name);\n    return 0;\n}",
+      "codeNote": "The union is 4 bytes while the same members in a structure need 12 — and writing u.f silently destroyed u.i.",
+      "mistake": "Filling a union like a structure and then reading every member back. After <code>u.i = 65; u.f = 3.5;</code>, reading <code>u.i</code> gives garbage, because both members sit on the SAME bytes. Only the most recently written member is valid.",
+      "examAnswer": "A union is a user-defined data type whose members share the same memory location, and therefore the size of a union is equal to the size of its largest member, whereas a structure allocates separate memory for each member and its size is at least the sum of its members. Consequently, all members of a structure may hold valid values simultaneously, while in a union only the member written most recently holds a valid value. An enumerated data type, declared with the enum keyword, defines a set of named integer constants whose values begin at zero by default and increase by one unless assigned explicitly. The typedef keyword is used to provide an alternative name for an existing data type, which improves readability, for example typedef struct { int roll; } Student;.",
+      "remember": "Union = one shared room, size of the biggest member. Structure = separate rooms, sum of all. enum starts at 0.",
+      "why": "'Difference between structure and union' is one of the most repeated exam questions in this unit, and typedef appears in nearly every real C program you will read.",
+      "practice": "Declare a union with an int, a double and a char array of 10. What is its size and why? Then write the same members as a structure and compare."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "A pointer variable stores…",
+      "options": [
+        "the value of another variable",
+        "the memory address of another variable",
+        "a copy of another variable",
+        "the data type of another variable"
+      ],
+      "answer": 1,
+      "why": "A pointer holds an ADDRESS. The value at that address is reached by dereferencing with *."
+    },
+    {
+      "q": "An int pointer p holds address 2000 and sizeof(int) is 4. What is p + 1?",
+      "options": [
+        "2001",
+        "2004",
+        "2008",
+        "2000"
+      ],
+      "answer": 1,
+      "why": "Pointer arithmetic is scaled by the size of the type. p+1 moves one whole int = 4 bytes, giving 2004."
+    },
+    {
+      "q": "Which statement about malloc() and calloc() is correct?",
+      "options": [
+        "malloc takes two arguments, calloc takes one",
+        "Both set the allocated memory to zero",
+        "calloc sets the memory to zero, malloc leaves garbage",
+        "malloc sets the memory to zero, calloc leaves garbage"
+      ],
+      "answer": 2,
+      "why": "calloc(n, size) clears every byte to 0. malloc(size) leaves whatever junk was already in that memory."
+    },
+    {
+      "q": "What is the main difference between an array name and a pointer?",
+      "options": [
+        "An array name cannot be reassigned, a pointer can",
+        "An array name stores a value, a pointer stores an address",
+        "There is no difference at all",
+        "A pointer cannot be used with the [] operator"
+      ],
+      "answer": 0,
+      "why": "An array name is a fixed address with no storage of its own, so arr = arr+1 is an error, while p = p+1 is perfectly legal."
+    },
+    {
+      "q": "To access a member through a structure POINTER p, you write…",
+      "options": [
+        "p.roll",
+        "*p.roll",
+        "p-&gt;roll",
+        "&amp;p.roll"
+      ],
+      "answer": 2,
+      "why": "The arrow operator is used with pointers. p->roll is the same as (*p).roll — the dot alone works only with a structure variable."
+    },
+    {
+      "q": "If a union has an int (4 bytes), a float (4 bytes) and a char (1 byte), its size is about…",
+      "options": [
+        "9 bytes",
+        "12 bytes",
+        "4 bytes",
+        "1 byte"
+      ],
+      "answer": 2,
+      "why": "A union shares one memory space, so its size is that of its largest member — here 4 bytes. A structure with the same members would need about 12."
+    },
+    {
+      "q": "What is a self-referential structure?",
+      "options": [
+        "A structure that calls itself like recursion",
+        "A structure containing a pointer to its own type",
+        "A structure copied into itself",
+        "A structure with only one member"
+      ],
+      "answer": 1,
+      "why": "struct Node { int data; struct Node *next; }; — the member must be a POINTER to its own type, and this is the basis of linked lists."
+    },
+    {
+      "q": "In enum Day { MON, TUE, WED }; what is the value of WED?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "It has no value"
+      ],
+      "answer": 1,
+      "why": "enum constants start at 0 by default, so MON=0, TUE=1 and WED=2."
+    },
+    {
+      "q": "If a program is run as ./sum 10 20, what is the value of argc?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "0"
+      ],
+      "answer": 2,
+      "why": "argc counts the program name too. argv[0]=\"./sum\", argv[1]=\"10\", argv[2]=\"20\", so argc is 3."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "What is a pointer? Explain the & and * operators with a small program, and state what would go wrong if you wrote int *p = marks; instead of int *p = &marks;"
+    },
+    {
+      "q": "An int pointer holds address 3000 and sizeof(int) is 4. Show step by step what p+1, p+3, p++ and (&a[4] - &a[0]) give, and explain why pointer arithmetic does not simply add 1.",
+      "hint": "The size of the type decides how far one step moves. Pointer subtraction counts elements, not bytes."
+    },
+    {
+      "q": "Compare malloc() and calloc() in a table. What is a memory leak, and why must every allocation be matched with free()?"
+    },
+    {
+      "q": "Differentiate between a structure and a union with a suitable example, clearly showing how much memory each one takes for the same three members.",
+      "hint": "Structure = sum of members (plus padding). Union = largest member only."
+    },
+    {
+      "q": "What is a self-referential structure? Write a program that creates two nodes, links them, prints both values using the arrow operator, and frees the allocated memory."
+    }
+  ]
+};

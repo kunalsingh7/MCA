@@ -1,0 +1,508 @@
+/* Operating System (MCA 108) — Unit 3. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.os = UNITS.os || [];
+UNITS.os[2] = {
+  "num": 3,
+  "title": "Memory Management",
+  "problem": "Your laptop has 8 GB of RAM, but you are running Chrome with twenty tabs, a video call and a compiler — together they want far more than 8 GB. And each of them must never be able to read or damage another one's memory.",
+  "solution": "The OS divides memory, keeps only the pieces actually being used in RAM, and pushes the rest to disk. Paging and segmentation make this invisible to your programs, and page replacement algorithms decide what to throw out when RAM is full.",
+  "objectives": [
+    "Explain how memory was managed before paging, using fixed and variable partitions",
+    "Distinguish internal from external fragmentation and state the cure for each",
+    "Explain swapping and say why it is different from paging",
+    "Translate a logical address into a physical address using a page table",
+    "Solve FIFO, LRU, Optimal, MRU and Clock page-replacement numericals and count page faults correctly",
+    "Demonstrate Belady's anomaly with a concrete reference string and explain why stack algorithms are immune",
+    "List the main design issues of a paging system, including page size, working set and thrashing",
+    "Compare paging with segmentation, and explain segmented paging and paged segmentation"
+  ],
+  "topics": [
+    {
+      "title": "Memory Management Without Swapping or Paging",
+      "teacher": "Before we learn the clever solutions, let's see the clumsy ones — because every clever idea in this unit exists to fix a problem you are about to meet. Think of a hostel: how do you divide one big building among many students?",
+      "explain": "In the simplest systems, a program is loaded into one <strong>continuous block</strong> of memory and stays there until it finishes. This is <strong>contiguous allocation</strong>. Memory is divided either into <strong>fixed partitions</strong> (decided in advance and never changed) or <strong>variable partitions</strong> (created exactly the size each process needs, when it arrives).",
+      "keyPoints": [
+        "<strong>Mono-programming</strong>: only one user program in memory at a time, sharing RAM with the OS. Simple but the CPU idles during I/O.",
+        "<strong>Fixed (static) partitioning</strong>: memory is divided in advance into a fixed number of partitions of fixed size.",
+        "In fixed partitioning the <strong>degree of multiprogramming</strong> can never exceed the number of partitions.",
+        "Fixed partitioning causes <strong>internal fragmentation</strong> — unused space left inside a partition.",
+        "<strong>Variable (dynamic) partitioning</strong>: a partition is created to exactly fit each process, so there is no internal fragmentation.",
+        "Variable partitioning causes <strong>external fragmentation</strong> — free space exists but it is broken into scattered holes.",
+        "Three placement strategies: <strong>First Fit</strong> (first hole big enough), <strong>Best Fit</strong> (smallest hole big enough), <strong>Worst Fit</strong> (largest hole).",
+        "Protection uses two hardware registers: a <strong>base register</strong> (start address) and a <strong>limit register</strong> (size); every address is checked against them."
+      ],
+      "subtopics": [
+        {
+          "title": "Fixed partitioning — decided once, forever",
+          "text": "The OS divides RAM into a fixed set of partitions when the system boots, say 4 MB, 8 MB, 8 MB and 16 MB. A process is put into a partition big enough to hold it. It is very easy to implement, but a 5 MB process placed in an 8 MB partition wastes 3 MB that nobody else can use. Worse, a process bigger than the largest partition simply cannot run at all."
+        },
+        {
+          "title": "Variable partitioning — cut to size",
+          "text": "Here the OS keeps a table of free holes and carves out a partition of exactly the required size when a process arrives. Nothing is wasted inside a partition. But as processes come and go, the free memory breaks into many small scattered holes, and eventually a new process cannot fit even though the total free memory is more than enough."
+        },
+        {
+          "title": "First Fit, Best Fit and Worst Fit",
+          "text": "<strong>First Fit</strong> scans from the start and takes the first hole that is large enough — it is the fastest. <strong>Best Fit</strong> searches the whole list for the smallest adequate hole; it wastes the least space per allocation but is slow and leaves behind tiny useless slivers. <strong>Worst Fit</strong> takes the largest hole so that the leftover piece is still usable; in practice it performs poorly. Studies show First Fit and Best Fit both beat Worst Fit, and First Fit is generally the fastest."
+        }
+      ],
+      "realLife": "A hostel with pre-built rooms of fixed size is fixed partitioning — a single student in a four-bed room wastes three beds. A hall where you put up curtains exactly around each group as they arrive is variable partitioning — no space wasted inside, but after groups leave and arrive all day you end up with many awkward narrow gaps.",
+      "worked": "<strong>First Fit vs Best Fit vs Worst Fit</strong><br>Free holes in memory, in this order:<br><code>100 KB, 500 KB, 200 KB, 300 KB, 600 KB</code><br>A process of <strong>212 KB</strong> arrives. Where does it go?<br><br><strong>First Fit</strong> — scan left to right, take the first hole ≥ 212:<br>100 too small → 500 fits → <strong>allocate in the 500 KB hole</strong>. Leftover = 500 − 212 = 288 KB.<br><br><strong>Best Fit</strong> — find the smallest hole that is ≥ 212:<br>Candidates are 500, 300 and 600. The smallest is <strong>300 KB</strong> → allocate there. Leftover = 300 − 212 = 88 KB.<br><br><strong>Worst Fit</strong> — find the largest hole:<br>The largest is <strong>600 KB</strong> → allocate there. Leftover = 600 − 212 = 388 KB.<br><br>Notice: the same request lands in three completely different places. Best Fit leaves the smallest leftover (88 KB) but that sliver is likely too small to ever be used again.",
+      "table": {
+        "headers": ["", "Fixed partitioning", "Variable partitioning"],
+        "rows": [
+          ["Partition size", "Decided in advance, never changes", "Created to fit each process"],
+          ["Fragmentation", "Internal (waste inside a partition)", "External (waste between partitions)"],
+          ["Degree of multiprogramming", "Limited to the number of partitions", "Varies with memory available"],
+          ["Implementation", "Very simple", "Needs a free-hole list and a placement strategy"],
+          ["Large process", "Cannot run if bigger than the largest partition", "Runs if a big enough hole exists"]
+        ]
+      },
+      "mistake": "Students say fixed partitioning has no fragmentation because the partitions are neat. It is the opposite — fixed partitioning is exactly where INTERNAL fragmentation comes from, because the partition is almost never the same size as the process.",
+      "examAnswer": "In contiguous memory allocation each process is placed in a single continuous block of main memory. Under fixed partitioning, memory is divided in advance into a fixed number of partitions of predetermined size; this is simple to implement but restricts the degree of multiprogramming and causes internal fragmentation, since the partition allotted is rarely exactly the size required. Under variable partitioning, a partition is created dynamically to match the size of each process, eliminating internal fragmentation but giving rise to external fragmentation as free memory becomes divided into scattered holes. Placement is performed using the first fit, best fit or worst fit strategy, and protection is enforced by base and limit registers.",
+      "remember": "Fixed = rooms built in advance → internal waste. Variable = cut to order → external gaps.",
+      "why": "Every problem here — wasted space, processes that will not fit, no protection — is exactly what paging was invented to solve. Understanding the disease makes the cure obvious.",
+      "practice": "Holes of 150 KB, 400 KB, 250 KB and 350 KB are free in that order. A 300 KB process arrives. Which hole does First Fit, Best Fit and Worst Fit each choose?"
+    },
+    {
+      "title": "Fragmentation: Internal, External and Compaction",
+      "teacher": "Here is a puzzle. Your memory says 50 MB free, but a 30 MB program refuses to load. How can that possibly happen? The answer is the most important word in this unit — fragmentation.",
+      "explain": "<strong>Fragmentation</strong> means memory that is free but unusable. <strong>Internal fragmentation</strong> is space wasted <em>inside</em> an allocated block, because the block given is bigger than what was asked for. <strong>External fragmentation</strong> is space wasted <em>between</em> allocated blocks — the total free memory is enough, but no single hole is large enough.",
+      "keyPoints": [
+        "<strong>Internal</strong> = unused space INSIDE an allocated block. Caused by fixed-size allocation.",
+        "<strong>External</strong> = free space scattered in small holes BETWEEN allocated blocks. Caused by variable-size allocation.",
+        "Paging suffers only from internal fragmentation, and only in the <strong>last page</strong> of a process.",
+        "Average internal fragmentation in paging is about <strong>half a page per process</strong>.",
+        "Segmentation suffers from external fragmentation, because segments have different sizes.",
+        "Cure for external fragmentation: <strong>compaction</strong> — shuffle all processes together to make one big hole.",
+        "Compaction is <strong>expensive</strong> (everything must be copied) and only possible if addresses are relocated dynamically at run time.",
+        "The real cure for external fragmentation is to stop demanding contiguous memory at all — that is, use <strong>paging</strong>."
+      ],
+      "subtopics": [
+        {
+          "title": "Internal fragmentation with a number",
+          "text": "Suppose partitions are fixed at 4 KB and a process needs 3.2 KB. It gets a whole 4 KB partition, so 0.8 KB is locked away inside — nobody else can touch it even though it is empty. Multiply that by hundreds of processes and the waste becomes serious. In paging the same thing happens, but only in the last page: a 5 KB process with 2 KB pages needs 3 pages (6 KB) and wastes 1 KB."
+        },
+        {
+          "title": "External fragmentation with a number",
+          "text": "Suppose after several processes finish, the free holes are 10 KB, 5 KB, 8 KB and 12 KB — a total of 35 KB free. Now a 20 KB process arrives. It cannot run, because contiguous allocation needs the 20 KB in one piece and the largest hole is only 12 KB. The memory exists; it is just in the wrong shape. The classic rule of thumb is the 'fifty-percent rule': with first fit, roughly one-third of memory may end up unusable this way."
+        },
+        {
+          "title": "Compaction — the expensive cure",
+          "text": "Compaction moves all the allocated blocks to one end of memory so that all the free holes merge into a single big hole. In the example above, compaction would produce one 35 KB hole and the 20 KB process would fit. But every byte of every process must be physically copied, which takes real time, and it only works if the hardware supports relocation at run time through a base register — otherwise the moved programs would break."
+        }
+      ],
+      "realLife": "Internal fragmentation is buying a full thali when you only wanted dal and rice — you paid for the whole plate and the rest is wasted. External fragmentation is a cinema hall with 50 empty seats but no 5 empty seats <em>together</em>, so your group of 5 cannot sit. Compaction is asking everybody to shift one seat so the gaps join up.",
+      "table": {
+        "headers": ["", "Internal fragmentation", "External fragmentation"],
+        "rows": [
+          ["Where is the waste", "Inside an allocated block", "Between allocated blocks"],
+          ["Caused by", "Fixed-size blocks / partitions", "Variable-size blocks / segments"],
+          ["Seen in", "Fixed partitioning, Paging", "Variable partitioning, Segmentation"],
+          ["Can compaction fix it?", "No", "Yes"],
+          ["Real cure", "Use a smaller block size", "Use paging (non-contiguous allocation)"]
+        ]
+      },
+      "mistake": "Do not write that paging removes fragmentation completely. Paging removes EXTERNAL fragmentation entirely, but it still has a little internal fragmentation in the last page of every process — on average half a page.",
+      "examAnswer": "Internal fragmentation refers to the memory wasted within an allocated block when the block allotted is larger than the amount actually requested, and it arises whenever allocation is performed in fixed-size units such as partitions or pages. External fragmentation refers to the memory wasted between allocated blocks, where the total amount of free memory is sufficient to satisfy a request but no single contiguous hole is large enough, and it arises under variable-size allocation such as dynamic partitioning and segmentation. External fragmentation may be relieved by compaction, in which allocated blocks are relocated so that the free holes coalesce into one large hole; however compaction is costly and requires run-time address relocation. The systematic solution is non-contiguous allocation through paging.",
+      "remember": "INternal = waste INside the block. EXternal = waste in the gaps outside. Compaction fixes only external.",
+      "why": "A two-mark definition question almost every year, and it is also the reason paging exists — so it appears inside longer answers too.",
+      "practice": "Memory has free holes of 12 KB, 6 KB and 18 KB. A 25 KB process arrives. Can it be loaded? Name the problem and give two possible solutions."
+    },
+    {
+      "title": "Swapping",
+      "teacher": "Your hostel room fits four people but eight friends want to study there. What do you do? Send some to the library for a while and call them back later. That is swapping — and your computer does it every day without telling you.",
+      "explain": "<strong>Swapping</strong> means temporarily moving an entire process out of main memory to a reserved area on disk (the <strong>swap space</strong> or backing store), and bringing it back later when it is needed. Moving out is called <strong>swap-out</strong> or roll-out; bringing back is <strong>swap-in</strong> or roll-in. It lets the total memory demanded by all processes exceed the physical RAM.",
+      "keyPoints": [
+        "Swapping moves a <strong>whole process</strong> between RAM and disk. (Paging moves individual pages — that is the difference.)",
+        "The disk area used is called <strong>swap space</strong> or the <strong>backing store</strong>; it must be fast with direct access.",
+        "Performed by the <strong>medium-term scheduler</strong>.",
+        "Main benefit: more processes can be kept 'alive' than physically fit in RAM.",
+        "Main cost: very slow, because disk transfer is thousands of times slower than memory.",
+        "Swap time is dominated by <strong>transfer time</strong>, which is proportional to the SIZE of the process.",
+        "A process waiting for I/O into its own buffer must <strong>not</strong> be swapped out, or the incoming data would overwrite another process's memory.",
+        "Too much swapping activity leads to <strong>thrashing</strong>, where the system spends more time swapping than computing."
+      ],
+      "subtopics": [
+        {
+          "title": "How the OS decides who to swap out",
+          "text": "The medium-term scheduler looks for processes that are not doing anything useful right now — typically low-priority processes, or ones blocked waiting for something slow. Their entire memory image is written to the swap area and their RAM is freed for others. When the process is scheduled again, it is read back. If the hardware supports run-time relocation, it may be read back into a completely different memory location."
+        },
+        {
+          "title": "The cost, with real numbers",
+          "text": "Suppose a process uses 100 MB and the disk transfers 50 MB per second. Swapping it out takes 2 seconds, and swapping it back in takes another 2 seconds — 4 seconds of pure overhead for one process. In CPU terms that is an eternity. This is precisely why modern systems avoid swapping whole processes and instead page in only the few kilobytes actually needed."
+        },
+        {
+          "title": "Swapping versus paging — keep them separate",
+          "text": "Both move data between RAM and disk, but <strong>swapping moves a complete process</strong> while <strong>paging moves fixed-size pages</strong>. Swapping is all-or-nothing and therefore slow and coarse; paging is fine-grained, so a 500 MB program can run with only a few megabytes resident. Modern systems use demand paging as the main mechanism, and swap out whole processes only when memory pressure is severe."
+        }
+      ],
+      "realLife": "It is exactly like your study table. You keep only the books you need right now on the table (RAM); the rest go back to the shelf (disk). When you need one from the shelf, you get up and fetch it — that pause is the swap-in delay. Keep too few on the table and you spend the whole evening walking to the shelf.",
+      "mistake": "Swapping is NOT the same as paging. Swapping moves an ENTIRE process; paging moves individual fixed-size pages. Also, a swapped-out process is not terminated — it is paused and will resume exactly where it stopped.",
+      "examAnswer": "Swapping is a memory management technique in which a process is temporarily transferred out of main memory to a backing store on disk, called the swap space, and is subsequently brought back into memory to continue execution. The operation of transferring a process out is termed swap-out or roll-out, and the reverse operation is termed swap-in or roll-in, and the whole activity is controlled by the medium-term scheduler. Swapping permits the combined size of active processes to exceed the available physical memory and thereby raises the degree of multiprogramming, but its cost is high since the transfer time is proportional to the size of the process. A process engaged in input or output into its own buffers must not be swapped out.",
+      "remember": "Swap = whole process to disk and back. Page = only the piece you need. Study table and bookshelf.",
+      "why": "It is the bridge between the old contiguous world and the modern paged world, and 'differentiate swapping and paging' is a favourite short question.",
+      "practice": "A process occupies 80 MB and the disk transfer rate is 40 MB per second. Calculate the total time to swap it out and back in, and explain why this is a serious overhead."
+    },
+    {
+      "title": "Paging: Frames, Page Tables and Address Translation",
+      "teacher": "What if a program did not have to sit in one continuous piece at all? What if you could scatter it anywhere in memory and the hardware would silently join the pieces back together? That one idea — paging — solved external fragmentation forever.",
+      "explain": "<strong>Paging</strong> divides the logical (virtual) address space of a process into equal-sized blocks called <strong>pages</strong>, and divides physical memory into blocks of the exact same size called <strong>frames</strong>. Any page can be placed in any free frame. A <strong>page table</strong>, one per process, records which frame holds each page, and the hardware uses it to translate every address the program produces.",
+      "keyPoints": [
+        "<strong>Page</strong> = a fixed-size block of logical memory. <strong>Frame</strong> = a block of physical memory of the <em>same</em> size.",
+        "Page size is always a <strong>power of 2</strong>, typically 4 KB, so that address splitting is just bit-splitting.",
+        "A <strong>logical address</strong> is split into a <strong>page number (p)</strong> and an <strong>offset (d)</strong>.",
+        "Page number = logical address ÷ page size; Offset = logical address mod page size.",
+        "Physical address = (frame number × page size) + offset. <strong>The offset never changes.</strong>",
+        "The page table is kept in memory; the <strong>page-table base register (PTBR)</strong> points to it.",
+        "Paging removes <strong>external fragmentation completely</strong>; a small amount of internal fragmentation remains in the last page.",
+        "Naive paging needs <strong>two memory accesses</strong> per reference (one for the page table, one for the data) — the <strong>TLB</strong>, a small fast cache of recent translations, fixes this.",
+        "Paging is invisible to the programmer — the process sees one continuous address space even though its pages are scattered."
+      ],
+      "subtopics": [
+        {
+          "title": "Why the offset is never translated",
+          "text": "A page and a frame are exactly the same size, so a byte that is 428 bytes into page 3 will still be 428 bytes into whichever frame holds page 3. Only the <em>block number</em> changes; the position inside the block is untouched. Remembering this one fact makes every address-translation numerical easy — you only ever look up the page number."
+        },
+        {
+          "title": "The TLB — making it fast",
+          "text": "Without help, every memory reference would need two trips to memory: first to read the page table, then to read the data. That doubles the time. So the CPU keeps a small associative cache called the <strong>Translation Lookaside Buffer (TLB)</strong> holding the most recently used page-to-frame mappings. A TLB hit gives the frame instantly. With hit ratios around 98%, the effective access time is close to a single memory access."
+        },
+        {
+          "title": "Protection and sharing",
+          "text": "Each page-table entry carries protection bits — a <strong>valid/invalid bit</strong> saying whether the page belongs to this process and is in memory, plus read/write/execute permissions. Because pages are separate objects, two processes can point their page tables at the <em>same</em> frame and share it. This is how many copies of the same program share one copy of its code in RAM."
+        }
+      ],
+      "realLife": "Think of a book photocopied page by page and stored in whatever pigeonholes happen to be free in the department office. The index card on the wall says 'page 1 is in hole 5, page 2 is in hole 12'. You still read the book in order — you just look up the card each time. The card is the page table, the pigeonholes are frames.",
+      "worked": "<strong>Address translation, step by step</strong><br>Page size = 1 KB = 1024 bytes.<br>Page table of this process:<br><code>Page 0 → Frame 5</code><br><code>Page 1 → Frame 2</code><br><code>Page 2 → Frame 8</code><br><code>Page 3 → Frame 7</code><br><br>The CPU generates <strong>logical address 3500</strong>. Find the physical address.<br><br><strong>Step 1 — Find the page number.</strong><br>Page number = 3500 ÷ 1024 = 3 (whole number part)<br>because 3 × 1024 = 3072, and 4 × 1024 = 4096 which is too big.<br><br><strong>Step 2 — Find the offset.</strong><br>Offset = 3500 − 3072 = <strong>428</strong><br>(equivalently, 3500 mod 1024 = 428)<br><br><strong>Step 3 — Look up the page table.</strong><br>Page 3 → <strong>Frame 7</strong><br><br><strong>Step 4 — Build the physical address.</strong><br>Physical address = (frame number × page size) + offset<br>= (7 × 1024) + 428<br>= 7168 + 428<br>= <strong>7596</strong><br><br>So logical address 3500 becomes physical address 7596. The offset 428 stayed exactly the same — only 3 became 7.<br><br><strong>A second quick one:</strong> logical address 1000.<br>Page = 1000 ÷ 1024 = 0, offset = 1000. Page 0 → Frame 5.<br>Physical = (5 × 1024) + 1000 = 5120 + 1000 = <strong>6120</strong>.",
+      "mistake": "Never add the frame number to the page number, and never translate the offset. Physical address = frame number × PAGE SIZE + offset. Also remember pages and frames are always the SAME size — that is the whole trick.",
+      "examAnswer": "Paging is a non-contiguous memory allocation scheme in which the logical address space of a process is divided into fixed-size blocks called pages and physical memory is divided into blocks of identical size called frames, so that any page may be loaded into any available frame. Every logical address generated by the processor is interpreted as a page number together with an offset; the page number is used as an index into the process's page table to obtain the corresponding frame number, and the physical address is formed as the frame number multiplied by the page size plus the unchanged offset. Paging eliminates external fragmentation entirely and permits convenient protection and sharing, while leaving a small internal fragmentation in the final page of each process. A Translation Lookaside Buffer is employed to avoid the additional memory reference required to consult the page table.",
+      "remember": "Logical = page + offset. Physical = frame + the SAME offset. Only the block number is translated.",
+      "why": "Address translation numericals appear in almost every paper, and every later topic — page replacement, segmentation, virtual memory — is built on this picture.",
+      "practice": "Page size is 2 KB. The page table is: page 0 → frame 3, page 1 → frame 7, page 2 → frame 1. Convert logical address 3000 into a physical address, showing every step."
+    },
+    {
+      "title": "Page Faults, Modeling and Paging Design Issues",
+      "teacher": "Paging has a secret superpower we have not used yet. If pages can live anywhere in memory... why must they be in memory at all? Why not leave most of them on disk and fetch them only when the program actually touches them?",
+      "explain": "In <strong>demand paging</strong>, a page is brought into memory only when it is referenced. If the program touches a page that is not resident, the hardware raises a <strong>page fault</strong>, the OS fetches the page from disk into a free frame, updates the page table and restarts the instruction. When no frame is free, a <strong>page replacement algorithm</strong> chooses a victim page to evict.",
+      "keyPoints": [
+        "A <strong>page fault</strong> is not an error — it is a normal interrupt saying 'this page is not in memory yet'.",
+        "The <strong>valid/invalid bit</strong> in the page-table entry is what triggers the fault.",
+        "Page fault handling: trap to OS → find the page on disk → find a free frame (or evict one) → read the page in → update the page table → <strong>restart the instruction</strong>.",
+        "A <strong>reference string</strong> is the sequence of page numbers a program touches — it is the input to every page replacement numerical.",
+        "<strong>Modeling paging algorithms</strong> means running an algorithm on a reference string for different frame counts and plotting the page-fault curve.",
+        "As a rule, <strong>more frames → fewer page faults</strong> — except for FIFO, which can break this rule (Belady's anomaly).",
+        "<strong>Effective Access Time (EAT)</strong> = (1 − p) × memory access time + p × page fault service time, where p is the page fault rate.",
+        "The <strong>working set</strong> is the set of pages a process is actively using right now; if its working set does not fit in its frames, it will fault constantly.",
+        "<strong>Thrashing</strong> = the system spends more time servicing page faults than executing — CPU utilisation collapses."
+      ],
+      "subtopics": [
+        {
+          "title": "Why page faults must be rare",
+          "text": "A memory access takes about 100 nanoseconds; servicing a page fault takes about 8 milliseconds, which is 80,000 times slower. If p is the fault rate, EAT ≈ (1 − p) × 100 ns + p × 8,000,000 ns. Even with p = 0.001 (one fault per thousand accesses) the average access time becomes roughly 8 microseconds — eighty times slower than normal memory. That is why keeping the fault rate tiny is the whole game."
+        },
+        {
+          "title": "Modeling paging algorithms",
+          "text": "To compare algorithms honestly we take one reference string, run each algorithm on it for 1, 2, 3, ... frames, and count the faults. Plotting faults against the number of frames gives a curve that normally falls as frames increase. This method is exactly what you do by hand in the worked examples of the next three topics, and it is what revealed Belady's anomaly — the shocking case where FIFO's curve goes <em>up</em>."
+        },
+        {
+          "title": "Design issues for a paging system",
+          "text": "<strong>Page size</strong> — small pages mean less internal fragmentation but a much bigger page table and more faults; large pages mean the opposite. Typical answer: 4 KB. <strong>Frame allocation</strong> — how many frames does each process get? Equal allocation, or proportional to process size. <strong>Replacement scope</strong> — <em>local</em> replacement takes a victim only from the faulting process's own frames; <em>global</em> replacement may steal from any process, which is more flexible but makes one process's behaviour affect another's. <strong>Working-set model and thrashing control</strong> — if the sum of all working sets exceeds available frames, the OS must reduce the degree of multiprogramming by swapping a process out. Other issues are <strong>page-fault frequency control</strong>, <strong>prepaging</strong> (loading several pages in advance), and <strong>locking</strong> pages involved in I/O so they cannot be evicted."
+        }
+      ],
+      "realLife": "You do not carry your whole library to the exam hall. You keep a few open books on the desk (frames) and fetch another only when a question needs it (page fault). If you keep only one book on a desk and the paper jumps between five subjects, you spend the whole three hours walking to the shelf and never write an answer — that is thrashing.",
+      "mistake": "A page fault is NOT a program crash or a bug. It is a routine, expected interrupt. Also, do not confuse 'page fault' with 'invalid memory access' — the latter is a genuine protection error where the page does not belong to the process at all.",
+      "examAnswer": "In demand paging a page is loaded into main memory only when it is referenced. When a referenced page is not resident, the valid-invalid bit of the corresponding page-table entry causes a page fault, in response to which the operating system locates the page on the backing store, allocates a free frame, selecting a victim by means of a page replacement algorithm if none is free, reads the page in, updates the page table and restarts the interrupted instruction. Since page fault service time is several orders of magnitude greater than memory access time, the effective access time is highly sensitive to the page fault rate. The principal design issues of a paging system are the choice of page size, the allocation of frames among processes, the use of local or global replacement, and the control of thrashing through the working-set model.",
+      "remember": "Page fault = 'not here yet, fetch it'. Fewer frames than the working set = thrashing.",
+      "why": "This topic supplies the vocabulary (reference string, frames, faults) used in all three numericals that follow, and 'design issues for paging' is a direct syllabus line.",
+      "practice": "Memory access time is 100 ns and page fault service time is 10 ms. If the page fault rate is 0.0005, compute the effective access time."
+    },
+    {
+      "title": "FIFO, Belady's Anomaly and Stack Algorithms",
+      "teacher": "The simplest replacement rule anyone can think of: throw out whichever page has been in memory the longest. Sounds fair. It is also the algorithm that produced one of the biggest surprises in operating system history — giving it MORE memory made it WORSE.",
+      "explain": "<strong>FIFO</strong> replaces the page that was loaded <em>earliest</em>, regardless of how often or how recently it has been used. It is implemented with a simple queue: new pages join the back, the victim is taken from the front. It is easy, but it can throw out a page that the program is using constantly, simply because that page was loaded first.",
+      "keyPoints": [
+        "FIFO evicts the <strong>oldest loaded</strong> page — not the least recently used one.",
+        "Implemented with one FIFO queue of resident pages; very cheap, needs no extra hardware.",
+        "Main weakness: it ignores usage entirely, so a heavily used old page gets evicted.",
+        "<strong>Belady's anomaly</strong>: for some reference strings, increasing the number of frames <strong>increases</strong> the number of page faults under FIFO.",
+        "The classic anomaly string is <strong>1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5</strong> — 9 faults with 3 frames, 10 faults with 4 frames.",
+        "A <strong>stack algorithm</strong> is one where the set of pages in n frames is always a <strong>subset</strong> of the set in n+1 frames.",
+        "Stack algorithms can <strong>never</strong> suffer Belady's anomaly. <strong>LRU and Optimal are stack algorithms.</strong>",
+        "<strong>FIFO is not a stack algorithm</strong> — which is exactly why the anomaly can occur.",
+        "Always count the <strong>first loads as page faults</strong> too: filling empty frames still counts."
+      ],
+      "subtopics": [
+        {
+          "title": "What Belady's anomaly really means",
+          "text": "Intuition says more memory can only help. Belady and his colleagues showed in 1969 that this intuition is false for FIFO. With more frames, FIFO keeps a different — and sometimes worse — set of pages, because the eviction order depends only on load order, not on usefulness. It is not a bug in the arithmetic; it is a genuine property of FIFO. Mention the year and the name in your answer for full marks."
+        },
+        {
+          "title": "The stack property, in plain words",
+          "text": "In LRU, the pages held in 3 frames are always the 3 most recently used pages, and the pages held in 4 frames are always the 4 most recently used. The first set is automatically <em>inside</em> the second. So anything that was a hit with 3 frames must also be a hit with 4 frames, and faults can only go down. FIFO has no such nesting — the 3-frame set can contain a page that the 4-frame run has already thrown away."
+        },
+        {
+          "title": "How to present a numerical neatly",
+          "text": "Draw a row of boxes for each reference. Write the current frame contents in a column under each reference and mark F for a fault or H for a hit. Show the queue order so the examiner can see which page is oldest. Then write the total: 'Page faults = ...' and, if asked, 'Hit ratio = hits / total references'. Marks are given for the working, so never show only the final count."
+        }
+      ],
+      "realLife": "A hostel rule that says 'the senior-most student must vacate the room first' — even if he is the one using it every day, while a fresher who never comes gets to stay. Fair by age, foolish by usefulness. That is FIFO.",
+      "worked": "<strong>Part A — FIFO with 3 frames</strong><br>Reference string: <code>7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2</code> (13 references)<br>Frames shown oldest → newest.<br><br><code>7</code> → FAULT. Frames: [7]<br><code>0</code> → FAULT. Frames: [7, 0]<br><code>1</code> → FAULT. Frames: [7, 0, 1]<br><code>2</code> → FAULT, evict 7 (oldest). Frames: [0, 1, 2]<br><code>0</code> → <strong>HIT</strong>. Frames: [0, 1, 2]<br><code>3</code> → FAULT, evict 0. Frames: [1, 2, 3]<br><code>0</code> → FAULT, evict 1. Frames: [2, 3, 0]<br><code>4</code> → FAULT, evict 2. Frames: [3, 0, 4]<br><code>2</code> → FAULT, evict 3. Frames: [0, 4, 2]<br><code>3</code> → FAULT, evict 0. Frames: [4, 2, 3]<br><code>0</code> → FAULT, evict 4. Frames: [2, 3, 0]<br><code>3</code> → <strong>HIT</strong>. Frames: [2, 3, 0]<br><code>2</code> → <strong>HIT</strong>. Frames: [2, 3, 0]<br><br><strong>Total page faults = 10</strong> · Hits = 3 · Hit ratio = 3/13 ≈ 0.23<br>(Notice 0 was evicted at step 6 and needed again immediately at step 7 — FIFO's classic mistake.)<br><br><strong>Part B — Belady's anomaly, proved with numbers</strong><br>New reference string: <code>1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5</code> (12 references)<br><br><em>FIFO with <strong>3 frames</strong>:</em><br><code>1</code> F [1] · <code>2</code> F [1,2] · <code>3</code> F [1,2,3]<br><code>4</code> F evict 1 → [2,3,4]<br><code>1</code> F evict 2 → [3,4,1]<br><code>2</code> F evict 3 → [4,1,2]<br><code>5</code> F evict 4 → [1,2,5]<br><code>1</code> <strong>HIT</strong> · <code>2</code> <strong>HIT</strong><br><code>3</code> F evict 1 → [2,5,3]<br><code>4</code> F evict 2 → [5,3,4]<br><code>5</code> <strong>HIT</strong><br>Hits = 3 → <strong>Page faults = 12 − 3 = 9</strong><br><br><em>FIFO with <strong>4 frames</strong>:</em><br><code>1</code> F [1] · <code>2</code> F [1,2] · <code>3</code> F [1,2,3] · <code>4</code> F [1,2,3,4]<br><code>1</code> <strong>HIT</strong> · <code>2</code> <strong>HIT</strong><br><code>5</code> F evict 1 → [2,3,4,5]<br><code>1</code> F evict 2 → [3,4,5,1]<br><code>2</code> F evict 3 → [4,5,1,2]<br><code>3</code> F evict 4 → [5,1,2,3]<br><code>4</code> F evict 5 → [1,2,3,4]<br><code>5</code> F evict 1 → [2,3,4,5]<br>Hits = 2 → <strong>Page faults = 12 − 2 = 10</strong><br><br><strong>3 frames → 9 faults. 4 frames → 10 faults.</strong><br>We gave the system MORE memory and it performed WORSE. This is <strong>Belady's anomaly</strong>.<br><br><em>Compare with LRU on the very same string:</em> 3 frames gives 10 faults and 4 frames gives 8 faults — it goes down, as it must, because LRU is a stack algorithm.",
+      "mistake": "Two errors to avoid. (1) Forgetting that the initial loads into empty frames are also page faults — with 3 frames, the first three distinct references are always 3 faults. (2) Treating FIFO like LRU: a HIT in FIFO does NOT change the queue order. The page stays exactly where it was in the queue.",
+      "examAnswer": "The First In First Out page replacement algorithm selects for replacement the page that has been resident in memory for the longest time, irrespective of how frequently or how recently it has been used, and is implemented by maintaining the resident pages in a simple queue. Although it is easy to implement, it may replace a heavily used page and it exhibits Belady's anomaly, first reported in 1969, in which increasing the number of allocated frames causes the number of page faults to increase rather than decrease. For the reference string 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5, FIFO incurs nine page faults with three frames but ten page faults with four frames. Algorithms possessing the stack property, in which the set of pages resident in n frames is always a subset of the set resident in n + 1 frames, such as LRU and the Optimal algorithm, are provably free from this anomaly.",
+      "remember": "FIFO = oldest out, usage ignored. More frames can mean more faults — that is Belady. LRU and Optimal are stack algorithms and are safe.",
+      "why": "Belady's anomaly is a guaranteed question — either 'what is it' or 'demonstrate it with an example'. Learn the string 1,2,3,4,1,2,5,1,2,3,4,5 by heart.",
+      "practice": "Apply FIFO with 3 frames to the reference string 2, 3, 2, 1, 5, 2, 4, 5, 3, 2, 5, 2 and count the page faults. Then explain in two lines why the same string cannot show Belady's anomaly under LRU."
+    },
+    {
+      "title": "LRU, Optimal and MRU Page Replacement",
+      "teacher": "If FIFO's mistake was ignoring usage, the fix is obvious — look at how pages were actually used. But how far do you look? Backwards into the past, or forwards into the future? Those two choices give us LRU and Optimal.",
+      "explain": "<strong>LRU (Least Recently Used)</strong> evicts the page that has not been used for the longest time — it predicts the future by looking at the recent past. <strong>Optimal (OPT or MIN)</strong> evicts the page that will not be needed for the longest time in the future — perfect, but impossible in reality since the future is unknown. <strong>MRU (Most Recently Used)</strong> does the opposite of LRU and evicts the page used most recently.",
+      "keyPoints": [
+        "<strong>LRU</strong>: evict the page whose <em>last use</em> was furthest in the <strong>past</strong>.",
+        "<strong>Optimal</strong>: evict the page whose <em>next use</em> is furthest in the <strong>future</strong>; it gives the theoretical minimum number of faults.",
+        "Optimal <strong>cannot be implemented</strong> — it needs knowledge of the future. It is used only as a benchmark to judge real algorithms.",
+        "<strong>MRU</strong>: evict the page used most recently. Useful only for special access patterns such as repeated sequential scans of a large file.",
+        "LRU is implemented with <strong>counters</strong> (a timestamp per page) or a <strong>stack</strong> of page numbers, both of which need hardware support.",
+        "LRU and Optimal are <strong>stack algorithms</strong>, so neither can ever suffer Belady's anomaly.",
+        "LRU relies on the <strong>principle of locality</strong> — a page used recently is very likely to be used again soon.",
+        "Because true LRU hardware is expensive, real systems use approximations such as the Clock algorithm."
+      ],
+      "subtopics": [
+        {
+          "title": "LRU — looking backwards",
+          "text": "LRU assumes that the recent past is a good mirror of the near future, which is true because of <strong>locality of reference</strong>: programs spend most of their time in loops, touching the same small set of pages again and again. So the page you have ignored the longest is the one you are least likely to want next. To apply it by hand, keep a list of resident pages ordered from least-recently-used to most-recently-used, and move a page to the end of the list every time it is referenced — including on a hit."
+        },
+        {
+          "title": "Optimal — looking forwards",
+          "text": "Also called Belady's optimal algorithm or MIN. For every resident page, look ahead in the reference string and find where it appears next; evict the one whose next appearance is furthest away, or which never appears again at all. No algorithm can do better, so its fault count is the lower bound. Examiners use it to ask 'how close did LRU come to optimal?' — in our example, LRU gives 9 faults against Optimal's 7, so LRU is quite good."
+        },
+        {
+          "title": "MRU — the opposite idea, and when it wins",
+          "text": "MRU evicts the most recently used page, which sounds absurd. But consider a program scanning a huge file from start to end, repeatedly. Under LRU every page is evicted just before it is needed again, and you fault on everything. MRU keeps the older pages and throws away the one just used, which will not be wanted again until the very end of the next scan. Database systems use MRU for exactly this kind of scan."
+        }
+      ],
+      "realLife": "Your study table has room for three books. LRU says put away the book you have not opened in the longest time — usually right. Optimal says put away the book you will not need until next month — which you can only know if you have already seen the question paper. MRU says put away the book you just closed — silly for exam study, but sensible if you are reading a novel straight through and will never turn back.",
+      "worked": "All three algorithms on the <strong>same</strong> reference string with <strong>3 frames</strong>:<br><code>7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2</code> (13 references)<br><br><strong>=== LRU (Least Recently Used) ===</strong><br>Frames listed least-recently-used → most-recently-used.<br><code>7</code> FAULT → [7]<br><code>0</code> FAULT → [7, 0]<br><code>1</code> FAULT → [7, 0, 1]<br><code>2</code> FAULT, evict 7 (LRU) → [0, 1, 2]<br><code>0</code> <strong>HIT</strong>, 0 becomes most recent → [1, 2, 0]<br><code>3</code> FAULT, evict 1 → [2, 0, 3]<br><code>0</code> <strong>HIT</strong> → [2, 3, 0]<br><code>4</code> FAULT, evict 2 → [3, 0, 4]<br><code>2</code> FAULT, evict 3 → [0, 4, 2]<br><code>3</code> FAULT, evict 0 → [4, 2, 3]<br><code>0</code> FAULT, evict 4 → [2, 3, 0]<br><code>3</code> <strong>HIT</strong> → [2, 0, 3]<br><code>2</code> <strong>HIT</strong> → [0, 3, 2]<br><strong>LRU page faults = 9</strong> (hits = 4)<br><br><strong>=== OPTIMAL ===</strong><br>At each fault, look ahead and evict the page needed furthest in the future.<br><code>7</code> FAULT → [7]<br><code>0</code> FAULT → [7, 0]<br><code>1</code> FAULT → [7, 0, 1]<br><code>2</code> FAULT. Ahead: 0 appears soon, 1 <em>never</em> appears again... but 7 also never appears again. Evict <strong>7</strong> → [0, 1, 2]<br><code>0</code> <strong>HIT</strong><br><code>3</code> FAULT. Ahead: 0 at next step, 2 later, 1 never again → evict <strong>1</strong> → [0, 2, 3]<br><code>0</code> <strong>HIT</strong><br><code>4</code> FAULT. Ahead from here: 2 comes next, then 3, then 0. Furthest is <strong>0</strong> → evict 0 → [2, 3, 4]<br><code>2</code> <strong>HIT</strong><br><code>3</code> <strong>HIT</strong><br><code>0</code> FAULT. Ahead: 3 then 2; 4 never again → evict <strong>4</strong> → [2, 3, 0]<br><code>3</code> <strong>HIT</strong><br><code>2</code> <strong>HIT</strong><br><strong>Optimal page faults = 7</strong> (hits = 6) — the best any algorithm can do.<br><br><strong>=== MRU (Most Recently Used) ===</strong><br>Evict the page used most recently.<br><code>7</code> F → [7] · <code>0</code> F → [7, 0] · <code>1</code> F → [7, 0, 1]<br><code>2</code> F, evict 1 (most recent) → [7, 0, 2]<br><code>0</code> <strong>HIT</strong> (0 is now most recent)<br><code>3</code> F, evict 0 → [7, 2, 3]<br><code>0</code> F, evict 3 → [7, 2, 0]<br><code>4</code> F, evict 0 → [7, 2, 4]<br><code>2</code> <strong>HIT</strong><br><code>3</code> F, evict 2 → [7, 4, 3]<br><code>0</code> F, evict 3 → [7, 4, 0]<br><code>3</code> F, evict 0 → [7, 4, 3]<br><code>2</code> F, evict 3 → [7, 4, 2]<br><strong>MRU page faults = 11</strong> (hits = 2)<br><br><strong>=== FINAL COMPARISON on this string, 3 frames ===</strong><br>Optimal = <strong>7</strong> faults (best possible)<br>LRU = <strong>9</strong> faults<br>FIFO = <strong>10</strong> faults (from the previous topic)<br>MRU = <strong>11</strong> faults (worst here)<br><br>LRU comes closest to Optimal — which is exactly why real operating systems try to approximate LRU.",
+      "table": {
+        "headers": ["", "FIFO", "LRU", "Optimal", "MRU"],
+        "rows": [
+          ["Evicts", "Oldest loaded page", "Least recently used page", "Page needed furthest in future", "Most recently used page"],
+          ["Looks at", "Load order", "The past", "The future", "The past"],
+          ["Implementable?", "Yes, very easy", "Yes, but needs hardware", "No — future is unknown", "Yes, easy"],
+          ["Belady's anomaly?", "Yes", "No (stack algorithm)", "No (stack algorithm)", "Possible"],
+          ["Faults in our example", "10", "9", "7", "11"]
+        ]
+      },
+      "mistake": "The most common mistake in LRU is not updating the recency order on a HIT. In LRU, every reference — hit or fault — makes that page the most recently used. (FIFO is the opposite: a hit changes nothing.) In Optimal, students look at the PAST instead of the future; always look forward in the string, and a page that never appears again is the best possible victim.",
+      "examAnswer": "The Least Recently Used algorithm replaces the resident page whose most recent reference lies furthest in the past, on the assumption, justified by the principle of locality of reference, that a page used recently is likely to be used again shortly. The Optimal algorithm replaces the page whose next reference lies furthest in the future and therefore produces the minimum possible number of page faults; however, since it requires knowledge of the future reference string it cannot be implemented and serves only as a standard against which practical algorithms are measured. The Most Recently Used algorithm replaces the page referenced most recently and is beneficial only for cyclic sequential access patterns such as repeated scans of a large file. Both LRU and the Optimal algorithm possess the stack property and are therefore free from Belady's anomaly.",
+      "remember": "LRU looks BACK, Optimal looks FORWARD, MRU is LRU upside down. Optimal is the scoreboard, LRU is the player.",
+      "why": "These three, together with FIFO, cover almost every page-replacement numerical asked, and 'why is Optimal not implementable' is a standard two-mark question.",
+      "practice": "Apply LRU and Optimal with 4 frames to the reference string 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5 and compare the number of page faults with FIFO's 10 faults on the same string."
+    },
+    {
+      "title": "Clock (Second Chance) Page Replacement",
+      "teacher": "True LRU needs the hardware to update a timestamp on every single memory reference — far too expensive. So engineers asked: can we get most of LRU's benefit with just ONE extra bit per page? The answer is the Clock algorithm, and it is what real operating systems actually use.",
+      "explain": "The <strong>Clock algorithm</strong>, also called <strong>Second Chance</strong>, is a cheap approximation of LRU. Each page has a single <strong>reference bit (R)</strong>, set to 1 by the hardware whenever the page is used. The resident pages are arranged in a circle with a pointer (the 'clock hand'). On a fault the hand examines the page it points to: if R = 1 it clears the bit to 0 and moves on (a second chance); if R = 0 that page is replaced.",
+      "keyPoints": [
+        "Needs only <strong>one reference bit per page</strong>, set automatically by hardware on every access.",
+        "Resident pages form a <strong>circular list</strong>; a pointer (clock hand) sweeps around it.",
+        "On a fault: R = 1 → set R = 0 and advance (second chance). R = 0 → <strong>replace this page</strong> and advance the hand past it.",
+        "A newly loaded page gets R = 1; on a <strong>hit</strong>, the page's R is set to 1 and the hand does not move.",
+        "If every page has R = 1, the hand goes all the way round clearing bits and then replaces the page it started at — so it <strong>degenerates to FIFO</strong>.",
+        "It is a genuine <strong>approximation of LRU</strong>: a page used recently has R = 1 and survives at least one sweep.",
+        "The <strong>enhanced second-chance</strong> version uses two bits, reference (R) and modify/dirty (M), and prefers to evict a page that is neither used nor modified, avoiding a disk write.",
+        "Clock is what real systems use — full LRU is too expensive in hardware."
+      ],
+      "subtopics": [
+        {
+          "title": "Why it is called Second Chance",
+          "text": "A page with R = 1 is not evicted immediately. Instead its bit is cleared and the hand moves on, so the page gets one more full sweep to prove it is still in use. If the program touches it again before the hand returns, R becomes 1 again and it is saved once more. If not, R is still 0 on the next visit and it is evicted. Only genuinely idle pages get thrown out."
+        },
+        {
+          "title": "Enhanced second chance — two bits",
+          "text": "Writing a modified (dirty) page back to disk costs an extra disk operation, so it is better to evict a clean page. Enhanced second chance classifies pages into four groups using (R, M): (0,0) not used and clean — the best victim; (0,1) not used but modified; (1,0) used and clean; (1,1) used and modified — the worst victim. The hand sweeps looking for the lowest class available, clearing R bits as it goes."
+        },
+        {
+          "title": "Where the hand stops",
+          "text": "The most common exam error is forgetting to advance the pointer after a replacement. After replacing a page, the hand moves to the <em>next</em> position, so the newly loaded page is the last one that will be examined on the following sweep. On a hit, the hand does not move at all — only the page's R bit is set to 1."
+        }
+      ],
+      "realLife": "A librarian walking round the reading room. If a book has a slip saying 'in use', she removes the slip and walks on — one more chance. If she comes back and the slip is still gone, the book clearly is not being read, so she shelves it. She never needs to remember exact times, only 'has anyone touched this since my last round'.",
+      "worked": "<strong>Clock algorithm with 3 frames</strong><br>Reference string: <code>1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5</code><br>Frames are slots f0, f1, f2 in a circle. R-bit shown in brackets. Hand starts at f0.<br><br><code>1</code> FAULT → f0 = 1(1). Hand → f1.  Frames: 1(1), —, —<br><code>2</code> FAULT → f1 = 2(1). Hand → f2.  Frames: 1(1), 2(1), —<br><code>3</code> FAULT → f2 = 3(1). Hand → f0.  Frames: 1(1), 2(1), 3(1)<br><code>4</code> FAULT. Hand at f0: page 1 has R=1 → clear to 0, move to f1. Page 2 R=1 → clear, move to f2. Page 3 R=1 → clear, move to f0. Page 1 now R=0 → <strong>replace</strong>. f0 = 4(1), hand → f1.<br>&nbsp;&nbsp;Frames: 4(1), 2(0), 3(0)<br><code>1</code> FAULT. Hand at f1: page 2 R=0 → <strong>replace</strong>. f1 = 1(1), hand → f2.<br>&nbsp;&nbsp;Frames: 4(1), 1(1), 3(0)<br><code>2</code> FAULT. Hand at f2: page 3 R=0 → <strong>replace</strong>. f2 = 2(1), hand → f0.<br>&nbsp;&nbsp;Frames: 4(1), 1(1), 2(1)<br><code>5</code> FAULT. Hand at f0: 4 R=1 → clear, f1. 1 R=1 → clear, f2. 2 R=1 → clear, f0. 4 now R=0 → <strong>replace</strong>. f0 = 5(1), hand → f1.<br>&nbsp;&nbsp;Frames: 5(1), 1(0), 2(0)<br><code>1</code> <strong>HIT</strong> → set page 1's R to 1. Hand stays at f1.  Frames: 5(1), 1(1), 2(0)<br><code>2</code> <strong>HIT</strong> → set page 2's R to 1.  Frames: 5(1), 1(1), 2(1)<br><code>3</code> FAULT. Hand at f1: 1 R=1 → clear, f2. 2 R=1 → clear, f0. 5 R=1 → clear, f1. 1 now R=0 → <strong>replace</strong>. f1 = 3(1), hand → f2.<br>&nbsp;&nbsp;Frames: 5(0), 3(1), 2(0)<br><code>4</code> FAULT. Hand at f2: page 2 R=0 → <strong>replace</strong>. f2 = 4(1), hand → f0.<br>&nbsp;&nbsp;Frames: 5(0), 3(1), 4(1)<br><code>5</code> <strong>HIT</strong> → set page 5's R to 1.  Frames: 5(1), 3(1), 4(1)<br><br><strong>Total page faults = 9</strong> · Hits = 3<br><br>On this string Clock matches FIFO's 9 faults, and it beats LRU's 10 — with only one extra bit of hardware. That cheapness is why real operating systems choose it.",
+      "mistake": "Do not evict the first page the hand points at without checking its R bit. The hand may have to go round several positions — or even a full circle — clearing bits before it finds an R = 0 page. Also remember that a HIT only sets R = 1; it does not move the hand.",
+      "examAnswer": "The Clock, or second chance, page replacement algorithm is a practical approximation of the Least Recently Used algorithm requiring only a single reference bit per page, which the hardware sets whenever the page is referenced. The resident pages are maintained in a circular list traversed by a pointer. When a page fault occurs, the pointer examines the page to which it refers: if the reference bit is one, the bit is cleared and the pointer advances, thereby granting that page a second chance; if the reference bit is zero, the page is selected as the victim and the pointer advances past it. If all reference bits are set, the algorithm degenerates into First In First Out. The enhanced second-chance variant additionally examines the modify bit so as to prefer a page that is both unreferenced and unmodified, thereby avoiding an unnecessary write to the backing store.",
+      "remember": "R = 1 → clear it and walk on (second chance). R = 0 → you are out. All bits set → it becomes plain FIFO.",
+      "why": "It is the only replacement algorithm in this list that real operating systems actually implement, so examiners like asking why LRU is approximated rather than implemented directly.",
+      "practice": "Apply the Clock algorithm with 3 frames to the reference string 1, 2, 3, 1, 4, 2, 5, 1, 2, 3, showing the reference bits and the hand position at every step, and count the page faults."
+    },
+    {
+      "title": "Segmentation, Segmented Paging and Paged Segmentation",
+      "teacher": "Paging is brilliant for the hardware but stupid about meaning — it might cut your function in half across two pages. A programmer does not think in 4 KB blocks; she thinks 'this is the code, this is the stack, this is the array'. Segmentation is memory divided the way a programmer thinks.",
+      "explain": "<strong>Segmentation</strong> divides a program into logical units of <strong>variable size</strong> called segments — code, data, stack, heap, a large array — each with its own name and length. A logical address is a pair <strong>&lt;segment number, offset&gt;</strong>. A <strong>segment table</strong> holds a <strong>base</strong> (where the segment starts in physical memory) and a <strong>limit</strong> (its length) for each segment.",
+      "keyPoints": [
+        "A <strong>segment</strong> is a variable-size logical unit: code, data, stack, heap, a function or an array.",
+        "Logical address = <strong>&lt;segment number s, offset d&gt;</strong> — a <em>two-dimensional</em> address the programmer can see.",
+        "Each segment-table entry has a <strong>base</strong> and a <strong>limit</strong>.",
+        "Translation: if <strong>d &lt; limit</strong>, physical address = base + d. If <strong>d ≥ limit</strong>, a <strong>trap</strong> occurs (segmentation fault).",
+        "Segmentation matches the programmer's view and makes <strong>protection and sharing per logical unit</strong> easy (e.g. mark the code segment read-only, share one library segment).",
+        "Segmentation causes <strong>external fragmentation</strong>, because segments have different sizes.",
+        "Paging causes internal fragmentation and is invisible to the programmer; segmentation causes external fragmentation and is visible.",
+        "<strong>Segmented paging</strong> (also called paged segmentation): each segment is itself divided into pages — this removes external fragmentation while keeping the logical structure.",
+        "The address then has <strong>three parts</strong>: segment number, page number within the segment, and offset within the page."
+      ],
+      "subtopics": [
+        {
+          "title": "Why segmentation exists at all",
+          "text": "Paging splits memory by <em>size</em>, which has no relation to what the program means. A single 4 KB page might hold the end of one function and the start of another, so you cannot mark it read-only or share it sensibly. Segments follow the program's own structure, so the OS can give the code segment read-and-execute permission, the data segment read-and-write permission, and let ten processes share one copy of a library segment. That is protection and sharing done properly."
+        },
+        {
+          "title": "Segmented paging — the best of both",
+          "text": "The obvious combination: keep the logical division into segments, but store each segment as a set of pages instead of one contiguous block. Now segments no longer need contiguous physical memory, so <strong>external fragmentation disappears</strong>, while protection and sharing still work per segment. The price is an extra level of lookup: the CPU consults the segment table to find that segment's page table, then that page table to find the frame. A TLB hides most of this cost. The Intel x86 architecture used exactly this scheme."
+        },
+        {
+          "title": "The names, and why they confuse everyone",
+          "text": "Many textbooks use <strong>segmented paging</strong> and <strong>paged segmentation</strong> as two names for the same scheme, and most RGPV answers treat them as identical: segmentation on the outside, paging on the inside. Where a distinction is drawn, <em>paged segmentation</em> emphasises that each segment is paged (segment table → page table → frame), while <em>segmented paging</em> is sometimes used for a paged system in which the large page table is itself broken into segments. Write the standard two-level scheme, state clearly that both terms usually describe segments divided into pages, and you will be safe."
+        }
+      ],
+      "realLife": "Paging is chopping a textbook into equal 50-page bundles — the chapter breaks fall wherever they fall. Segmentation is binding it by chapter, so each chapter is one unit of its own natural length. Segmented paging is binding by chapter, and then photocopying each chapter 50 pages at a time so the bundles fit in any drawer.",
+      "worked": "<strong>Part A — Segmentation address translation</strong><br>Segment table:<br><code>Segment 0: base = 1400, limit = 1000</code><br><code>Segment 1: base = 6300, limit =  400</code><br><code>Segment 2: base = 4300, limit =  400</code><br><br><em>Logical address &lt;1, 250&gt;:</em><br>Step 1 — check the limit: is 250 &lt; 400? <strong>Yes</strong>, so it is legal.<br>Step 2 — physical address = base + offset = 6300 + 250 = <strong>6550</strong><br><br><em>Logical address &lt;2, 100&gt;:</em><br>100 &lt; 400 ✓ → physical = 4300 + 100 = <strong>4400</strong><br><br><em>Logical address &lt;1, 500&gt;:</em><br>Is 500 &lt; 400? <strong>No.</strong> → <strong>TRAP: addressing error (segmentation fault).</strong> No physical address is produced. This is exactly how the hardware stops a program from reading past the end of its own array.<br><br><strong>Part B — Segmented paging, address in three parts</strong><br>Suppose segment number = 3 bits, page number = 5 bits, offset = 12 bits (page size 4 KB).<br>Given a logical address, the hardware:<br>1. Uses the <strong>segment number</strong> to index the segment table → gets the address of that segment's <strong>page table</strong> (and its length, for a bounds check).<br>2. Uses the <strong>page number</strong> to index that page table → gets the <strong>frame number</strong>.<br>3. Physical address = frame number × 4096 + offset.<br><br>So it is two table lookups instead of one — and the offset, as always, passes through unchanged.",
+      "table": {
+        "headers": ["", "Paging", "Segmentation"],
+        "rows": [
+          ["Block size", "Fixed (e.g. 4 KB)", "Variable — the natural size of the unit"],
+          ["Divided by", "The operating system / hardware", "The programmer or compiler"],
+          ["Address form", "One number (page + offset are hidden)", "Two parts: &lt;segment, offset&gt;"],
+          ["Visible to programmer?", "No", "Yes"],
+          ["Fragmentation", "Internal only", "External only"],
+          ["Table entry holds", "Frame number", "Base and limit"],
+          ["Protection / sharing", "Per fixed-size page — awkward", "Per logical unit — natural"]
+        ]
+      },
+      "mistake": "In segmentation, the bounds check comes FIRST — compare the offset with the limit before adding the base. Students often add base + offset straight away and miss the trap case. Also, the limit is the segment's LENGTH, not its ending address.",
+      "examAnswer": "Segmentation is a memory management scheme that supports the programmer's view of memory by dividing a program into logical units of variable length, such as code, data, stack and heap, each of which forms a segment. A logical address consists of a segment number and an offset; the segment number indexes a segment table whose entries contain a base and a limit, and the physical address is obtained as base plus offset only if the offset is strictly less than the limit, a violation causing a trap to the operating system. Segmentation provides natural protection and sharing at the level of logical units but suffers from external fragmentation because segments are of unequal size. Segmented paging, also referred to as paged segmentation, combines the two schemes by dividing each segment into fixed-size pages, so that external fragmentation is eliminated while the logical structure of segmentation is preserved, at the cost of an additional level of address translation.",
+      "remember": "Paging = fixed size, OS's view, internal waste. Segmentation = variable size, programmer's view, external waste. Combine them and you get the best of both.",
+      "why": "'Differentiate paging and segmentation' is the single most repeated question in this unit, and segmented paging is the standard follow-up worth another five marks.",
+      "practice": "A segment table has segment 0 (base 219, limit 600), segment 1 (base 2300, limit 14), segment 2 (base 90, limit 100). Find the physical address for <0, 430>, <1, 10> and <2, 500>, stating clearly which one traps and why."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "A process of 3.2 KB is loaded into a fixed partition of 4 KB. What kind of fragmentation is the leftover 0.8 KB?",
+      "options": [
+        "External fragmentation",
+        "Internal fragmentation",
+        "Compaction",
+        "No fragmentation at all"
+      ],
+      "answer": 1,
+      "why": "The waste is INSIDE the allocated block, so it is internal fragmentation — the classic result of fixed-size allocation."
+    },
+    {
+      "q": "Free holes of 100 KB, 500 KB, 200 KB, 300 KB and 600 KB exist in that order. Which hole does Best Fit choose for a 212 KB process?",
+      "options": [
+        "500 KB",
+        "600 KB",
+        "300 KB",
+        "200 KB"
+      ],
+      "answer": 2,
+      "why": "Best Fit picks the SMALLEST hole that is still big enough. Of 500, 300 and 600, the smallest is 300 KB. (First Fit would pick 500 KB and Worst Fit 600 KB.)"
+    },
+    {
+      "q": "Page size is 1 KB and page 3 is stored in frame 7. What is the physical address for logical address 3500?",
+      "options": [
+        "7168",
+        "7596",
+        "3500",
+        "10668"
+      ],
+      "answer": 1,
+      "why": "3500 ÷ 1024 gives page 3 with offset 428. Physical = 7 × 1024 + 428 = 7168 + 428 = 7596. The offset is never changed."
+    },
+    {
+      "q": "Which type of fragmentation does paging eliminate completely?",
+      "options": [
+        "Internal fragmentation",
+        "External fragmentation",
+        "Both of them",
+        "Neither of them"
+      ],
+      "answer": 1,
+      "why": "Since any page fits in any frame, no free frame is ever unusable — external fragmentation vanishes. A little internal fragmentation stays in each process's last page."
+    },
+    {
+      "q": "For the string 1,2,3,4,1,2,5,1,2,3,4,5 under FIFO, the page faults are 9 with three frames and 10 with four frames. This is called…",
+      "options": [
+        "Thrashing",
+        "The stack property",
+        "Belady's anomaly",
+        "Locality of reference"
+      ],
+      "answer": 2,
+      "why": "Belady's anomaly is exactly this: giving FIFO more frames increases the number of page faults. Stack algorithms such as LRU and Optimal can never do this."
+    },
+    {
+      "q": "Which page replacement algorithm gives the theoretical minimum number of page faults but cannot actually be implemented?",
+      "options": [
+        "LRU",
+        "FIFO",
+        "Clock",
+        "Optimal"
+      ],
+      "answer": 3,
+      "why": "Optimal evicts the page needed furthest in the future, which requires knowing the future reference string. It is used only as a benchmark to judge real algorithms."
+    },
+    {
+      "q": "In the Clock algorithm, what happens when the hand points at a page whose reference bit is 1?",
+      "options": [
+        "The page is replaced immediately",
+        "The bit is cleared to 0 and the hand moves on",
+        "The hand stops and the algorithm restarts",
+        "The page is written back to disk"
+      ],
+      "answer": 1,
+      "why": "R = 1 means the page was used recently, so it gets a second chance: the bit is cleared and the hand advances. Only a page with R = 0 is replaced."
+    },
+    {
+      "q": "A segment has base 6300 and limit 400. What happens for the logical address <segment, offset> = <that segment, 500>?",
+      "options": [
+        "Physical address 6800 is produced",
+        "Physical address 6300 is produced",
+        "A trap occurs — addressing error",
+        "The offset wraps around to 100"
+      ],
+      "answer": 2,
+      "why": "The bounds check comes first: 500 is not less than the limit of 400, so the hardware traps to the OS. This is what a segmentation fault actually is."
+    },
+    {
+      "q": "What is the main difference between swapping and paging?",
+      "options": [
+        "Swapping moves an entire process; paging moves individual fixed-size pages",
+        "Swapping is faster than paging",
+        "Swapping uses RAM only, paging uses disk only",
+        "They are two names for the same technique"
+      ],
+      "answer": 0,
+      "why": "Swapping is all-or-nothing on a whole process image. Paging is fine-grained, so a large program can run with only a few of its pages resident."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Explain contiguous memory allocation using fixed and variable partitions. Define internal and external fragmentation with an example of each, and state how each can be reduced."
+    },
+    {
+      "q": "What is paging? Explain how a logical address is converted into a physical address, using page size 1 KB and a page table of your own choice. Also state why paging removes external fragmentation.",
+      "hint": "Show the page number, the offset, the table lookup and the final addition as four separate steps."
+    },
+    {
+      "q": "Consider the reference string 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2 with three frames. Find the number of page faults using FIFO, LRU and the Optimal algorithm, showing the frame contents at every step. Which performs best and why?",
+      "hint": "Remember that the initial loads into empty frames also count as page faults."
+    },
+    {
+      "q": "What is Belady's anomaly? Demonstrate it using the reference string 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5 with three and then four frames under FIFO. Explain what a stack algorithm is and why LRU is immune to this anomaly."
+    },
+    {
+      "q": "Differentiate between paging and segmentation on at least five points. Then explain segmented paging, showing how a logical address is translated in it, and state the problem it solves."
+    }
+  ]
+};

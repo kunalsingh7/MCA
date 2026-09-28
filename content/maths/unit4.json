@@ -1,0 +1,532 @@
+/* Mathematical Foundation (MCA 110) — Unit 4. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.maths = UNITS.maths || [];
+UNITS.maths[3] = {
+  "num": 4,
+  "title": "Graph Theory",
+  "problem": "Google Maps has to find you the cheapest route to college. Your college has to make an exam timetable where no student has two papers at the same hour. A company has to lay cable between offices using the least wire. All three look like different problems — but they are the same problem wearing different clothes.",
+  "solution": "Graph theory turns 'things and the connections between them' into dots and lines. Once a problem is drawn as a graph, ready-made rules (degree counting, Dijkstra, Euler's conditions, colouring) solve it — and the same rules work for maps, timetables and cables alike.",
+  "objectives": [
+    "Define a graph, vertex, edge and degree, and read a graph written as V and E lists",
+    "Apply the Handshaking Theorem to check or find the number of edges",
+    "Tell apart simple graphs, multigraphs, directed graphs and weighted graphs",
+    "Count the edges of a complete graph Kn using n(n−1)/2",
+    "Use Euler's formula V − E + F = 2 on a planar graph, and show K5 is not planar",
+    "Test two graphs for isomorphism, and explain why a matching degree sequence is not enough",
+    "Find the shortest path in a weighted graph using Dijkstra's algorithm",
+    "Decide from degrees alone whether a graph has an Euler circuit or an Euler path",
+    "Distinguish Eulerian from Hamiltonian, and find the chromatic number of a small graph"
+  ],
+  "topics": [
+    {
+      "title": "Introduction and Basic Terminology of Graphs",
+      "teacher": "Draw a few dots on paper and join some of them with lines. Congratulations — you have just drawn a graph. That is genuinely all a graph is. The word 'graph' here has nothing to do with the bar charts and pie charts you drew in school.",
+      "explain": "A <strong>graph G = (V, E)</strong> is a pair of two sets: <strong>V</strong>, a set of points called <strong>vertices</strong> (or nodes), and <strong>E</strong>, a set of lines called <strong>edges</strong>, where each edge joins two vertices. The <strong>degree</strong> of a vertex is simply the number of edge-ends touching it.",
+      "keyPoints": [
+        "<strong>Vertex (node)</strong> = a dot. The plural of vertex is <em>vertices</em>.",
+        "<strong>Edge</strong> = a line joining two vertices. Written as (A, B) or AB.",
+        "Two vertices joined by an edge are called <strong>adjacent</strong> (neighbours).",
+        "<strong>Degree deg(v)</strong> = number of edges touching vertex v.",
+        "A <strong>loop</strong> (edge from a vertex to itself) adds <strong>2</strong> to that vertex's degree.",
+        "<strong>Isolated vertex</strong> = degree 0 (a lonely dot, no edges).",
+        "<strong>Pendant vertex</strong> = degree 1 (hanging by a single edge).",
+        "A graph is drawn only to help you see it — the <em>drawing</em> does not matter, only V and E do."
+      ],
+      "subtopics": [
+        {
+          "title": "How a graph is written down in an exam",
+          "text": "Since a question paper cannot always print a picture, a graph is written as two lists. For example: V = {A, B, C, D} and E = {AB, AC, BC, CD}. That is a complete description — four dots, four lines. Practise reading this form, because most exam questions give you exactly this and expect you to work from it."
+        },
+        {
+          "title": "The drawing is not the graph",
+          "text": "The same graph can be drawn in many different ways — straight lines, curved lines, vertices moved around — and it is still the <em>same</em> graph as long as V and E are the same. This is an important idea, and it is the whole reason the topic of <strong>isomorphism</strong> exists later in this unit."
+        },
+        {
+          "title": "Degree, counted honestly",
+          "text": "To find deg(v), just count how many edge-ends arrive at v. If a graph has the edge set E = {AB, AC, AD}, then deg(A) = 3 because three edges touch A, while deg(B) = deg(C) = deg(D) = 1. A loop at A would count twice, because both of its ends are at A."
+        }
+      ],
+      "realLife": "Your WhatsApp group is a graph. Each member is a vertex, and every 'saved this person's number' link is an edge. The class topper with everyone's number saved is a high-degree vertex; the new admission nobody has added yet is an isolated vertex.",
+      "worked": "Let G have V = {A, B, C, D} and E = {AB, AC, AD, BC, CD}.<br>Count edge-ends at each vertex:<br><strong>deg(A)</strong> — touches B, C, D → <strong>3</strong><br><strong>deg(B)</strong> — touches A, C → <strong>2</strong><br><strong>deg(C)</strong> — touches A, B, D → <strong>3</strong><br><strong>deg(D)</strong> — touches A, C → <strong>2</strong><br>Total edges |E| = <strong>5</strong>. No vertex is isolated and none is pendant.",
+      "mistake": "Students count a loop as degree 1. A loop has <strong>both</strong> of its ends at the same vertex, so it contributes <strong>2</strong> to that vertex's degree. Getting this wrong breaks every handshaking calculation afterwards.",
+      "examAnswer": "A graph G is defined as an ordered pair G = (V, E), where V is a non-empty set of elements called vertices or nodes, and E is a set of unordered pairs of vertices called edges. Two vertices joined by an edge are said to be adjacent, and the edge is said to be incident on those vertices. The degree of a vertex v, denoted deg(v), is the number of edges incident on v, with a loop counted twice. A vertex of degree zero is called an isolated vertex and a vertex of degree one is called a pendant vertex.",
+      "remember": "Vertex = dot. Edge = line. Degree = how many lines touch the dot (loop counts 2).",
+      "why": "Every network you will ever program — road maps, social networks, computer networks, web pages and links, dependencies between tasks — is stored and processed as a graph.",
+      "practice": "For V = {P, Q, R, S} and E = {PQ, QR, RS, SP, PR}, write the degree of every vertex and the total number of edges."
+    },
+    {
+      "title": "The Handshaking Theorem",
+      "teacher": "Picture a party. Everybody shakes hands with some people. Now, every single handshake involves exactly two hands. So if you add up how many handshakes each person made, you will have counted every handshake twice. That harmless little observation is a real theorem — and it earns easy marks.",
+      "explain": "The <strong>Handshaking Theorem</strong> says that in any graph, the <strong>sum of the degrees of all vertices = 2 × (number of edges)</strong>. The reason is simple: every edge has two ends, and each end adds 1 to some vertex's degree — so every edge is counted exactly twice in the total.",
+      "keyPoints": [
+        "<strong>Σ deg(v) = 2|E|</strong> — the sum of all degrees is twice the number of edges.",
+        "So the sum of all degrees is <strong>always an even number</strong>.",
+        "Corollary: the number of <strong>odd-degree vertices is always even</strong>.",
+        "A graph can never have exactly one odd-degree vertex. Never three. Never five.",
+        "It works for multigraphs and for loops too (a loop adds 2).",
+        "Rearranged: <strong>|E| = (Σ deg(v)) / 2</strong> — handy when the question gives degrees and asks for edges.",
+        "For a directed graph: Σ in-degrees = Σ out-degrees = |E|.",
+        "Use it as a <strong>free check</strong> on any degree calculation you do."
+      ],
+      "subtopics": [
+        {
+          "title": "Why the odd-degree count must be even",
+          "text": "Split the vertices into two piles — even degree and odd degree. The even pile adds up to an even total automatically. The whole total 2|E| is also even. So the odd pile must add up to an even total too, and a bunch of odd numbers only adds up to an even total when there is an <strong>even count</strong> of them. That is the proof, in three lines."
+        },
+        {
+          "title": "The most common exam question type",
+          "text": "\"A graph has 10 vertices each of degree 3. How many edges?\" Use Σ deg = 2|E|: here Σ deg = 10 × 3 = 30, so |E| = 30/2 = <strong>15</strong>. Notice that if the question had said 'each of degree 3' with <em>9</em> vertices, Σ deg = 27 which is odd — such a graph cannot exist. Spotting that is worth full marks."
+        },
+        {
+          "title": "Use it to catch your own mistakes",
+          "text": "After you write down the degrees of a graph, add them up and check the total is exactly twice the number of edges you counted. If it is not, you have miscounted somewhere. This ten-second check has saved more marks than any clever trick."
+        }
+      ],
+      "realLife": "In a class of 30 students, suppose every student exchanges notes with exactly 4 others. Total 'note-sharing links' = (30 × 4)/2 = 60, not 120 — because sharing between Aman and Bina is one link, counted once by Aman and once by Bina.",
+      "worked": "<strong>Verify the Handshaking Theorem for graph G:</strong><br>V = {A, B, C, D}, E = {AB, AC, AD, BC, CD} → so |E| = <strong>5</strong> edges.<br><br><strong>Step 1 — find every degree:</strong><br>deg(A) = 3 &nbsp;(edges AB, AC, AD)<br>deg(B) = 2 &nbsp;(edges AB, BC)<br>deg(C) = 3 &nbsp;(edges AC, BC, CD)<br>deg(D) = 2 &nbsp;(edges AD, CD)<br><br><strong>Step 2 — add the degrees:</strong><br>Σ deg(v) = 3 + 2 + 3 + 2 = <strong>10</strong><br><br><strong>Step 3 — compare with 2|E|:</strong><br>2|E| = 2 × 5 = <strong>10</strong><br>10 = 10 ✅ <strong>Handshaking Theorem verified.</strong><br><br><em>Bonus check:</em> odd-degree vertices are A and C — that is <strong>2</strong> of them, an even number, exactly as the corollary promises.",
+      "table": {
+        "headers": ["Given", "Use", "Example"],
+        "rows": [
+          ["All degrees", "|E| = Σdeg / 2", "8 vertices of degree 3 → |E| = 24/2 = 12"],
+          ["Number of edges", "Σdeg = 2|E|", "|E| = 7 → Σdeg = 14"],
+          ["Σdeg is odd", "Impossible graph", "9 vertices of degree 3 → Σdeg = 27 ✗"],
+          ["Count of odd vertices", "Must be even", "Never exactly 1 or 3 odd vertices"]
+        ]
+      },
+      "mistake": "Writing Σ deg(v) = |E| instead of 2|E|. Remember the handshake picture — every edge is a handshake between two hands, so it gets counted twice, once at each end.",
+      "examAnswer": "The Handshaking Theorem states that for any graph G = (V, E), the sum of the degrees of all the vertices is equal to twice the number of edges, that is, Σ deg(v) = 2|E|. This holds because every edge is incident on exactly two vertices (a loop being counted twice at the same vertex), and therefore contributes exactly two to the total degree sum. An immediate corollary is that the sum of all degrees is always even, and consequently the number of vertices of odd degree in any graph must be even.",
+      "remember": "Every edge has TWO ends → Sum of degrees = 2 × edges. Odd-degree vertices always come in pairs.",
+      "why": "It is the fastest sanity check in all of graph theory, and it is the hidden reason behind Euler's circuit conditions later in this unit.",
+      "practice": "A graph has 6 vertices, each of degree 4. How many edges does it have? Then check whether a graph with 5 vertices each of degree 3 can exist."
+    },
+    {
+      "title": "Types of Graphs: Simple, Multi, Directed, Weighted and Complete",
+      "teacher": "Graphs come in a few flavours, and the exam loves asking you to tell them apart. Think of them as the same idea with different rules about what the lines are allowed to do — can two dots be joined twice? do the lines have arrows? do they carry a number?",
+      "explain": "A <strong>simple graph</strong> has no loops and no repeated edges. A <strong>multigraph</strong> allows two or more edges between the same pair of vertices. A <strong>directed graph (digraph)</strong> gives every edge an arrow. A <strong>weighted graph</strong> attaches a number (cost, distance, time) to every edge. A <strong>complete graph Kn</strong> joins every vertex to every other vertex.",
+      "keyPoints": [
+        "<strong>Simple graph:</strong> no loops, no parallel edges, undirected.",
+        "<strong>Multigraph:</strong> parallel (multiple) edges between the same two vertices are allowed.",
+        "<strong>Directed graph:</strong> edges are ordered pairs — (A,B) is not the same as (B,A).",
+        "In a digraph a vertex has an <strong>in-degree</strong> and an <strong>out-degree</strong>.",
+        "<strong>Weighted graph:</strong> every edge carries a number — its weight (km, ₹, minutes).",
+        "<strong>Complete graph Kn:</strong> every pair of vertices is joined, so it has <strong>n(n−1)/2</strong> edges.",
+        "In Kn every vertex has degree <strong>n − 1</strong>.",
+        "K3 = 3 edges, K4 = 6 edges, K5 = 10 edges, K6 = 15 edges.",
+        "<strong>Subgraph:</strong> a graph made from a subset of the vertices and edges of G."
+      ],
+      "subtopics": [
+        {
+          "title": "Where the Kn formula comes from",
+          "text": "In Kn every vertex is joined to the other n − 1 vertices, so every degree is n − 1 and Σ deg = n(n − 1). By the Handshaking Theorem |E| = Σ deg / 2 = <strong>n(n − 1)/2</strong>. It is just 'choose 2 vertices out of n' — every pair gets exactly one edge. This is why the two topics sit next to each other."
+        },
+        {
+          "title": "Directed graphs and why direction matters",
+          "text": "In an undirected graph, friendship: if A is joined to B then B is joined to A. In a directed graph, following: A → B does not mean B → A. For a vertex v, <strong>in-degree</strong> counts arrows arriving and <strong>out-degree</strong> counts arrows leaving, and across the whole digraph Σ in-degree = Σ out-degree = number of edges."
+        },
+        {
+          "title": "Weighted graphs — the useful ones",
+          "text": "A plain graph only says 'there is a road'. A weighted graph says 'there is a road, and it is 7 km'. Almost every practical question — shortest route, cheapest cable, fastest delivery — needs weights. Dijkstra's algorithm later in this unit works only on weighted graphs with <strong>non-negative</strong> weights."
+        }
+      ],
+      "realLife": "Bhopal city bus routes form a weighted graph — stops are vertices, routes are edges, and the fare or the distance is the weight. Two different buses running between the same two stops make it a multigraph. A one-way road makes it directed.",
+      "worked": "<strong>How many edges in K6 (6 people, everybody shakes hands with everybody)?</strong><br>|E| = n(n − 1)/2 = 6 × 5 / 2 = 30/2 = <strong>15 edges</strong><br>Every vertex has degree n − 1 = <strong>5</strong>.<br><em>Check with Handshaking:</em> Σ deg = 6 × 5 = 30, and 2|E| = 2 × 15 = 30 ✅<br><br><strong>Quick table:</strong><br>K3 → 3×2/2 = <strong>3</strong> edges<br>K4 → 4×3/2 = <strong>6</strong> edges<br>K5 → 5×4/2 = <strong>10</strong> edges<br>K7 → 7×6/2 = <strong>21</strong> edges",
+      "table": {
+        "headers": ["Type", "Loops?", "Parallel edges?", "Direction?", "Example"],
+        "rows": [
+          ["Simple graph", "No", "No", "No", "V={A,B,C}, E={AB, BC}"],
+          ["Multigraph", "No", "<strong>Yes</strong>", "No", "Two separate bus routes A→B"],
+          ["Pseudograph", "<strong>Yes</strong>", "Yes", "No", "A road that loops back to the same town"],
+          ["Directed graph", "Allowed", "Allowed", "<strong>Yes</strong>", "Instagram 'follows'"],
+          ["Weighted graph", "—", "—", "Either", "Map with distances in km"],
+          ["Complete Kn", "No", "No", "No", "K4 has 6 edges"]
+        ]
+      },
+      "mistake": "Writing the complete-graph edge count as n(n−1) and forgetting to divide by 2. That formula counts every edge twice (once from each end) — always halve it.",
+      "examAnswer": "A simple graph is a graph containing neither loops nor parallel edges, whereas a multigraph is a graph in which two or more edges may join the same pair of vertices. In a directed graph, or digraph, every edge is an ordered pair of vertices and therefore has a direction, so each vertex possesses both an in-degree and an out-degree. A weighted graph is a graph in which every edge is assigned a numerical value called its weight, representing a quantity such as distance or cost. A complete graph Kn is a simple graph in which every pair of distinct vertices is joined by exactly one edge; consequently each vertex has degree n − 1 and the graph contains n(n − 1)/2 edges.",
+      "remember": "Simple = no loops, no doubles. Kn edges = n(n−1)/2 — halve it, because you counted from both ends.",
+      "why": "Choosing the right type of graph is the first step of modelling any real problem — one-way roads need a digraph, distances need weights, and multiple flights between two cities need a multigraph.",
+      "practice": "Find the number of edges in K8 and K10. Then state the degree of each vertex in K8 and verify your edge count with the Handshaking Theorem."
+    },
+    {
+      "title": "Paths, Cycles and Connectivity",
+      "teacher": "You want to go from your hostel to the library. The route you take, the fact that a route exists at all, and whether you come back where you started — those three simple questions are exactly walks, connectivity and cycles.",
+      "explain": "A <strong>walk</strong> is any sequence of vertices where each consecutive pair is joined by an edge. A <strong>path</strong> is a walk that never repeats a vertex. A <strong>cycle</strong> is a path that starts and ends at the same vertex. A graph is <strong>connected</strong> if there is a path between every pair of vertices.",
+      "keyPoints": [
+        "<strong>Walk:</strong> any route along edges — repeats allowed.",
+        "<strong>Trail:</strong> a walk with <strong>no repeated edge</strong> (vertices may repeat).",
+        "<strong>Path:</strong> a walk with <strong>no repeated vertex</strong> (so no repeated edge either).",
+        "<strong>Cycle:</strong> a closed path — starts and ends at the same vertex, no other vertex repeated.",
+        "<strong>Length</strong> of a path = number of <strong>edges</strong> in it, not vertices.",
+        "<strong>Connected graph:</strong> a path exists between every pair of vertices.",
+        "<strong>Component:</strong> a maximal connected piece of a disconnected graph.",
+        "<strong>Cut vertex</strong> (removing it disconnects G) and <strong>bridge</strong> (removing that edge disconnects G).",
+        "A connected graph with no cycle at all is a <strong>tree</strong>, and it has exactly n − 1 edges."
+      ],
+      "subtopics": [
+        {
+          "title": "Trail vs path — the one-line difference",
+          "text": "A <strong>trail</strong> forbids repeating an <em>edge</em>. A <strong>path</strong> forbids repeating a <em>vertex</em>. Every path is automatically a trail (if you never revisit a vertex you can never reuse an edge), but a trail need not be a path. Keep this straight, because Euler works with trails/circuits while Hamilton works with paths/cycles."
+        },
+        {
+          "title": "Connected, disconnected and components",
+          "text": "If you can reach every vertex from every other vertex, the graph is <strong>connected</strong>. If not, it splits into separate islands called <strong>components</strong>. A graph with V = {A,B,C,D} and E = {AB, CD} is disconnected with exactly two components, {A,B} and {C,D} — there is no way to travel from A to D."
+        },
+        {
+          "title": "Cut vertices and bridges — the weak points",
+          "text": "A <strong>cut vertex</strong> is a vertex whose removal breaks the graph into more pieces; a <strong>bridge</strong> is an edge whose removal does the same. In a network these are the single points of failure. In the path graph A–B–C, the vertex B is a cut vertex and both edges are bridges."
+        }
+      ],
+      "realLife": "The Indian Railways network is connected — you can reach any station from any other, maybe with changes. But a single-track line to one remote hill station is a bridge: if that track is washed away in the monsoon, that station becomes its own separate component.",
+      "worked": "Take V = {A, B, C, D, E} and E = {AB, BC, CD, DA, CE}.<br><br><strong>A path from A to E:</strong> A → B → C → E. Vertices A, B, C, E — none repeated ✅. Its <strong>length is 3</strong> (three edges: AB, BC, CE).<br><br><strong>A cycle:</strong> A → B → C → D → A. It returns to A and repeats no other vertex ✅. Length <strong>4</strong>.<br><br><strong>Is G connected?</strong> From A you reach B (AB), C (via B), D (AD), E (via C). Every vertex reachable → <strong>yes, connected</strong>, one component.<br><br><strong>Bridge?</strong> Remove edge CE — now E is cut off with no other edge. So <strong>CE is a bridge</strong> and <strong>C is a cut vertex</strong>. The edges AB, BC, CD, DA are not bridges, because they lie on the cycle A–B–C–D–A and the cycle gives an alternative route.",
+      "mistake": "Measuring the length of a path by counting vertices. The length is the number of <strong>edges</strong>. The path A → B → C has 3 vertices but length <strong>2</strong>.",
+      "examAnswer": "In a graph G, a walk is a finite sequence of vertices in which every consecutive pair is joined by an edge. A trail is a walk in which no edge is repeated, while a path is a walk in which no vertex is repeated. A closed trail is called a circuit, and a closed path, in which only the starting and ending vertices coincide, is called a cycle. The length of a path is the number of edges contained in it. A graph is said to be connected if there exists at least one path between every pair of its vertices; otherwise it is disconnected and separates into maximal connected subgraphs called components. A vertex whose removal increases the number of components is called a cut vertex, and an edge with that property is called a bridge.",
+      "remember": "Trail = no edge twice. Path = no vertex twice. Cycle = a path that comes home. Length = count the EDGES.",
+      "why": "Connectivity is the first question asked of any network — can data actually reach every machine? — and cut vertices and bridges are exactly the points a network engineer must duplicate for safety.",
+      "practice": "For V = {P,Q,R,S,T} and E = {PQ, QR, RS, SP, ST}, find one path from P to T with its length, one cycle, and state whether the graph has a bridge."
+    },
+    {
+      "title": "Planar Graphs and Euler's Formula",
+      "teacher": "Here is a puzzle that looks childish and is not. Can you draw three houses and three utilities — water, gas, electricity — and connect every house to every utility, without any two lines crossing? Try it on paper. You will fail, and by the end of this topic you will be able to <em>prove</em> that failing was inevitable.",
+      "explain": "A graph is <strong>planar</strong> if it can be drawn on a flat sheet so that <strong>no two edges cross</strong> except at a shared vertex. Such a drawing cuts the plane into regions called <strong>faces</strong>. For any connected planar graph, <strong>Euler's formula V − E + F = 2</strong> holds, where V, E, F are the numbers of vertices, edges and faces.",
+      "keyPoints": [
+        "<strong>Planar graph:</strong> can be drawn with no edge crossings.",
+        "<strong>Faces</strong> = regions of the plane, and you must <strong>count the outer unbounded region too</strong>.",
+        "<strong>Euler's formula: V − E + F = 2</strong> for a connected plane graph.",
+        "Rearranged: F = 2 − V + E — handy when the question asks for the number of faces.",
+        "Corollary (simple connected planar, V ≥ 3): <strong>E ≤ 3V − 6</strong>.",
+        "If the graph has no triangle (e.g. bipartite): <strong>E ≤ 2V − 4</strong>.",
+        "<strong>K5 is NOT planar</strong> (V=5, E=10, but 3V − 6 = 9 &lt; 10).",
+        "<strong>K3,3 is NOT planar</strong> (V=6, E=9, but 2V − 4 = 8 &lt; 9) — that is the three-houses puzzle.",
+        "<strong>Kuratowski's theorem:</strong> a graph is planar exactly when it contains no K5 or K3,3 pattern inside it."
+      ],
+      "subtopics": [
+        {
+          "title": "Counting faces — do not forget the outside",
+          "text": "The single biggest error here is forgetting the <strong>infinite outer face</strong>. Draw a simple triangle: V = 3, E = 3. You can see one region inside — but the whole endless area outside the triangle is a face too, so F = 2. Check: 3 − 3 + 2 = <strong>2</strong> ✅. Always add 1 for the outside."
+        },
+        {
+          "title": "Using the corollary to prove non-planarity",
+          "text": "The inequality <strong>E ≤ 3V − 6</strong> must be satisfied by every simple connected planar graph with at least 3 vertices. So if a graph <em>breaks</em> the inequality, it cannot possibly be planar. This is a one-line proof and examiners love it. Note the logic runs one way only: satisfying the inequality does <em>not</em> guarantee planarity (K3,3 satisfies it yet is still non-planar)."
+        },
+        {
+          "title": "Why planarity matters practically",
+          "text": "A printed circuit board is a flat sheet of copper. Two wires that cross would short-circuit. So 'can this circuit be laid on one layer?' is literally the question 'is this graph planar?'. When the answer is no, the manufacturer must add a second layer — which costs money."
+        }
+      ],
+      "realLife": "A metro map for a small city is planar — the lines are drawn so they meet only at interchange stations. Wherever the map shows one line jumping over another, that crossing needs a real flyover or tunnel, which is expensive. Planarity is literally a construction budget.",
+      "worked": "<strong>Part A — verify Euler's formula on K4.</strong><br>K4 has V = 4 and E = 4×3/2 = 6. It <em>is</em> planar: draw a triangle A, B, C and put D in the middle joined to all three.<br>Faces you can see: the three small triangles ABD, BCD, CAD, plus the outer region = <strong>F = 4</strong>.<br>Check: V − E + F = 4 − 6 + 4 = <strong>2</strong> ✅<br><br><strong>Part B — find F without drawing.</strong> A connected planar graph has V = 6 and E = 9. Then<br>F = 2 − V + E = 2 − 6 + 9 = <strong>5 faces</strong>.<br><br><strong>Part C — prove K5 is not planar.</strong><br>K5: V = 5, E = 5×4/2 = <strong>10</strong>.<br>The planar corollary requires E ≤ 3V − 6 = 3(5) − 6 = <strong>9</strong>.<br>But 10 &gt; 9, so the condition fails → <strong>K5 is non-planar.</strong> ✅<br><br><strong>Part D — the three-houses puzzle (K3,3).</strong><br>K3,3: V = 6, E = 9. It has no triangle, so it must satisfy E ≤ 2V − 4 = 2(6) − 4 = <strong>8</strong>.<br>But 9 &gt; 8 → <strong>K3,3 is non-planar</strong>, which is why the puzzle can never be solved.",
+      "table": {
+        "headers": ["Graph", "V", "E", "3V − 6", "Planar?"],
+        "rows": [
+          ["Triangle K3", "3", "3", "3", "Yes (3 ≤ 3)"],
+          ["K4", "4", "6", "6", "Yes (6 ≤ 6)"],
+          ["K5", "5", "10", "9", "<strong>No</strong> (10 &gt; 9)"],
+          ["K3,3", "6", "9", "12", "<strong>No</strong> — use E ≤ 2V − 4 = 8"]
+        ]
+      },
+      "mistake": "Forgetting the outer infinite face when counting F. A triangle has F = 2, not 1. If your V − E + F does not come to 2, the missing 1 is almost always the outside region.",
+      "examAnswer": "A graph is said to be planar if it can be drawn in a plane in such a way that no two of its edges intersect except at a common vertex; such a drawing is called a plane graph, and it divides the plane into regions called faces, including one unbounded outer face. Euler's formula states that for any connected plane graph, V − E + F = 2, where V, E and F denote the number of vertices, edges and faces respectively. From this it follows that for a simple connected planar graph with V ≥ 3, E ≤ 3V − 6. Since the complete graph K5 has V = 5 and E = 10 while 3V − 6 = 9, this inequality is violated and K5 is therefore non-planar. By Kuratowski's theorem, a graph is planar if and only if it contains no subgraph homeomorphic to K5 or K3,3.",
+      "remember": "V − E + F = 2, and F ALWAYS includes the outside. K5 and K3,3 are the two famous non-planar graphs.",
+      "why": "Circuit board design, VLSI chip layout and clean network diagrams all reduce to the question 'is this graph planar?'.",
+      "practice": "A connected planar graph has 8 vertices and 12 edges. How many faces does it have? Then use E ≤ 3V − 6 to check whether a simple connected graph with 6 vertices and 14 edges can be planar."
+    },
+    {
+      "title": "Isomorphic Graphs, and Homomorphism",
+      "teacher": "Two students draw the same graph. One draws it as a neat square, the other stretches it into a weird flat shape and renames the corners. The pictures look completely different. Are they the same graph? Yes — and 'isomorphic' is the word for exactly that.",
+      "explain": "Two graphs G1 and G2 are <strong>isomorphic</strong> if there is a one-to-one, onto mapping (a bijection) between their vertex sets that <strong>preserves adjacency</strong> — that is, u and v are joined in G1 <em>if and only if</em> their images f(u) and f(v) are joined in G2. In plain words: same structure, different names and different drawing.",
+      "keyPoints": [
+        "Isomorphic = same structure, only the labels and the drawing differ. Written G1 ≅ G2.",
+        "<strong>Necessary conditions</strong> — all must match: same number of vertices, same number of edges, same <strong>degree sequence</strong>.",
+        "Also must match: number of components, number of cycles, length of the shortest cycle.",
+        "<strong>Warning:</strong> a matching degree sequence does <strong>NOT</strong> prove isomorphism.",
+        "To <strong>prove</strong> isomorphism you must exhibit the actual mapping and check every edge.",
+        "To <strong>disprove</strong> it, one mismatching invariant is enough.",
+        "<strong>Degree sequence</strong> = the list of all degrees written in order, e.g. (1, 2, 2, 3).",
+        "A <strong>homomorphism</strong> is a weaker idea: a mapping f where every edge (u,v) of G maps to an edge (f(u),f(v)) of H — one direction only, and it need not be one-to-one.",
+        "Every isomorphism is a homomorphism, but most homomorphisms are not isomorphisms."
+      ],
+      "subtopics": [
+        {
+          "title": "The counter-example you must remember",
+          "text": "Take G1 = one 6-cycle: V = {1,…,6}, E = {12, 23, 34, 45, 56, 61}. Take G2 = two separate triangles: V = {a,…,f}, E = {ab, bc, ca, de, ef, fd}. Both have 6 vertices, 6 edges, and every vertex of degree 2 — identical degree sequence (2,2,2,2,2,2). Yet G1 is <strong>connected</strong> and G2 has <strong>two components</strong>. They are not isomorphic. This single example is the standard answer to 'is degree sequence enough?'."
+        },
+        {
+          "title": "A practical checklist",
+          "text": "Step 1: compare |V|. Step 2: compare |E|. Step 3: compare degree sequences. If any of these differ, stop — <strong>not isomorphic</strong>, and you are done. If all three match, you still have work to do: build a mapping (start by pairing up the highest-degree vertices, since a vertex of degree 3 can only map to another vertex of degree 3) and then verify every single edge translates correctly."
+        },
+        {
+          "title": "Homomorphism, in plain words",
+          "text": "A homomorphism only promises that connected things <em>stay</em> connected after mapping; it may squash several vertices into one, and it does not promise anything about non-edges. A neat fact: a proper colouring of a graph G with k colours is exactly a homomorphism from G to the complete graph Kk — each colour is one vertex of Kk, and adjacent vertices must land on different colours, which is precisely an edge of Kk."
+        }
+      ],
+      "realLife": "The seating chart of your classroom and the same chart redrawn by a friend from the back of the room look nothing alike — different orientation, different names for the corners. But who sits next to whom is identical. The two charts are isomorphic.",
+      "worked": "<strong>Part A — prove these two ARE isomorphic.</strong><br>G1: V = {1, 2, 3, 4}, E = {12, 23, 34, 41}<br>G2: V = {p, q, r, s}, E = {pq, qs, sr, rp}<br><br><em>Step 1:</em> |V| = 4 for both ✅<br><em>Step 2:</em> |E| = 4 for both ✅<br><em>Step 3:</em> degree sequence — G1: deg(1)=2, deg(2)=2, deg(3)=2, deg(4)=2 → (2,2,2,2). G2: deg(p)=2, deg(q)=2, deg(r)=2, deg(s)=2 → (2,2,2,2) ✅<br><em>Step 4 — build the mapping:</em> f(1)=p, f(2)=q, f(3)=s, f(4)=r<br><em>Step 5 — check every edge:</em><br>12 → pq ✅ &nbsp;&nbsp; 23 → qs ✅ &nbsp;&nbsp; 34 → sr ✅ &nbsp;&nbsp; 41 → rp ✅<br>All 4 edges map onto the 4 edges of G2 → <strong>G1 ≅ G2</strong>.<br><br><strong>Part B — same degree sequence, still NOT isomorphic.</strong><br>H1: V = {1,2,3,4,5,6}, E = {12, 23, 34, 45, 56, 61} (one big 6-cycle)<br>H2: V = {a,b,c,d,e,f}, E = {ab, bc, ca, de, ef, fd} (two triangles)<br>Both: 6 vertices, 6 edges, degree sequence (2,2,2,2,2,2) — all three tests pass!<br>But H1 is <strong>connected</strong> (1 component) and H2 has <strong>2 components</strong>. Also H1's shortest cycle has length 6, H2's has length 3.<br>→ <strong>NOT isomorphic.</strong> This proves the degree sequence alone is never sufficient.",
+      "table": {
+        "headers": ["Check", "If it differs", "If it matches"],
+        "rows": [
+          ["Number of vertices", "Not isomorphic — stop", "Keep checking"],
+          ["Number of edges", "Not isomorphic — stop", "Keep checking"],
+          ["Degree sequence", "Not isomorphic — stop", "Keep checking — <strong>not proof yet</strong>"],
+          ["Number of components", "Not isomorphic — stop", "Keep checking"],
+          ["Length of shortest cycle", "Not isomorphic — stop", "Keep checking"],
+          ["An actual edge-preserving bijection", "—", "<strong>Now it is proved</strong>"]
+        ]
+      },
+      "mistake": "Declaring two graphs isomorphic just because their degree sequences match. That is a <em>necessary</em> condition, not a <em>sufficient</em> one — a 6-cycle and two triangles both have degree sequence (2,2,2,2,2,2) and are definitely not isomorphic.",
+      "examAnswer": "Two graphs G1 = (V1, E1) and G2 = (V2, E2) are said to be isomorphic if there exists a bijection f : V1 → V2 such that any two vertices u and v are adjacent in G1 if and only if f(u) and f(v) are adjacent in G2; such a mapping is called an isomorphism and preserves the entire structure of the graph. Isomorphic graphs must necessarily have the same number of vertices, the same number of edges and the same degree sequence, but these conditions are necessary and not sufficient, since a cycle of length six and a pair of disjoint triangles share the degree sequence (2,2,2,2,2,2) without being isomorphic. A homomorphism is a more general mapping f : V1 → V2 which requires only that every edge of G1 is carried to an edge of G2, without being required to be one-to-one or to reflect non-adjacency.",
+      "remember": "Same degree sequence is only a HINT, never a proof. To prove it, show the mapping and check every edge.",
+      "why": "Chemists use graph isomorphism to check whether two molecule diagrams are the same compound, and compilers use it to spot duplicate code structures.",
+      "practice": "G1: V={1,2,3,4}, E={12,13,14}. G2: V={a,b,c,d}, E={ab,ac,ad}. Are they isomorphic? Write the degree sequences and give the mapping if they are."
+    },
+    {
+      "title": "Shortest Path in a Weighted Graph — Dijkstra's Algorithm",
+      "teacher": "This is the exact algorithm running inside Google Maps when it tells you the fastest way to college. It is also beautifully simple: always walk to the nearest place you have not visited yet, and keep updating your best-known distances. Let us do one fully on the board.",
+      "explain": "<strong>Dijkstra's algorithm</strong> finds the shortest path from one starting vertex to every other vertex in a weighted graph with <strong>non-negative</strong> weights. It keeps a tentative distance for each vertex, repeatedly picks the unvisited vertex with the smallest distance, marks it final, and uses it to improve (<strong>relax</strong>) its neighbours' distances.",
+      "keyPoints": [
+        "Works only when all weights are <strong>zero or positive</strong> — negative weights break it.",
+        "<strong>Step 1:</strong> distance of the source = 0, every other vertex = ∞.",
+        "<strong>Step 2:</strong> pick the unvisited vertex with the smallest distance; mark it visited (its value is now final).",
+        "<strong>Step 3 (relax):</strong> for each unvisited neighbour, if dist(current) + weight &lt; dist(neighbour), replace it.",
+        "<strong>Step 4:</strong> repeat until every vertex is visited.",
+        "A visited vertex is <strong>never changed again</strong> — that is the whole guarantee.",
+        "Record a <strong>predecessor</strong> for each vertex so you can trace the actual route backwards at the end.",
+        "It is a <strong>greedy</strong> algorithm — nearest-first, and for non-negative weights greedy happens to be optimal.",
+        "Time complexity O(V²) with a simple table, O((V+E) log V) with a min-heap."
+      ],
+      "subtopics": [
+        {
+          "title": "What 'relaxing an edge' really means",
+          "text": "Relaxing is nothing more than asking one question: \"Is going through this vertex a cheaper way to reach that neighbour than the best route I knew before?\" If yes, write the smaller number; if no, leave it alone. That is the entire inner loop of the algorithm."
+        },
+        {
+          "title": "Why negative weights break it",
+          "text": "Dijkstra permanently finalises a vertex the moment it is picked, assuming no future route could ever be shorter. With a negative edge, a longer-looking detour could later <em>subtract</em> weight and turn out cheaper — so the finalised value would be wrong. For negative weights you need the Bellman–Ford algorithm instead."
+        },
+        {
+          "title": "How to present it in the exam",
+          "text": "Draw the distance table with one column per vertex and one row per step. Tick the vertex you finalise in each row and carry every other value forward, changing only what improved. Then write the final distances and trace the route backwards using your predecessors. A clean table earns most of the marks on its own."
+        }
+      ],
+      "realLife": "You are at Bhopal railway station and want the cheapest auto route to UIT-RGPV with three possible stops on the way. Dijkstra says: go to the nearest reachable stop first, note down the cheapest cost to reach each of the others through it, and keep repeating. You never have to try every possible route.",
+      "worked": "<strong>Find the shortest path from A to every vertex.</strong><br>V = {A, B, C, D, E}<br>Weighted edges: A–B = 4, A–C = 2, B–C = 1, B–D = 5, C–D = 8, C–E = 10, D–E = 2<br><br><strong>Initialise:</strong> A = 0; B = C = D = E = ∞. Nothing visited.<br><br><strong>Step 1 — visit A (0), the smallest.</strong><br>Relax A–B: 0 + 4 = 4 &lt; ∞ → <strong>B = 4</strong> (via A)<br>Relax A–C: 0 + 2 = 2 &lt; ∞ → <strong>C = 2</strong> (via A)<br>Table now: A=0✔, B=4, C=2, D=∞, E=∞<br><br><strong>Step 2 — smallest unvisited is C (2). Visit C.</strong><br>Relax C–B: 2 + 1 = 3 &lt; 4 → <strong>B improves to 3</strong> (via C)<br>Relax C–D: 2 + 8 = 10 &lt; ∞ → <strong>D = 10</strong> (via C)<br>Relax C–E: 2 + 10 = 12 &lt; ∞ → <strong>E = 12</strong> (via C)<br>Table now: A=0✔, B=3, C=2✔, D=10, E=12<br><br><strong>Step 3 — smallest unvisited is B (3). Visit B.</strong><br>Relax B–D: 3 + 5 = 8 &lt; 10 → <strong>D improves to 8</strong> (via B)<br>Table now: A=0✔, B=3✔, C=2✔, D=8, E=12<br><br><strong>Step 4 — smallest unvisited is D (8). Visit D.</strong><br>Relax D–E: 8 + 2 = 10 &lt; 12 → <strong>E improves to 10</strong> (via D)<br>Table now: A=0✔, B=3✔, C=2✔, D=8✔, E=10<br><br><strong>Step 5 — visit E (10). All vertices visited. Stop.</strong><br><br><strong>Final shortest distances from A:</strong><br>A = 0 · B = <strong>3</strong> · C = <strong>2</strong> · D = <strong>8</strong> · E = <strong>10</strong><br><br><strong>Trace the route to E backwards:</strong> E came from D, D came from B, B came from C, C came from A.<br>→ Shortest path <strong>A → C → B → D → E</strong><br><em>Check the arithmetic:</em> 2 + 1 + 5 + 2 = <strong>10</strong> ✅ matches the table.<br><em>Compare the obvious route</em> A → C → E = 2 + 10 = 12, which is longer — so the detour really was cheaper.",
+      "table": {
+        "headers": ["Step — vertex visited", "A", "B", "C", "D", "E"],
+        "rows": [
+          ["Start", "0", "∞", "∞", "∞", "∞"],
+          ["Visit A (0)", "0 ✔", "4", "2", "∞", "∞"],
+          ["Visit C (2)", "0 ✔", "<strong>3</strong>", "2 ✔", "10", "12"],
+          ["Visit B (3)", "0 ✔", "3 ✔", "2 ✔", "<strong>8</strong>", "12"],
+          ["Visit D (8)", "0 ✔", "3 ✔", "2 ✔", "8 ✔", "<strong>10</strong>"],
+          ["Visit E (10)", "0 ✔", "3 ✔", "2 ✔", "8 ✔", "10 ✔"]
+        ]
+      },
+      "mistake": "Going back and changing a vertex that has already been ticked as visited. Once a vertex is finalised in Dijkstra its distance is fixed forever — only <em>unvisited</em> neighbours may be updated. The other common slip is choosing the next vertex by smallest <em>edge weight</em> instead of by smallest <em>total distance from the source</em>.",
+      "examAnswer": "Dijkstra's algorithm determines the shortest path from a given source vertex to all other vertices in a weighted graph in which every edge weight is non-negative. The algorithm assigns a tentative distance of zero to the source and infinity to every other vertex. At each stage it selects the unvisited vertex having the smallest tentative distance, marks it as visited so that its distance becomes final, and then relaxes each edge leaving it, that is, for every unvisited neighbour it replaces the neighbour's tentative distance by the smaller of the existing value and the distance of the current vertex plus the weight of the connecting edge. The process is repeated until all vertices have been visited, and the shortest route is recovered by tracing the recorded predecessors backwards from the destination.",
+      "remember": "Nearest-first. Relax = 'is going through me cheaper?'. Once ticked, never changed. No negative weights.",
+      "why": "It is the algorithm behind route finding in maps, packet routing on the internet (OSPF), and least-cost planning in logistics — and it is asked in almost every exam and interview.",
+      "practice": "Run Dijkstra from P on: V={P,Q,R,S}, edges P–Q=1, P–R=4, Q–R=2, Q–S=6, R–S=3. Show the table at each step and give the shortest distance from P to S."
+    },
+    {
+      "title": "Eulerian and Hamiltonian Paths and Circuits",
+      "teacher": "A postman must walk down every street exactly once. A salesman must visit every city exactly once. That one word — streets versus cities, edges versus vertices — is the whole difference between Euler and Hamilton. And here is the surprise: the first one has a ten-second test, and the second one has no easy test at all.",
+      "explain": "An <strong>Euler path</strong> uses <strong>every edge exactly once</strong>; if it also returns to its start it is an <strong>Euler circuit</strong>. A <strong>Hamiltonian path</strong> visits <strong>every vertex exactly once</strong>; if it returns to its start it is a <strong>Hamiltonian circuit</strong>. Euler is about <em>edges</em>; Hamilton is about <em>vertices</em>.",
+      "keyPoints": [
+        "<strong>Euler circuit exists ⟺</strong> the graph is connected AND <strong>every vertex has even degree</strong>.",
+        "<strong>Euler path (but no circuit) exists ⟺</strong> connected AND <strong>exactly two vertices have odd degree</strong>.",
+        "In that case the Euler path <strong>must start at one odd vertex and end at the other</strong>.",
+        "More than two odd vertices → <strong>no Euler path and no Euler circuit</strong>.",
+        "There can never be exactly one odd vertex (Handshaking Theorem forbids it).",
+        "<strong>Hamiltonian</strong> = every <strong>vertex</strong> once. No simple if-and-only-if test is known.",
+        "<strong>Dirac's theorem (sufficient only):</strong> if n ≥ 3 and every vertex has degree ≥ n/2, a Hamiltonian circuit exists.",
+        "A graph may be Eulerian but not Hamiltonian, or Hamiltonian but not Eulerian, or both, or neither.",
+        "<strong>Kn (n ≥ 3) is always Hamiltonian</strong>; it is Eulerian only when n is odd (every degree n−1 must be even)."
+      ],
+      "subtopics": [
+        {
+          "title": "Why the even-degree rule is obvious once you see it",
+          "text": "Imagine walking an Euler circuit. Every time you arrive at a vertex you must also leave it, using a different edge — so the edges at that vertex get used up in <strong>pairs</strong>. If a vertex had an odd degree, one edge would be left stranded with no partner. Hence every vertex must be even. For an Euler <em>path</em>, only the start (leave without arriving) and the end (arrive without leaving) are allowed to be odd — which is exactly two odd vertices."
+        },
+        {
+          "title": "The Königsberg bridges — where this began",
+          "text": "In the 1700s the citizens of Königsberg asked whether they could walk across all seven bridges of their city exactly once. Euler drew the four land areas as vertices and the seven bridges as edges, found that <strong>all four</strong> vertices had odd degree, and proved the walk is impossible. That single proof created graph theory as a subject."
+        },
+        {
+          "title": "Hamilton is genuinely hard",
+          "text": "There is no degree test that decides Hamiltonicity. Dirac's theorem gives only a <em>sufficient</em> condition — if it holds you are safe, but if it fails the graph may still be Hamiltonian. Deciding Hamiltonicity in general is an NP-complete problem, which is why the Travelling Salesman Problem is famous for being computationally hard."
+        }
+      ],
+      "realLife": "A municipal garbage truck must drive down every lane of a colony once — that is an Euler problem (edges). A courier boy must deliver one parcel to each of ten houses and return to the office — that is a Hamiltonian problem (vertices). Same colony, two completely different questions.",
+      "worked": "<strong>Part A — does this graph have an Euler circuit?</strong><br>V = {P, Q, R, S}, E = {PQ, QR, RS, SP, PR} → |E| = 5<br><br><em>Step 1 — is it connected?</em> From P you reach Q, R, S. <strong>Yes.</strong><br><em>Step 2 — find every degree:</em><br>deg(P) = 3 &nbsp;(PQ, SP, PR) → <strong>odd</strong><br>deg(Q) = 2 &nbsp;(PQ, QR) → even<br>deg(R) = 3 &nbsp;(QR, RS, PR) → <strong>odd</strong><br>deg(S) = 2 &nbsp;(RS, SP) → even<br><em>Handshaking check:</em> 3+2+3+2 = 10 = 2 × 5 ✅<br><br><em>Step 3 — apply the rule:</em><br>Odd-degree vertices = P and R → <strong>exactly two</strong>.<br>→ <strong>No Euler circuit</strong> (that needs every degree even).<br>→ <strong>An Euler path DOES exist</strong>, and it must start at P and end at R (or start at R and end at P).<br><br><em>Step 4 — actually write one:</em> P → Q → R → S → P → R<br>Edges used in order: PQ, QR, RS, SP, PR — all <strong>5</strong> edges, none repeated ✅ Starts at P, ends at R ✅<br><br><strong>Part B — now remove edge PR.</strong><br>E = {PQ, QR, RS, SP} → |E| = 4<br>deg(P) = 2, deg(Q) = 2, deg(R) = 2, deg(S) = 2 — <strong>all even</strong>, and still connected.<br>→ <strong>Euler circuit EXISTS.</strong> One is P → Q → R → S → P, using all 4 edges once and returning home ✅<br><br><strong>Part C — Hamiltonian check on the Part A graph.</strong><br>Try P → Q → R → S. Every vertex visited exactly once → <strong>Hamiltonian path ✅</strong><br>Try P → Q → R → S → P. Edge SP exists, so we return home → <strong>Hamiltonian circuit ✅</strong><br>Note it uses only 4 of the 5 edges — Hamilton does <em>not</em> care about leftover edges, only about vertices.",
+      "table": {
+        "headers": ["", "Eulerian", "Hamiltonian"],
+        "rows": [
+          ["Covers every…", "<strong>Edge</strong> exactly once", "<strong>Vertex</strong> exactly once"],
+          ["May repeat", "Vertices may repeat", "Edges may be left unused"],
+          ["Circuit condition", "Connected + <strong>all degrees even</strong>", "No simple condition known"],
+          ["Path condition", "Connected + <strong>exactly 2 odd vertices</strong>", "No simple condition known"],
+          ["Easy to decide?", "Yes — just count degrees", "<strong>No</strong> — NP-complete in general"],
+          ["Sufficient rule", "—", "Dirac: n ≥ 3 and every deg ≥ n/2"],
+          ["Everyday version", "Postman on every street", "Salesman visiting every city"]
+        ]
+      },
+      "mistake": "Trying to use the even-degree rule on a Hamiltonian question. The degree conditions apply <strong>only</strong> to Euler paths and circuits. There is no degree test that decides whether a Hamiltonian circuit exists — you must search, or quote Dirac's theorem as a sufficient (not necessary) condition.",
+      "examAnswer": "An Euler path in a graph is a path which traverses every edge of the graph exactly once, and an Euler circuit is an Euler path which begins and ends at the same vertex. A connected graph possesses an Euler circuit if and only if every one of its vertices has even degree, and it possesses an Euler path but no Euler circuit if and only if exactly two of its vertices have odd degree, in which case the path must begin at one odd vertex and terminate at the other. A Hamiltonian path is a path which passes through every vertex of the graph exactly once, and a Hamiltonian circuit is such a path which returns to its starting vertex. The essential distinction is that an Eulerian traversal is concerned with covering all edges whereas a Hamiltonian traversal is concerned with covering all vertices; moreover, no simple necessary and sufficient condition is known for the existence of a Hamiltonian circuit, although Dirac's theorem gives the sufficient condition that every vertex of a graph on n ≥ 3 vertices has degree at least n/2.",
+      "remember": "Euler = Edges (count degrees: all even → circuit, exactly two odd → path). Hamilton = Houses/vertices (no easy test).",
+      "why": "Euler conditions solve real routing problems — garbage collection, road gritting, circuit-board drilling — in seconds. Hamiltonian problems are the famous hard ones (Travelling Salesman) that whole research fields attack.",
+      "practice": "For V = {A,B,C,D,E} with E = {AB, BC, CD, DE, EA, AC}, list every degree and decide whether an Euler circuit, an Euler path, or neither exists. Justify using the degree rule."
+    },
+    {
+      "title": "Graph Colouring and Chromatic Number",
+      "teacher": "Your college has to make an exam timetable. Two papers can share the same time slot only if no student is taking both. Colour every subject with a 'time slot' colour, making sure clashing subjects never get the same colour, and use as few colours as possible. That is graph colouring — a timetable problem in disguise.",
+      "explain": "A <strong>proper colouring</strong> of a graph assigns a colour to every vertex so that <strong>no two adjacent vertices share a colour</strong>. The <strong>chromatic number χ(G)</strong> is the <strong>smallest</strong> number of colours for which a proper colouring exists.",
+      "keyPoints": [
+        "<strong>Proper colouring:</strong> adjacent vertices must get different colours.",
+        "<strong>χ(G)</strong> = the minimum number of colours needed. 'Chromatic' just means 'to do with colour'.",
+        "χ = 2 exactly when the graph is <strong>bipartite</strong> — equivalently, when it has <strong>no odd-length cycle</strong>.",
+        "<strong>χ(Kn) = n</strong> — in a complete graph everyone is adjacent to everyone, so all colours must differ.",
+        "<strong>Even cycle:</strong> χ = 2. &nbsp; <strong>Odd cycle:</strong> χ = 3.",
+        "Any <strong>tree</strong> with at least one edge has χ = 2.",
+        "If G contains a triangle (a K3), then χ(G) ≥ 3. A clique of size k forces χ ≥ k.",
+        "<strong>Four Colour Theorem:</strong> every <strong>planar</strong> graph has χ ≤ 4.",
+        "Upper bound: χ(G) ≤ Δ + 1, where Δ is the largest degree in G."
+      ],
+      "subtopics": [
+        {
+          "title": "How to find χ in the exam — two halves",
+          "text": "Finding χ always needs <strong>two arguments</strong>. First a <strong>lower bound</strong>: find a reason the graph needs at least k colours — the usual reason is a triangle (needs 3) or a larger clique (a K4 needs 4). Second an <strong>upper bound</strong>: actually produce a valid colouring with k colours. When both halves say k, you have proved χ = k. Students who only show a colouring have proved χ ≤ k, not χ = k."
+        },
+        {
+          "title": "Bipartite graphs and the odd-cycle test",
+          "text": "A graph is <strong>bipartite</strong> if its vertices split into two groups with every edge running between the groups, never inside one. Such a graph needs exactly 2 colours. The neat test: a graph is bipartite <em>if and only if</em> it contains no cycle of odd length. That is why the 4-cycle needs 2 colours but the 5-cycle needs 3 — go around the 5-cycle alternating red, blue, red, blue and the fifth vertex is stuck next to both a red and a blue."
+        },
+        {
+          "title": "The greedy colouring method",
+          "text": "Go through the vertices one by one — usually largest degree first — and give each vertex the <strong>lowest-numbered colour not already used by any of its neighbours</strong>. This is quick and always produces a valid colouring, but it is not guaranteed to use the absolute minimum number of colours. It does guarantee at most Δ + 1 colours."
+        },
+        {
+          "title": "The Four Colour Theorem",
+          "text": "Any map drawn on a flat sheet can be coloured with just four colours so that no two neighbouring regions share a colour. Turn each region into a vertex and join regions that share a border, and the map becomes a planar graph — so the theorem says every planar graph has χ ≤ 4. It was conjectured in 1852 and only proved in 1976, with computer assistance."
+        }
+      ],
+      "realLife": "Mobile-phone towers are a colouring problem — each tower is a vertex, two nearby towers that would interfere are joined by an edge, and the 'colours' are radio frequencies. The chromatic number tells the company the minimum number of frequencies it must buy. Exam timetabling and assigning CPU registers to variables in a compiler are exactly the same problem.",
+      "worked": "<strong>Find χ(G) for:</strong> V = {A, B, C, D}, E = {AB, BC, CD, DA, AC}<br><br><em>Step 1 — degrees:</em> deg(A) = 3 (B, D, C), deg(B) = 2 (A, C), deg(C) = 3 (B, D, A), deg(D) = 2 (C, A).<br><em>Handshaking check:</em> 3+2+3+2 = 10 = 2 × 5 edges ✅<br><br><em>Step 2 — lower bound.</em> Look for a triangle. A–B, B–C and A–C are all edges, so <strong>A, B, C form a triangle</strong>. Three mutually adjacent vertices must all get different colours → <strong>χ ≥ 3</strong>.<br><br><em>Step 3 — upper bound: try to colour with exactly 3.</em><br>A = <strong>Red</strong><br>B = <strong>Green</strong> &nbsp;(B is adjacent to A, so not Red)<br>C = <strong>Blue</strong> &nbsp;(C is adjacent to A=Red and B=Green, so it needs a third colour)<br>D = <strong>Green</strong> &nbsp;(D is adjacent to C=Blue and A=Red only — Green is free, and D is <em>not</em> adjacent to B)<br><br><em>Step 4 — verify every edge has two different colours:</em><br>AB: Red / Green ✅ &nbsp; BC: Green / Blue ✅ &nbsp; CD: Blue / Green ✅ &nbsp; DA: Green / Red ✅ &nbsp; AC: Red / Blue ✅<br>Valid with 3 colours → χ ≤ 3.<br><br><em>Step 5 — conclude.</em> χ ≥ 3 and χ ≤ 3, therefore <strong>χ(G) = 3</strong>.<br><br><strong>Quick extra results to memorise:</strong><br>χ(K4) = <strong>4</strong> &nbsp;(every pair adjacent)<br>χ(C4) = <strong>2</strong> &nbsp;(4-cycle, even → Red, Blue, Red, Blue)<br>χ(C5) = <strong>3</strong> &nbsp;(5-cycle, odd → two colours cannot close the loop)<br>χ(tree) = <strong>2</strong> &nbsp;(trees have no cycles at all)",
+      "table": {
+        "headers": ["Graph", "Chromatic number χ", "Reason"],
+        "rows": [
+          ["No edges at all", "1", "Nobody is adjacent to anybody"],
+          ["Any tree (with ≥ 1 edge)", "2", "No cycles, so it is bipartite"],
+          ["Even cycle C4, C6…", "2", "Alternate two colours all the way round"],
+          ["Odd cycle C3, C5…", "3", "Two colours cannot close an odd loop"],
+          ["Complete graph Kn", "n", "Every vertex is adjacent to every other"],
+          ["Any planar graph", "≤ 4", "Four Colour Theorem"],
+          ["Any graph", "≤ Δ + 1", "Δ = largest degree; greedy colouring bound"]
+        ]
+      },
+      "mistake": "Giving a colouring with, say, 4 colours and claiming χ = 4. Producing a colouring only proves χ is <strong>at most</strong> that number. You must also argue why fewer colours are impossible — usually by pointing at a triangle or a larger complete subgraph.",
+      "examAnswer": "A proper vertex colouring of a graph G is an assignment of colours to the vertices such that no two adjacent vertices receive the same colour, and the chromatic number χ(G) is defined as the minimum number of colours for which such a colouring exists. A graph has chromatic number one if and only if it has no edges, and chromatic number two if and only if it is bipartite, which is equivalent to containing no cycle of odd length. The complete graph Kn requires exactly n colours since every pair of its vertices is adjacent, and in general χ(G) ≤ Δ + 1 where Δ is the maximum degree of G. By the Four Colour Theorem, every planar graph can be properly coloured using at most four colours. Graph colouring is applied to problems of examination timetabling, frequency assignment and register allocation in compilers.",
+      "remember": "χ = fewest colours so no two neighbours match. Triangle → 3. Kn → n. Planar → at most 4. Even cycle 2, odd cycle 3.",
+      "why": "Exam timetables, shift rosters, mobile frequency allocation and compiler register allocation are all solved by colouring a graph — and χ is the honest answer to 'what is the minimum resource I need?'.",
+      "practice": "Find χ for the 5-cycle V={A,B,C,D,E}, E={AB,BC,CD,DE,EA}. Give a valid colouring and explain why 2 colours are not enough."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "In a graph with 7 edges, what is the sum of the degrees of all vertices?",
+      "options": ["7", "14", "21", "It depends on the number of vertices"],
+      "answer": 1,
+      "why": "Handshaking Theorem: Σ deg(v) = 2|E| = 2 × 7 = 14. The number of vertices does not change this."
+    },
+    {
+      "q": "How many edges does the complete graph K6 have?",
+      "options": ["12", "15", "30", "36"],
+      "answer": 1,
+      "why": "|E| = n(n−1)/2 = 6 × 5 / 2 = 15. Forgetting to divide by 2 gives the wrong answer 30."
+    },
+    {
+      "q": "A connected planar graph has 6 vertices and 9 edges. How many faces does it have?",
+      "options": ["3", "4", "5", "6"],
+      "answer": 2,
+      "why": "Euler's formula V − E + F = 2 gives F = 2 − V + E = 2 − 6 + 9 = 5. Remember the outer infinite region counts as a face."
+    },
+    {
+      "q": "A connected graph has an Euler CIRCUIT if and only if…",
+      "options": [
+        "Exactly two vertices have odd degree",
+        "Every vertex has even degree",
+        "Every vertex has odd degree",
+        "It has no cycles"
+      ],
+      "answer": 1,
+      "why": "An Euler circuit needs to enter and leave every vertex in pairs, so every degree must be even. Exactly two odd vertices gives an Euler path, not a circuit."
+    },
+    {
+      "q": "A connected graph has exactly two vertices of odd degree. What can you say?",
+      "options": [
+        "It has an Euler circuit",
+        "It has an Euler path that starts at one odd vertex and ends at the other",
+        "It has neither an Euler path nor a circuit",
+        "It must be planar"
+      ],
+      "answer": 1,
+      "why": "Exactly two odd vertices is the precise condition for an Euler path (but not a circuit), and the path is forced to begin at one odd vertex and finish at the other."
+    },
+    {
+      "q": "What is the main difference between an Eulerian and a Hamiltonian circuit?",
+      "options": [
+        "Eulerian covers every vertex once; Hamiltonian covers every edge once",
+        "Eulerian covers every edge once; Hamiltonian covers every vertex once",
+        "They are the same thing",
+        "Eulerian works only on weighted graphs"
+      ],
+      "answer": 1,
+      "why": "Euler is about EDGES (the postman on every street), Hamilton is about VERTICES (the salesman visiting every city)."
+    },
+    {
+      "q": "Two graphs have the same number of vertices, the same number of edges and the same degree sequence. Are they necessarily isomorphic?",
+      "options": [
+        "Yes, always",
+        "No — a 6-cycle and two triangles both have degree sequence (2,2,2,2,2,2) but differ",
+        "Yes, provided both are connected",
+        "Only if they are planar"
+      ],
+      "answer": 1,
+      "why": "These three conditions are necessary but not sufficient. The 6-cycle is connected while two disjoint triangles have two components, so they cannot be isomorphic despite identical degree sequences."
+    },
+    {
+      "q": "In Dijkstra's algorithm, which vertex do you visit next?",
+      "options": [
+        "The one joined by the smallest edge weight",
+        "The unvisited vertex with the smallest tentative distance from the source",
+        "Any unvisited neighbour",
+        "The vertex with the highest degree"
+      ],
+      "answer": 1,
+      "why": "Dijkstra is greedy on total distance from the SOURCE, not on individual edge weights. Picking by smallest edge weight is a very common mistake."
+    },
+    {
+      "q": "What is the chromatic number of a cycle with 5 vertices (C5)?",
+      "options": ["1", "2", "3", "5"],
+      "answer": 2,
+      "why": "C5 is an odd cycle. Alternating two colours around the loop fails at the last vertex, which ends up adjacent to both colours, so a third colour is needed. Even cycles manage with 2."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "State the Handshaking Theorem and verify it for the graph V = {A,B,C,D,E} with E = {AB, AC, BC, CD, DE, EA}. Then explain why a graph with five vertices each of degree 3 cannot exist.",
+      "hint": "Find every degree, add them, compare with 2|E|. For the second part check whether the degree sum comes out even."
+    },
+    {
+      "q": "Define isomorphic graphs. Explain, with a clear counter-example of your own, why two graphs having the same degree sequence need not be isomorphic."
+    },
+    {
+      "q": "Apply Dijkstra's algorithm to find the shortest path from A to D in the weighted graph with edges A–B = 2, A–C = 5, B–C = 1, B–D = 7, C–D = 3. Show the distance table at every step and state the final route and its cost.",
+      "hint": "Initialise A = 0 and everything else ∞, then always finalise the smallest unvisited value."
+    },
+    {
+      "q": "State Euler's formula for planar graphs and use it, together with the corollary E ≤ 3V − 6, to prove that K5 is not planar."
+    },
+    {
+      "q": "Compare Eulerian and Hamiltonian circuits. Give the exact degree conditions for Euler paths and circuits, and explain with an everyday example why no such simple condition exists for Hamiltonian circuits."
+    }
+  ]
+};

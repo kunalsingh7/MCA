@@ -1,0 +1,610 @@
+/* Programming & Problem Solving in C (MCA 109) — Unit 2. Loaded with a normal <script> tag. */
+var UNITS = UNITS || {};
+UNITS.c = UNITS.c || [];
+UNITS.c[1] = {
+  "num": 2,
+  "title": "Control Statements, Loops, I/O and Arrays",
+  "problem": "A Unit 1 program runs straight from top to bottom, every line once. But real work is not like that. You need to check a condition ('did she pass?'), repeat a job ('print 60 students' marks'), and store many values under one name. Plain top-to-bottom code cannot do any of these.",
+  "solution": "Control statements let the program choose a path, loops let it repeat work without repeating code, I/O functions let it talk to the user, and arrays let one name hold hundreds of values. Together these turn a calculator into a real program.",
+  "objectives": [
+    "Write if, if-else, else-if ladder and nested if statements correctly",
+    "Use switch-case with break and default, and explain fall-through",
+    "Choose between while, for and do-while for any given problem",
+    "Trace a loop iteration by iteration and predict its exact output",
+    "Use break, continue, goto and exit() and state the difference between them",
+    "Write printf and scanf with the correct format specifier for every data type",
+    "Read and print strings using scanf, gets, puts and fgets, and explain the whitespace problem",
+    "Declare, initialise and traverse one-dimensional and two-dimensional arrays"
+  ],
+  "topics": [
+    {
+      "title": "Making Decisions: if, if-else and the else-if Ladder",
+      "teacher": "Think about your morning. 'If it is raining, take an umbrella.' You did not plan every possible day in advance — you checked a condition and then decided. A program needs exactly that power, and <code>if</code> is how you give it.",
+      "explain": "A <strong>control statement</strong> changes the order in which statements are executed. The <code>if</code> statement runs a block only when a condition is true. <code>if-else</code> gives two paths — one when true, one when false. When there are many possible cases, you chain them into an <strong>else-if ladder</strong>, which is checked from the top and stops at the first true condition.",
+      "keyPoints": [
+        "<code>if (condition) { ... }</code> — runs the block only when the condition is true.",
+        "In C, <strong>0 is false</strong> and any non-zero value is true.",
+        "<code>else</code> is optional, and an <code>else</code> always belongs to the nearest unmatched <code>if</code>.",
+        "An <strong>else-if ladder</strong> checks conditions top to bottom and stops at the first true one.",
+        "The final <code>else</code> of a ladder is the 'none of the above' case.",
+        "A <strong>nested if</strong> is an if written inside another if — used when a second check only makes sense after the first passes.",
+        "Without braces <code>{ }</code>, only the <strong>single next statement</strong> belongs to the if.",
+        "Never put a semicolon right after <code>if (condition)</code> — it silently ends the if."
+      ],
+      "subtopics": [
+        {
+          "title": "if vs if-else",
+          "text": "A plain <code>if</code> has only one road: do this, or do nothing. <code>if-else</code> has two roads and exactly one of them is always taken. Use <code>if</code> when nothing needs to happen on failure, and <code>if-else</code> when both outcomes matter, such as printing 'Pass' or 'Fail'."
+        },
+        {
+          "title": "The else-if ladder",
+          "text": "When one value must be sorted into many ranges — grade A, B, C, D — you write <code>if ... else if ... else if ... else</code>. C tests them in written order and the moment one is true it runs that block and <strong>skips all the rest</strong>. This is why the order of the conditions matters so much."
+        },
+        {
+          "title": "Nested if",
+          "text": "A nested if places one decision inside another. For example, first check that the student appeared for the exam; only then check whether the marks are above 40. The inner check would be meaningless on its own, which is exactly when nesting is the right choice."
+        }
+      ],
+      "realLife": "Marksheet rules at college: 75% and above is a distinction, 60 and above first division, 40 and above pass, below that fail. Your result is decided by the first rule that matches — that is an else-if ladder in real life.",
+      "code": "int marks = 72;\n\nif (marks >= 75) {\n    printf(\"Distinction\\n\");\n} else if (marks >= 60) {\n    printf(\"First Division\\n\");\n} else if (marks >= 40) {\n    printf(\"Pass\\n\");\n} else {\n    printf(\"Fail\\n\");\n}\n\n/* nested if - the second check only matters if the first passed */\nint attended = 1;\nif (attended == 1) {\n    if (marks >= 40) {\n        printf(\"Promoted to next semester\\n\");\n    }\n}",
+      "codeNote": "The ladder stops at the first true condition — marks 72 prints 'First Division' and never even tests the lines below it.",
+      "mistake": "Writing <code>if (marks >= 40);</code> with a semicolon. That semicolon is an empty statement, so the if does nothing and the block below always runs. The compiler gives no error — your output is just silently wrong.",
+      "examAnswer": "Control statements alter the normal sequential flow of execution of a program. The if statement executes a block of statements only when the given condition evaluates to true. The if-else statement provides two alternative paths, executing the first block when the condition is true and the second block otherwise. When several mutually exclusive conditions must be tested, an else-if ladder is used; the conditions are evaluated from top to bottom and the block corresponding to the first true condition is executed, after which the remaining conditions are skipped. A nested if is an if statement written inside another if statement, used when one condition must be tested only after another has already been satisfied.",
+      "remember": "if = one road. if-else = two roads. Ladder = first match wins, then exit.",
+      "why": "Almost every program you will ever write makes a decision. Grade calculation, largest of three numbers and even-odd checks are guaranteed exam questions built entirely on this.",
+      "practice": "Write an else-if ladder that reads a single character and prints whether it is a vowel, a consonant or not a letter at all."
+    },
+    {
+      "title": "The switch Statement",
+      "teacher": "Imagine a lift with ten buttons. You do not want ten separate 'if this button then that floor' checks — you press one button and go. When one variable has many fixed values, <code>switch</code> is that panel of buttons.",
+      "explain": "The <code>switch</code> statement compares one integer or character expression against a list of constant <code>case</code> labels and jumps to the matching one. Each case normally ends with <code>break</code>, which exits the switch. If no case matches, the optional <code>default</code> block runs.",
+      "keyPoints": [
+        "Syntax: <code>switch (expression) { case constant: statements; break; ... default: statements; }</code>",
+        "The expression must be an <strong>integer or char</strong> type — never float, and never a string.",
+        "Case labels must be <strong>constants</strong>, not variables, and must all be different.",
+        "<code>break</code> jumps out of the switch. Without it, execution <strong>falls through</strong> into the next case.",
+        "<code>default</code> runs when no case matches — it is optional but you should always write it.",
+        "<code>default</code> can be placed anywhere, but by convention it goes last.",
+        "A switch can only test <strong>equality</strong>; it cannot test ranges like <code>marks >= 40</code>.",
+        "Deliberate fall-through is useful for grouping cases, e.g. 'a', 'e', 'i', 'o', 'u' all meaning vowel."
+      ],
+      "subtopics": [
+        {
+          "title": "The break trap",
+          "text": "Once C finds a matching case it keeps executing <strong>downwards</strong> through the following cases until it meets a <code>break</code> or the closing brace. This is called <em>fall-through</em>. Forgetting a single <code>break</code> means your program prints the right answer <em>and</em> every answer below it — the single most common switch bug in exams."
+        },
+        {
+          "title": "Why default matters",
+          "text": "Without <code>default</code>, an unexpected input simply produces no output at all, which looks like the program crashed. With <code>default</code> you can print 'Invalid choice', so the user always gets a response. Examiners regularly cut marks for a menu program with no default case."
+        },
+        {
+          "title": "switch versus else-if ladder",
+          "text": "Use <code>switch</code> when one variable is compared with several fixed constant values — a menu choice, a day number, an operator symbol. Use an <code>else-if</code> ladder when you need ranges, floats, or conditions joined with <code>&amp;&amp;</code> and <code>||</code>. A switch is usually faster and much easier to read, but it is simply not allowed to express a range."
+        }
+      ],
+      "realLife": "A canteen menu card with numbers: press 1 for tea, 2 for coffee, 3 for samosa. Anything else and the cashier says 'we do not have that' — which is exactly the default case.",
+      "code": "int choice = 2;\n\nswitch (choice) {\n    case 1:\n        printf(\"Tea - Rs 10\\n\");\n        break;\n    case 2:\n        printf(\"Coffee - Rs 15\\n\");\n        break;          /* remove this break and 'Samosa' prints too */\n    case 3:\n        printf(\"Samosa - Rs 12\\n\");\n        break;\n    default:\n        printf(\"Invalid choice\\n\");\n}\n\n/* deliberate fall-through: all five vowels share one block */\nchar ch = 'e';\nswitch (ch) {\n    case 'a':\n    case 'e':\n    case 'i':\n    case 'o':\n    case 'u':\n        printf(\"Vowel\\n\");\n        break;\n    default:\n        printf(\"Not a vowel\\n\");\n}",
+      "codeNote": "The first switch shows break stopping the flow; the second shows fall-through used on purpose so five cases share one statement.",
+      "mistake": "<code>switch (marks) { case marks >= 40: ... }</code> is illegal twice over — a case label must be a constant, and switch cannot test a range at all. Use an else-if ladder for ranges.",
+      "examAnswer": "The switch statement is a multi-way decision statement that compares the value of an integer or character expression with several constant case labels and transfers control to the matching case. Each case is normally terminated by a break statement, which causes control to leave the switch; if break is omitted, execution continues into the following cases, a behaviour known as fall-through. The optional default case is executed when no case label matches the expression. The switch expression must be of integral type and every case label must be a distinct constant, so switch can test only equality and cannot be used for range conditions.",
+      "remember": "switch = equality only. Missing break = falls through. No default = silent nothing.",
+      "why": "Menu-driven programs and simple calculators are standard exam questions, and both are written with switch. The fall-through output question appears again and again.",
+      "practice": "Write a switch that takes an operator character ('+', '-', '*', '/') and two numbers, and prints the result. Handle an invalid operator using default."
+    },
+    {
+      "title": "Loops: while and for",
+      "teacher": "Suppose your teacher says 'write your name 100 times'. Would you really write 100 lines? A loop is the polite way of saying 'do this again until I tell you to stop' — one instruction, hundred repetitions.",
+      "explain": "A <strong>loop</strong> repeats a block of statements as long as a condition stays true. Every loop needs three things: <strong>initialisation</strong> (where to start), a <strong>condition</strong> (when to stop) and an <strong>update</strong> (how to move forward). The <code>while</code> loop keeps these three parts in separate places, while the <code>for</code> loop gathers all three into one neat header line.",
+      "keyPoints": [
+        "Every loop needs initialisation, a condition and an update — miss the update and it runs forever.",
+        "<code>while (condition) { ... }</code> tests <strong>before</strong> each pass, so it may run <strong>zero</strong> times.",
+        "<code>for (init; condition; update) { ... }</code> puts all three parts in one line.",
+        "The <code>for</code> loop also tests before the body, so it can also run zero times.",
+        "Use <code>for</code> when the number of repetitions is <strong>known</strong> (print 1 to 10).",
+        "Use <code>while</code> when you repeat <strong>until something happens</strong> (until the user enters 0).",
+        "All three parts of a <code>for</code> header are optional — <code>for(;;)</code> is a deliberate infinite loop.",
+        "The loop variable is usually called <code>i</code>, <code>j</code>, <code>k</code> — short for 'index'."
+      ],
+      "subtopics": [
+        {
+          "title": "How a while loop executes",
+          "text": "C first tests the condition. If it is true, the body runs once and control jumps straight back to the condition. If it is false the very first time, the body is <strong>never executed at all</strong>. This is why <code>while</code> is called an <em>entry-controlled</em> or pre-test loop."
+        },
+        {
+          "title": "The for loop is just a tidy while",
+          "text": "<code>for (i = 1; i &lt;= 5; i++)</code> does exactly the same work as <code>i = 1; while (i &lt;= 5) { ... i++; }</code>. The advantage is that all three parts sit together on one line, so you can see at a glance where the loop starts, stops and steps — and you cannot forget the update by accident."
+        },
+        {
+          "title": "Nested loops",
+          "text": "A loop written inside another loop is a <strong>nested loop</strong>. The inner loop completes all its repetitions for <em>every single</em> pass of the outer loop. If the outer runs 3 times and the inner 4 times, the inner body runs 3 &times; 4 = 12 times in total. Star patterns and multiplication tables are all nested loops."
+        }
+      ],
+      "realLife": "Counting down the 10 rotis you have to make is a <code>for</code> loop — you know the number. Stirring the tea until it boils is a <code>while</code> loop — you do not know how many stirs, you just keep checking.",
+      "worked": "<strong>Trace this loop step by step:</strong><br><code>int sum = 0, i;</code><br><code>for (i = 1; i &lt;= 5; i++) { sum = sum + i; }</code><br><br><strong>Before the loop:</strong> sum = 0, i is not set yet<br><strong>Initialisation:</strong> i = 1 (happens once only)<br><br><strong>Pass 1:</strong> condition 1 &lt;= 5 is TRUE &rarr; sum = 0 + 1 = <strong>1</strong> &rarr; update i++ makes i = 2<br><strong>Pass 2:</strong> condition 2 &lt;= 5 is TRUE &rarr; sum = 1 + 2 = <strong>3</strong> &rarr; i becomes 3<br><strong>Pass 3:</strong> condition 3 &lt;= 5 is TRUE &rarr; sum = 3 + 3 = <strong>6</strong> &rarr; i becomes 4<br><strong>Pass 4:</strong> condition 4 &lt;= 5 is TRUE &rarr; sum = 6 + 4 = <strong>10</strong> &rarr; i becomes 5<br><strong>Pass 5:</strong> condition 5 &lt;= 5 is TRUE &rarr; sum = 10 + 5 = <strong>15</strong> &rarr; i becomes 6<br><strong>Pass 6:</strong> condition 6 &lt;= 5 is FALSE &rarr; loop ends immediately, body does NOT run<br><br><strong>Final answer: sum = 15, and i = 6 after the loop (not 5).</strong><br>Notice the body ran 5 times but the condition was tested 6 times — the last test is the one that stops it.",
+      "code": "/* for loop - count is known */\nint i, sum = 0;\nfor (i = 1; i <= 5; i++) {\n    sum = sum + i;\n}\nprintf(\"Sum = %d\\n\", sum);      /* Sum = 15 */\n\n/* while loop - keep going until the user enters 0 */\nint n;\nprintf(\"Enter numbers, 0 to stop: \");\nscanf(\"%d\", &n);\nwhile (n != 0) {\n    printf(\"You typed %d\\n\", n);\n    scanf(\"%d\", &n);            /* the update - without it, infinite loop */\n}\n\n/* nested loop - 3 rows of 4 stars = 12 stars */\nint r, c;\nfor (r = 1; r <= 3; r++) {\n    for (c = 1; c <= 4; c++) {\n        printf(\"* \");\n    }\n    printf(\"\\n\");\n}",
+      "codeNote": "Three loops, three jobs: for counts a known 5 times, while waits for a 0, and the nested for prints a 3-row grid.",
+      "mistake": "Writing <code>for (i = 1; i &lt;= 5; i++);</code> with a semicolon after the header. The loop then repeats an <em>empty</em> statement five times and the block below runs only once. Same trap as the if-semicolon.",
+      "examAnswer": "A loop is a control structure that repeatedly executes a block of statements while a specified condition remains true. Every loop requires initialisation of a control variable, a test condition and an update expression. The while loop is an entry-controlled loop in which the condition is tested before the body is executed, so the body may be executed zero times if the condition is initially false. The for loop combines initialisation, condition and update into a single header and is also entry-controlled; it is preferred when the number of iterations is known in advance, whereas the while loop is preferred when the number of iterations depends on a condition discovered at run time.",
+      "remember": "for = you know HOW MANY. while = you know WHEN TO STOP.",
+      "why": "Sum of n numbers, factorial, tables, patterns, reversing a number — every one of these standard exam programs is just a loop with different arithmetic inside.",
+      "practice": "Trace, iteration by iteration, what this prints: <code>int i = 10; while (i > 6) { printf(\"%d \", i); i--; }</code>"
+    },
+    {
+      "title": "The do-while Loop and Choosing the Right Loop",
+      "teacher": "Here is the one difference examiners love to ask about. A <code>while</code> loop is a guard who checks your ID before letting you in. A <code>do-while</code> loop lets you in first and checks your ID on the way out — so you always get in at least once.",
+      "explain": "The <code>do-while</code> loop executes its body <strong>first</strong> and tests the condition <strong>afterwards</strong>. Because of this, the body always runs <strong>at least once</strong>, even when the condition is false from the very start. It is called an <em>exit-controlled</em> or post-test loop, and it is the only loop in C that ends with a semicolon.",
+      "keyPoints": [
+        "Syntax: <code>do { ... } while (condition);</code> — note the <strong>semicolon at the end</strong>.",
+        "The body runs <strong>before</strong> the first test, so it executes a <strong>minimum of one time</strong>.",
+        "<code>while</code> and <code>for</code> are <strong>entry-controlled</strong>; <code>do-while</code> is <strong>exit-controlled</strong>.",
+        "If the condition is false at the start: while runs 0 times, do-while runs 1 time.",
+        "Perfect for menus — show the menu once, then repeat until the user picks 'Exit'.",
+        "Also perfect for input validation — ask once, then re-ask while the input is wrong.",
+        "All three loops can do the same job; you choose the one that reads most naturally.",
+        "Forgetting the closing semicolon in <code>do-while</code> is a compile-time error."
+      ],
+      "subtopics": [
+        {
+          "title": "The zero-versus-one difference",
+          "text": "Set <code>i = 10</code> and write the condition <code>i &lt; 5</code>. A <code>while</code> loop prints nothing at all, because the very first test fails. A <code>do-while</code> loop prints 10 once and then stops. This tiny example is the classic two-mark question — learn it as a pair."
+        },
+        {
+          "title": "Where do-while is genuinely the right choice",
+          "text": "Any job that must happen at least once before you can even judge the condition. Displaying a menu, asking for a password, or asking for a valid age — you cannot know whether the input was wrong until you have already asked for it once."
+        },
+        {
+          "title": "Picking a loop in the exam",
+          "text": "Ask yourself two questions. First: do I know the number of repetitions? If yes, use <code>for</code>. If no, ask the second: must the body run at least once? If yes, use <code>do-while</code>; if no, use <code>while</code>. Stating this reasoning in your answer usually earns the mark on its own."
+        }
+      ],
+      "realLife": "An ATM always shows you the menu screen first and only then asks 'another transaction?'. It never decides in advance that you do not want a menu — that is do-while.",
+      "table": {
+        "headers": [
+          "",
+          "while",
+          "do-while",
+          "for"
+        ],
+        "rows": [
+          [
+            "Condition tested",
+            "Before the body",
+            "After the body",
+            "Before the body"
+          ],
+          [
+            "Type",
+            "Entry-controlled",
+            "Exit-controlled",
+            "Entry-controlled"
+          ],
+          [
+            "Minimum runs",
+            "0 times",
+            "1 time",
+            "0 times"
+          ],
+          [
+            "Init / update written",
+            "Separately, outside the header",
+            "Separately, outside the header",
+            "All in one header line"
+          ],
+          [
+            "Ends with a semicolon",
+            "No",
+            "Yes — <code>} while(c);</code>",
+            "No"
+          ],
+          [
+            "Best used when",
+            "Repetitions unknown, may be zero",
+            "Body must run at least once (menus, input validation)",
+            "Number of repetitions is known"
+          ]
+        ]
+      },
+      "code": "/* Same starting value, opposite behaviour */\nint i = 10;\nwhile (i < 5) {\n    printf(\"while: %d\\n\", i);   /* never prints - condition false at entry */\n    i++;\n}\n\nint j = 10;\ndo {\n    printf(\"do-while: %d\\n\", j); /* prints 10 ONCE, then tests and stops */\n    j++;\n} while (j < 5);\n\n/* the natural use - a menu */\nint choice;\ndo {\n    printf(\"1. Deposit  2. Withdraw  3. Exit\\n\");\n    scanf(\"%d\", &choice);\n} while (choice != 3);",
+      "codeNote": "Identical starting value 10 and identical condition, yet while prints nothing and do-while prints one line — that is the whole difference.",
+      "mistake": "Forgetting the semicolon after <code>while (condition)</code> at the end of a do-while. It is the only loop in C that needs one, and leaving it out is a compile error students waste minutes hunting for.",
+      "examAnswer": "The do-while loop is an exit-controlled or post-test loop in which the body of the loop is executed first and the test condition is evaluated afterwards. As a result, the body of a do-while loop is always executed at least once, even if the condition is false at the outset, whereas the body of a while or for loop may not be executed at all. The syntax is do { statements } while (condition); and it must be terminated by a semicolon after the while clause. The do-while loop is therefore preferred in situations such as menu-driven programs and input validation, where the statements must be performed at least once before the condition can be meaningfully tested.",
+      "remember": "while = test then do (may run 0 times). do-while = do then test (runs at least 1 time).",
+      "why": "'Difference between while and do-while' is one of the most frequently asked short questions in this paper, and the answer is worth full marks if you give the minimum-one-run point plus an example.",
+      "practice": "State the exact output of each: (a) <code>int i=5; while(i>10){printf(\"%d\",i); i++;}</code> (b) <code>int i=5; do{printf(\"%d\",i); i++;}while(i>10);</code>"
+    },
+    {
+      "title": "Special Constructs: break, continue, goto and exit()",
+      "teacher": "Every rule needs an emergency exit. You are watching a film and the fire alarm rings — you leave the hall completely. Or the scene is boring and you skip ahead. C has a word for each of these, and confusing the two costs marks every single year.",
+      "explain": "<code>break</code> immediately <strong>leaves</strong> the current loop or switch. <code>continue</code> <strong>skips the rest of the current iteration</strong> and jumps to the next one, but stays inside the loop. <code>goto</code> jumps to a named label elsewhere in the same function. <code>exit()</code> terminates the whole program at once.",
+      "keyPoints": [
+        "<code>break</code> — exits the <strong>innermost</strong> loop or switch only. Never exits two loops at once.",
+        "<code>continue</code> — skips the remaining statements of this pass and starts the next one.",
+        "<code>break</code> leaves the loop; <code>continue</code> keeps the loop alive.",
+        "<code>continue</code> has no meaning in a switch — it only works inside loops.",
+        "In a <code>for</code> loop, <code>continue</code> still runs the update part (<code>i++</code>); in a <code>while</code> loop it does <strong>not</strong>.",
+        "<code>goto label;</code> jumps to <code>label:</code> — but only <strong>within the same function</strong>.",
+        "<code>goto</code> is legal but discouraged: it produces tangled 'spaghetti code'.",
+        "<code>exit(0)</code> ends the entire program from anywhere, and needs <code>#include &lt;stdlib.h&gt;</code>."
+      ],
+      "subtopics": [
+        {
+          "title": "break versus continue",
+          "text": "Think of a queue at the fee counter. <code>break</code> means you walk out of the queue and go home — the loop is over for you. <code>continue</code> means you step aside and let the next person go — you are still in the process, just skipping this turn. That one sentence answers the whole comparison question."
+        },
+        {
+          "title": "The continue trap in a while loop",
+          "text": "In <code>while (i &lt; 10) { if (i == 5) continue; i++; }</code>, when <code>i</code> becomes 5 the <code>continue</code> jumps straight back to the condition <strong>without</strong> running <code>i++</code>. So <code>i</code> stays 5 forever and the program hangs. In a <code>for</code> loop this cannot happen, because the update sits in the header and always runs."
+        },
+        {
+          "title": "goto, labels and exit()",
+          "text": "A <strong>label</strong> is just a name followed by a colon, like <code>end:</code>, and <code>goto end;</code> jumps to it. Its only defensible use is breaking out of deeply nested loops in one shot; otherwise structured statements are always clearer. <code>exit(0)</code> is different in kind — it does not jump anywhere, it shuts the program down. By convention <code>exit(0)</code> means success and any non-zero value, such as <code>exit(1)</code>, means an error."
+        }
+      ],
+      "realLife": "Marking attendance in class: if a student is absent you skip that name and move to the next one — that is continue. If the bell rings you stop the whole roll call — that is break. If the college is closed and you go home, that is exit().",
+      "code": "#include <stdio.h>\n#include <stdlib.h>   /* needed for exit() */\n\nint main(void) {\n    int i;\n\n    /* break - stop completely at 3 */\n    for (i = 1; i <= 5; i++) {\n        if (i == 3) break;\n        printf(\"%d \", i);       /* prints: 1 2 */\n    }\n    printf(\"\\n\");\n\n    /* continue - skip only 3, keep looping */\n    for (i = 1; i <= 5; i++) {\n        if (i == 3) continue;\n        printf(\"%d \", i);       /* prints: 1 2 4 5 */\n    }\n    printf(\"\\n\");\n\n    /* goto with a label */\n    if (i > 100) goto end;\n    printf(\"goto was not taken\\n\");\n\nend:\n    exit(0);                    /* 0 means the program ended successfully */\n}",
+      "codeNote": "Same loop, one keyword changed: break gives 1 2, continue gives 1 2 4 5 — the missing 3 is the only difference.",
+      "mistake": "Thinking <code>break</code> exits <em>all</em> nested loops. It exits only the innermost one. To leave two loops together you need a flag variable or a single <code>goto</code>.",
+      "examAnswer": "C provides several jump statements that alter the normal flow of control. The break statement terminates the innermost enclosing loop or switch statement and transfers control to the statement following it. The continue statement skips the remaining statements of the current iteration and transfers control to the next iteration of the loop, so the loop itself continues to execute. The goto statement transfers control unconditionally to a labelled statement within the same function; although valid, it is discouraged because it makes program flow difficult to follow. The exit() function, declared in stdlib.h, terminates the entire program immediately, conventionally returning 0 for successful termination and a non-zero value to indicate an error.",
+      "remember": "break = leave the loop. continue = skip this turn. goto = jump. exit() = end the program.",
+      "why": "'Difference between break and continue' with the output of a small loop is asked almost every year, and it is two easy marks if you know the exact printed sequence.",
+      "practice": "Give the exact output of <code>for(i=1;i&lt;=6;i++){ if(i%2==0) continue; if(i==5) break; printf(\"%d \",i);}</code>"
+    },
+    {
+      "title": "Formatted I/O: printf() and scanf()",
+      "teacher": "A program that cannot talk to you is just a machine mumbling to itself. <code>printf</code> is how it speaks and <code>scanf</code> is how it listens. The tricky part is that you must tell C exactly what <em>kind</em> of value is coming — and that is what those little % symbols are for.",
+      "explain": "<strong>Formatted I/O</strong> means input and output where you control the exact format using <strong>format specifiers</strong> such as <code>%d</code> and <code>%f</code>. <code>printf()</code> sends formatted output to the screen and <code>scanf()</code> reads formatted input from the keyboard. Both are declared in <code>stdio.h</code>.",
+      "keyPoints": [
+        "<code>%d</code> integer &nbsp; <code>%f</code> float &nbsp; <code>%lf</code> double &nbsp; <code>%c</code> character &nbsp; <code>%s</code> string",
+        "Also useful: <code>%u</code> unsigned, <code>%ld</code> long int, <code>%x</code> hexadecimal, <code>%%</code> prints a literal % sign.",
+        "<code>scanf()</code> needs the <strong>address</strong> of the variable, so you write <code>&amp;</code> before its name.",
+        "No <code>&amp;</code> is needed for an array or a string — the array name is already an address.",
+        "In <code>scanf</code> you MUST use <code>%lf</code> for a double; <code>%f</code> there reads only a float.",
+        "<code>%.2f</code> prints exactly 2 digits after the decimal point.",
+        "<code>%5d</code> prints the number in a field 5 characters wide, right-aligned — useful for tables.",
+        "A wrong specifier does not usually give an error; it silently prints garbage."
+      ],
+      "subtopics": [
+        {
+          "title": "Why scanf needs the & sign",
+          "text": "<code>printf</code> only needs to <em>read</em> the value, so you pass the value itself. <code>scanf</code> must <em>change</em> your variable, so it needs to know <strong>where that variable lives</strong> in memory — and <code>&amp;marks</code> means 'the address of marks'. Forget the <code>&amp;</code> and the program usually crashes at run time, not at compile time."
+        },
+        {
+          "title": "Width and precision",
+          "text": "Between the % and the letter you can add formatting. <code>%.2f</code> fixes two decimal places, so 87.5 prints as 87.50 — exactly what you want for money and percentages. <code>%10s</code> right-aligns a string in 10 columns and <code>%-10s</code> left-aligns it, which is how neat tabular output is produced."
+        },
+        {
+          "title": "The %c and whitespace problem",
+          "text": "After you type a number and press Enter, that Enter key stays waiting in the input buffer. The next <code>scanf(\"%c\", &amp;ch)</code> happily reads that leftover newline instead of your character. The standard fix is to write a space before the specifier: <code>scanf(\" %c\", &amp;ch)</code>. That leading space tells scanf to skip any whitespace first."
+        }
+      ],
+      "realLife": "Filling an examination form: there are separate boxes for roll number (digits only), name (letters) and percentage (with a decimal point). Format specifiers are those boxes — each accepts one particular kind of value.",
+      "table": {
+        "headers": [
+          "Specifier",
+          "Data type",
+          "Example use",
+          "Prints / reads"
+        ],
+        "rows": [
+          [
+            "%d",
+            "int",
+            "printf(\"%d\", 21)",
+            "21"
+          ],
+          [
+            "%f",
+            "float",
+            "printf(\"%.2f\", 87.5)",
+            "87.50"
+          ],
+          [
+            "%lf",
+            "double",
+            "scanf(\"%lf\", &amp;fees)",
+            "reads 55999.99"
+          ],
+          [
+            "%c",
+            "char",
+            "printf(\"%c\", 'A')",
+            "A"
+          ],
+          [
+            "%s",
+            "string",
+            "printf(\"%s\", name)",
+            "Priya"
+          ],
+          [
+            "%u",
+            "unsigned int",
+            "printf(\"%u\", 40)",
+            "40"
+          ]
+        ]
+      },
+      "code": "#include <stdio.h>\n\nint main(void) {\n    int rollNo;\n    float marks;\n    char grade;\n    double fees;\n\n    printf(\"Enter roll number: \");\n    scanf(\"%d\", &rollNo);        /* & gives scanf the address */\n\n    printf(\"Enter marks: \");\n    scanf(\"%f\", &marks);\n\n    printf(\"Enter grade: \");\n    scanf(\" %c\", &grade);        /* leading space skips the leftover Enter */\n\n    printf(\"Enter fees: \");\n    scanf(\"%lf\", &fees);         /* %lf, not %f, for a double */\n\n    printf(\"Roll %d scored %.2f, grade %c, fees %.2lf\\n\",\n           rollNo, marks, grade, fees);\n    return 0;\n}",
+      "codeNote": "Three rules in one program: & in every scanf, a space before %c, and %lf for double.",
+      "mistake": "Writing <code>scanf(\"%d\", marks);</code> without the <code>&amp;</code>. The compiler may only warn, but at run time the program writes to a random memory address and usually crashes. Always <code>&amp;</code> — except for strings and arrays.",
+      "examAnswer": "Formatted input and output functions allow data to be read and displayed in a specified format using format specifiers. The printf() function displays formatted output on the standard output device, while scanf() reads formatted input from the standard input device; both are declared in the header file stdio.h. Common format specifiers are %d for int, %f for float, %lf for double, %c for char and %s for string. In scanf() the address-of operator & must precede each ordinary variable, because scanf needs the memory address of the variable in order to store the value read; it is not required for arrays and strings, since an array name already denotes an address. Field width and precision may also be specified, as in %5d or %.2f.",
+      "remember": "printf sends OUT, scanf takes IN. scanf always needs & (except strings).",
+      "why": "Every single program you write in the practical exam uses printf and scanf. One missing & is the difference between a working program and a crash.",
+      "practice": "Write the correct scanf and printf lines to read a student's name, age and percentage, then print the percentage to two decimal places."
+    },
+    {
+      "title": "Unformatted I/O and String I/O Functions",
+      "teacher": "Try typing 'Priya Sharma' into a <code>scanf(\"%s\")</code> and you will get back only 'Priya'. Sharma just vanishes. Nothing is broken — C is following a rule you have not learnt yet. Let me show you that rule and its cure.",
+      "explain": "<strong>Unformatted I/O</strong> functions read or write data without any format specifier. They handle one character or one whole line at a time. The important ones are <code>getchar()</code> and <code>putchar()</code> for single characters, and <code>gets()</code> and <code>puts()</code> for strings.",
+      "keyPoints": [
+        "<code>getchar()</code> reads one character; <code>putchar(ch)</code> prints one character.",
+        "<code>gets(str)</code> reads a whole line <strong>including spaces</strong>, and stops at Enter.",
+        "<code>puts(str)</code> prints a string and <strong>adds a newline automatically</strong>; printf does not.",
+        "<code>scanf(\"%s\", name)</code> stops at the <strong>first space, tab or newline</strong> — it reads one word only.",
+        "So <code>scanf(\"%s\")</code> cannot read a full name with a space in it; <code>gets()</code> can.",
+        "<code>gets()</code> is <strong>unsafe</strong> — it cannot check the array size and was removed in C11.",
+        "The safe modern replacement is <code>fgets(str, sizeof(str), stdin)</code>.",
+        "<code>getch()</code> and <code>getche()</code> are Turbo C extras from <code>conio.h</code>, not standard C."
+      ],
+      "subtopics": [
+        {
+          "title": "Why scanf stops at a space",
+          "text": "The <code>%s</code> specifier is defined to read a sequence of <strong>non-whitespace</strong> characters. The moment it meets a space, tab or newline it stops and puts a <code>'\\0'</code> terminator there. Everything after the space is left sitting in the input buffer and will be picked up by your <em>next</em> scanf — which is why the next input often looks like it was 'skipped'."
+        },
+        {
+          "title": "gets() and puts()",
+          "text": "<code>gets(name)</code> reads characters until you press Enter, so spaces are kept, and it replaces the Enter with <code>'\\0'</code>. <code>puts(name)</code> prints the string and moves to a new line by itself. The catch is real: <code>gets()</code> has no way to know how big your array is, so a long input overflows it and corrupts memory. This is why the C11 standard removed it — mention this in the exam and you stand out."
+        },
+        {
+          "title": "Formatted versus unformatted",
+          "text": "Formatted functions (<code>printf</code>, <code>scanf</code>) use format specifiers and can handle many values of mixed types in one call. Unformatted functions (<code>getchar</code>, <code>putchar</code>, <code>gets</code>, <code>puts</code>) take no specifiers, work with characters or strings only, and are simpler and faster for that one job."
+        }
+      ],
+      "realLife": "Telling an auto driver 'Arera Colony' — he hears the first word and drives off before you finish. <code>scanf(\"%s\")</code> is that driver. <code>gets()</code> is the one who patiently waits until you stop talking.",
+      "table": {
+        "headers": [
+          "Function",
+          "Reads / prints",
+          "Handles spaces?",
+          "Note"
+        ],
+        "rows": [
+          [
+            "scanf(\"%s\", s)",
+            "one word",
+            "No — stops at a space",
+            "Needs no &amp; for an array"
+          ],
+          [
+            "gets(s)",
+            "one full line",
+            "Yes",
+            "Unsafe; removed in C11"
+          ],
+          [
+            "fgets(s, n, stdin)",
+            "one full line, size limited",
+            "Yes",
+            "Safe; keeps the '\\n'"
+          ],
+          [
+            "puts(s)",
+            "prints a string",
+            "Yes",
+            "Adds a newline itself"
+          ],
+          [
+            "getchar() / putchar()",
+            "one character",
+            "—",
+            "Simplest character I/O"
+          ]
+        ]
+      },
+      "code": "#include <stdio.h>\n\nint main(void) {\n    char name[50];\n    char ch;\n\n    printf(\"Enter full name: \");\n    /* scanf(\"%s\", name);  would read only 'Priya' from 'Priya Sharma' */\n    fgets(name, sizeof(name), stdin);   /* safe: reads the whole line */\n    printf(\"Hello, \");\n    puts(name);                          /* puts adds a newline by itself */\n\n    printf(\"Press any key: \");\n    ch = getchar();                      /* reads exactly one character */\n    putchar(ch);                         /* prints exactly one character */\n    putchar('\\n');\n    return 0;\n}",
+      "codeNote": "fgets keeps the spaces that scanf(\"%s\") would have thrown away, and unlike gets() it can never overflow the 50-character array.",
+      "mistake": "Using <code>scanf(\"%s\", name)</code> for a full name and then wondering where the surname went. <code>%s</code> stops at the first space, always. Use <code>gets()</code> in old Turbo C, or <code>fgets()</code> in any modern compiler.",
+      "examAnswer": "Unformatted input and output functions transfer data without the use of format specifiers. The functions getchar() and putchar() read and display a single character respectively, while gets() reads an entire line of text including spaces until the Enter key is pressed, and puts() displays a string followed automatically by a newline character. In contrast, the formatted function scanf() with the %s specifier reads only up to the first whitespace character, and therefore cannot read a string containing spaces. The gets() function is considered unsafe because it performs no bounds checking on the destination array and was removed from the C11 standard; the function fgets(), which limits the number of characters read, is used in its place.",
+      "remember": "scanf %s = one word only. gets = whole line. puts = prints and adds a newline.",
+      "why": "Reading a full name or an address is needed in half the practical programs, and 'why did my scanf skip the rest' is the bug that wastes the most lab time.",
+      "practice": "A user types <code>New Market Bhopal</code>. What exactly is stored by <code>scanf(\"%s\", s)</code>, and what by <code>gets(s)</code>? Explain the difference."
+    },
+    {
+      "title": "One-Dimensional Arrays",
+      "teacher": "Storing the marks of 60 students needs 60 variables — marks1, marks2, marks3... Would you really name them all? An array is one name with 60 numbered boxes inside it, and a loop can walk through every box for you.",
+      "explain": "An <strong>array</strong> is a collection of elements of the <strong>same data type</strong> stored in <strong>continuous memory locations</strong> under a single name. Each element is reached by an <strong>index</strong> written in square brackets. In C the index always starts at <strong>0</strong>, so an array of size <code>n</code> has valid indexes from <code>0</code> to <code>n-1</code>.",
+      "keyPoints": [
+        "Declaration: <code>int marks[5];</code> — reserves 5 int-sized boxes.",
+        "Initialisation: <code>int marks[5] = {90, 85, 78, 92, 66};</code>",
+        "Indexes run from <strong>0 to n-1</strong>. <code>marks[0]</code> is the first, <code>marks[4]</code> the last.",
+        "All elements must be of the <strong>same data type</strong>.",
+        "Elements are stored in <strong>contiguous</strong> (side-by-side) memory locations.",
+        "If you give fewer values than the size, the rest are automatically <strong>0</strong>.",
+        "<code>int a[] = {1,2,3};</code> — the size can be left out when you supply values; here it is 3.",
+        "The array size must be fixed at declaration; C does not check whether your index is out of range."
+      ],
+      "subtopics": [
+        {
+          "title": "Why indexing starts at 0",
+          "text": "The array name stores the address of the first element, and the index is really an <em>offset</em> from that address. The first element is 0 steps away, the second is 1 step away, and so on. So <code>marks[0]</code> is not a quirk — it is literally 'the element zero boxes from the start'."
+        },
+        {
+          "title": "Traversing an array with a loop",
+          "text": "Arrays and <code>for</code> loops are made for each other. <code>for (i = 0; i &lt; n; i++)</code> visits every element exactly once. Note the condition is <code>i &lt; n</code>, not <code>i &lt;= n</code> — with size 5, <code>i &lt;= 5</code> would touch <code>marks[5]</code>, which does not exist."
+        },
+        {
+          "title": "C does not check your index",
+          "text": "If you write <code>marks[10]</code> in an array of size 5, C will <strong>not</strong> stop you. It simply reads or writes whatever memory sits there, giving garbage values or a crash that appears far away from the real mistake. Checking the bounds is entirely the programmer's responsibility."
+        }
+      ],
+      "realLife": "A train coach with 60 numbered seats. The coach has one name (S4) and every passenger is found by a seat number. You do not invent a separate name for each seat — you just say S4, seat 23.",
+      "worked": "<strong>Find the largest of 5 marks: 90, 85, 78, 92, 66</strong><br><code>int marks[5] = {90, 85, 78, 92, 66};</code><br>Start by assuming the first element is the largest: <strong>max = marks[0] = 90</strong><br><br><strong>i = 1:</strong> marks[1] = 85. Is 85 &gt; 90? NO &rarr; max stays <strong>90</strong><br><strong>i = 2:</strong> marks[2] = 78. Is 78 &gt; 90? NO &rarr; max stays <strong>90</strong><br><strong>i = 3:</strong> marks[3] = 92. Is 92 &gt; 90? YES &rarr; max becomes <strong>92</strong><br><strong>i = 4:</strong> marks[4] = 66. Is 66 &gt; 92? NO &rarr; max stays <strong>92</strong><br><strong>i = 5:</strong> condition i &lt; 5 fails &rarr; loop ends<br><br><strong>Largest = 92</strong><br>Sum check for the same array: 90 + 85 = 175, +78 = 253, +92 = 345, +66 = <strong>411</strong>. Average = 411 / 5 = <strong>82.2</strong>",
+      "code": "#include <stdio.h>\n\nint main(void) {\n    int marks[5] = {90, 85, 78, 92, 66};\n    int i, sum = 0, max;\n\n    /* traverse: note i < 5, NOT i <= 5 */\n    for (i = 0; i < 5; i++) {\n        printf(\"marks[%d] = %d\\n\", i, marks[i]);\n        sum = sum + marks[i];\n    }\n    printf(\"Sum = %d, Average = %.2f\\n\", sum, sum / 5.0);\n\n    max = marks[0];\n    for (i = 1; i < 5; i++) {\n        if (marks[i] > max) {\n            max = marks[i];\n        }\n    }\n    printf(\"Largest = %d\\n\", max);   /* 92 */\n\n    int zeros[5] = {1, 2};            /* rest become 0 automatically */\n    printf(\"zeros[4] = %d\\n\", zeros[4]);   /* 0 */\n    return 0;\n}",
+      "codeNote": "sum / 5.0 uses 5.0 on purpose — sum / 5 would be integer division and would throw the decimal part away.",
+      "mistake": "Writing <code>for (i = 1; i &lt;= 5; i++)</code> for an array of size 5. You skip <code>marks[0]</code> and read <code>marks[5]</code>, which does not exist. Always <code>i = 0; i &lt; n</code>.",
+      "examAnswer": "An array is a collection of elements of the same data type stored in contiguous memory locations and referred to by a common name. Each individual element is accessed using an index or subscript enclosed in square brackets, and in C the index always begins at 0, so an array of size n has valid indices from 0 to n-1. A one-dimensional array is declared as data_type array_name[size], for example int marks[5], and may be initialised at the time of declaration as int marks[5] = {90, 85, 78, 92, 66}. If fewer initialisers are supplied than the declared size, the remaining elements are automatically set to zero. C performs no bounds checking on array indices, so accessing an element outside the declared range results in undefined behaviour.",
+      "remember": "Size n, index 0 to n-1. Loop with i &lt; n, never i &lt;= n.",
+      "why": "Sum, average, largest, smallest, reverse and searching an array are the standard array programs — and all six are the same for loop with different bodies.",
+      "practice": "Declare an array of 6 integers, read them from the user, and print the sum of only the even numbers."
+    },
+    {
+      "title": "Two-Dimensional and Multi-Dimensional Arrays",
+      "teacher": "A one-dimensional array is a single row of seats. But a marksheet is a grid — students down the side, subjects across the top. For a grid you need two index numbers: which row, and which column. That is a 2-D array.",
+      "explain": "A <strong>two-dimensional array</strong> stores data in rows and columns, like a table or matrix. It is declared as <code>data_type name[rows][columns]</code> and each element is accessed with <strong>two indexes</strong>: <code>a[i][j]</code>, where <code>i</code> is the row and <code>j</code> is the column. Both indexes start at 0, and the total number of elements is rows &times; columns.",
+      "keyPoints": [
+        "Declaration: <code>int a[3][4];</code> — 3 rows, 4 columns, <strong>12 elements</strong> in total.",
+        "Access: <code>a[i][j]</code> — <strong>row first, column second</strong>. Always that order.",
+        "Both indexes start at 0: rows 0 to 2, columns 0 to 3 in the example above.",
+        "Initialisation: <code>int a[2][3] = {{1,2,3},{4,5,6}};</code> — inner braces are one row each.",
+        "C stores a 2-D array in <strong>row-major order</strong>: the whole of row 0, then row 1, and so on.",
+        "Memory needed = rows &times; columns &times; sizeof(type).",
+        "You may omit the <strong>first</strong> dimension when initialising, never the second: <code>int a[][3]={{1,2,3},{4,5,6}};</code>",
+        "Traversing needs <strong>nested loops</strong> — outer loop for rows, inner loop for columns.",
+        "Three or more dimensions are allowed too: <code>int b[2][3][4];</code> — 24 elements."
+      ],
+      "subtopics": [
+        {
+          "title": "Row-major storage",
+          "text": "Memory itself is one long line, so C flattens the table by laying row 0 down first, then row 1 immediately after it, and so on. This is called <strong>row-major order</strong>. It is why the second dimension must always be given — the compiler needs to know how long each row is before it can find where row 1 begins."
+        },
+        {
+          "title": "Nested loops for a matrix",
+          "text": "The outer loop picks the row and the inner loop walks across that row's columns. Printing a newline after the inner loop finishes is what makes the output look like an actual table. For a 3&times;4 array the inner body executes 3 &times; 4 = 12 times in total."
+        },
+        {
+          "title": "Where 2-D arrays are used",
+          "text": "Matrix addition, multiplication and transpose are the classic exam programs. Matrix addition needs both matrices to have the same order and simply adds <code>a[i][j] + b[i][j]</code>. The transpose swaps rows with columns, so <code>t[j][i] = a[i][j]</code> — a one-line change that carries a whole question."
+        }
+      ],
+      "realLife": "Your class marksheet on the notice board: rows are students, columns are subjects. To find Priya's Maths marks you look across her row until you reach the Maths column — row index, then column index.",
+      "worked": "<strong>Add two 2&times;2 matrices</strong><br>A = {{1, 2}, {3, 4}} &nbsp;&nbsp; B = {{5, 6}, {7, 8}}<br>Rule: <code>C[i][j] = A[i][j] + B[i][j]</code><br><br><strong>i=0, j=0:</strong> C[0][0] = 1 + 5 = <strong>6</strong><br><strong>i=0, j=1:</strong> C[0][1] = 2 + 6 = <strong>8</strong><br>(inner loop finished &rarr; print a newline, move to next row)<br><strong>i=1, j=0:</strong> C[1][0] = 3 + 7 = <strong>10</strong><br><strong>i=1, j=1:</strong> C[1][1] = 4 + 8 = <strong>12</strong><br><br><strong>Result C = {{6, 8}, {10, 12}}</strong><br>The inner body ran 2 &times; 2 = 4 times, exactly the number of elements.",
+      "code": "#include <stdio.h>\n\nint main(void) {\n    int a[2][2] = {{1, 2}, {3, 4}};\n    int b[2][2] = {{5, 6}, {7, 8}};\n    int c[2][2];\n    int i, j;\n\n    for (i = 0; i < 2; i++) {          /* outer loop = rows */\n        for (j = 0; j < 2; j++) {      /* inner loop = columns */\n            c[i][j] = a[i][j] + b[i][j];\n        }\n    }\n\n    for (i = 0; i < 2; i++) {\n        for (j = 0; j < 2; j++) {\n            printf(\"%4d\", c[i][j]);    /* %4d lines the columns up */\n        }\n        printf(\"\\n\");                  /* newline AFTER each full row */\n    }\n    return 0;\n}",
+      "codeNote": "The printf(\"\\n\") sits between the two loops — inside the outer, outside the inner — which is exactly what turns a list into a table.",
+      "mistake": "Writing <code>a[i, j]</code> instead of <code>a[i][j]</code>. In C the comma is an operator, so <code>a[i, j]</code> quietly means <code>a[j]</code> — no error message, completely wrong element. Each index needs its own brackets.",
+      "examAnswer": "A two-dimensional array is an array of arrays that stores data in the form of rows and columns, and is declared as data_type array_name[rows][columns]. Each element is accessed using two subscripts, the first specifying the row and the second the column, both beginning at zero; thus an array declared as int a[3][4] contains twelve elements with row indices 0 to 2 and column indices 0 to 3. It may be initialised as int a[2][3] = {{1,2,3},{4,5,6}}, where each inner pair of braces represents one row. Elements are stored in contiguous memory in row-major order, that is, all elements of the first row are stored before those of the second row. Two-dimensional arrays are traversed using nested loops and are commonly used to represent matrices.",
+      "remember": "a[row][column]. Rows &times; columns = total elements. Outer loop = row, inner loop = column.",
+      "why": "Matrix addition, multiplication and transpose are near-certain programming questions, and every one of them is a nested loop over a 2-D array.",
+      "practice": "Declare a 3&times;3 matrix, fill it from the user, and print the sum of its diagonal elements (the ones where the row index equals the column index)."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Which loop is guaranteed to execute its body at least once?",
+      "options": [
+        "while",
+        "for",
+        "do-while",
+        "All three"
+      ],
+      "answer": 2,
+      "why": "do-while tests the condition AFTER running the body, so the body always runs at least one time. while and for test first and may run zero times."
+    },
+    {
+      "q": "What is the output of: <code>for(i=1;i&lt;=5;i++){ if(i==3) continue; printf(\"%d \", i); }</code>",
+      "options": [
+        "1 2",
+        "1 2 4 5",
+        "1 2 3 4 5",
+        "3"
+      ],
+      "answer": 1,
+      "why": "continue skips only that one iteration and keeps the loop running, so 3 is missed but 4 and 5 still print. With break instead, the output would have been just 1 2."
+    },
+    {
+      "q": "In a switch statement, what happens if you forget the <code>break</code> at the end of a matching case?",
+      "options": [
+        "The program gives a compile error",
+        "Only that case runs, as normal",
+        "Execution falls through and the following cases also run",
+        "The default case runs instead"
+      ],
+      "answer": 2,
+      "why": "This is called fall-through. After a match, C keeps executing downwards until it meets a break or the closing brace of the switch."
+    },
+    {
+      "q": "For an array declared as <code>int marks[5];</code>, what is the index of the LAST element?",
+      "options": [
+        "5",
+        "4",
+        "1",
+        "0"
+      ],
+      "answer": 1,
+      "why": "Indexes start at 0, so a size-5 array uses indexes 0, 1, 2, 3, 4. marks[5] is outside the array."
+    },
+    {
+      "q": "Which scanf format specifier must be used to read a <code>double</code>?",
+      "options": [
+        "%f",
+        "%d",
+        "%lf",
+        "%c"
+      ],
+      "answer": 2,
+      "why": "In scanf, %f reads a float and %lf reads a double. Using %f for a double stores a wrong value."
+    },
+    {
+      "q": "A user types <code>Priya Sharma</code>. What does <code>scanf(\"%s\", name);</code> store in name?",
+      "options": [
+        "Priya Sharma",
+        "Priya",
+        "Sharma",
+        "Nothing — it gives an error"
+      ],
+      "answer": 1,
+      "why": "%s stops reading at the first whitespace character, so only the word 'Priya' is stored. Use gets() or fgets() to read a whole line with spaces."
+    },
+    {
+      "q": "How many elements does <code>int a[3][4];</code> have in total?",
+      "options": [
+        "7",
+        "34",
+        "12",
+        "3"
+      ],
+      "answer": 2,
+      "why": "A 2-D array has rows x columns elements: 3 x 4 = 12, stored contiguously in row-major order."
+    },
+    {
+      "q": "What is the difference between <code>break</code> and <code>exit()</code>?",
+      "options": [
+        "There is no difference",
+        "break leaves the innermost loop or switch; exit() terminates the whole program",
+        "break ends the program; exit() leaves the loop",
+        "Both only work inside a switch"
+      ],
+      "answer": 1,
+      "why": "break only leaves the innermost loop or switch and the program continues after it. exit(), declared in stdlib.h, shuts the entire program down immediately."
+    },
+    {
+      "q": "What does <code>puts(str)</code> do that <code>printf(\"%s\", str)</code> does not?",
+      "options": [
+        "It reads a string",
+        "It adds a newline automatically after the string",
+        "It checks the array size",
+        "It converts the string to uppercase"
+      ],
+      "answer": 1,
+      "why": "puts() prints the string and then automatically moves to a new line. With printf you must write \\n yourself."
+    }
+  ],
+  "examQuestions": [
+    {
+      "q": "Explain the difference between the while and do-while loops. Write a small program using each, with the same starting value and the same condition, and show why their outputs differ.",
+      "hint": "Use a condition that is false right at the start — that is where the difference shows up."
+    },
+    {
+      "q": "What is fall-through in a switch statement? Write a switch with a missing break, give its exact output, and then explain one situation where fall-through is actually useful."
+    },
+    {
+      "q": "Distinguish between break and continue with a suitable example of each. Also state briefly what goto and exit() do."
+    },
+    {
+      "q": "Write a C program to read 10 numbers into a one-dimensional array and print the largest, the smallest and the average. Trace your loop for the first three elements.",
+      "hint": "Start by assuming the first element is both the largest and the smallest, then compare from index 1 onwards."
+    },
+    {
+      "q": "Explain two-dimensional arrays with declaration, initialisation and row-major storage. Write a program to add two 3x3 matrices and display the result in table form."
+    }
+  ]
+};
